@@ -28,6 +28,7 @@ Retention
 - percentage of applications still active 3, 6, 12 months into the future: So like customer stickyness. 
 
 ## Use Cases
+### Note: Use cases are a super set of the minimal-viable-product features; include more features because its important to set up the API so it can handle this shit
 
 Use case 1: Set up profile
 - Login with the platform
@@ -48,22 +49,29 @@ Use case 3: Create an event and see that its created ( User and Group)
 - read the event stream that displays the new content in context
 
 
-Use case 4: send email, CC  tarrie email adress,  have event displayed in the event stream authomatically (User and Group)
+Use case 4: Write to platform from outside of Tarrie
+**send email, CC  tarrie email adress,  have event displayed in the event stream authomatically (User and Group)** 
 - Setup email for user page
 - email event with a picture + description and CC group email
 - read the event stream that displays the new content in context
     - (Note this is very similar to kindle, if you send your kindle email a kindle formatted book you downloaded illegally online, it will automatically be on your kindle)
 
-Use case 5: Manage event
+Use case 5: Read from platform outside of Tarrie
+** Ical, Google Calender integration of events (not sure of the steps)**
+- Choose type of calender to integrate
+- walk through of setup of calender integration
+- see events on native calender. 
+
+Use case 6: Manage event
 -  Promoting events: Share with specific groups on contact list? Share with subscribers + admin? Share within the public network that you are in (Northwestern)? Share with people outside the network?
 - 
 
-Use case 6: Manage group and contacts
+Use case 7: Manage group and contacts
 - revoke or give new titles such as admin + club memeber
 - select frequency of push notifications and communications from group to members.  
 
 
-Use case 7: Use case 1-4 via mobile so think about what this entials
+Use case 8: Use case 1-4 via mobile so think about what this entials
 - Initial Call to platform will include authentication about the resource being requested
 - On the platform side the authication data will be processed by the `auth` class of the platform, if crednetials autheticated (who is it?) and authorized (can they do this action?) request passed through server, and response is sent back. 
 **In general since mobile is lightweight and poor internet connectivity (1) compress data so the app can download it quicky (2) multiple resources can be requested at a time, so one request to server per page (3) selectivity of the shit you want since we dont want to crash app w/ too much data**

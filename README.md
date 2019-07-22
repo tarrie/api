@@ -43,10 +43,13 @@ Use case 2: Create group
 Use case 3: Create an event and see that its created ( User and Group)
 - Login with the platform
 - Create an event using user page or group page
+- assing hashtags to event + server categorizes hashtag?
 - promote the event on Tarrie platform and via email
     - emails will have a link-token asking users to sign up if not part of network. 
 - See example of how it looks on mobile app and via email
 - read the event stream that displays the new content in context
+
+Use case 8: Explore events by hashtags 
 
 
 Use case 4: Write to platform from outside of Tarrie
@@ -64,11 +67,13 @@ Use case 5: Read from platform outside of Tarrie
 
 Use case 6: Manage event
 -  Promoting events: Share with specific groups on contact list? Share with subscribers + admin? Share within the public network that you are in (Northwestern)? Share with people outside the network?
-- 
+- Set visbility for event that is posted. Can anyone share it and it will bounce virally around the network? can only groups that 
+- Change or delete event, send notificattions about the event. 
 
 Use case 7: Manage group and contacts
 - revoke or give new titles such as admin + club memeber
 - select frequency of push notifications and communications from group to members.  
+
 
 
 Use case 8: Use case 1-4 via mobile so think about what this entials

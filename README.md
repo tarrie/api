@@ -43,7 +43,7 @@ Use case 2: Create group
 Use case 3: Create an event and see that its created ( User and Group)
 - Login with the platform
 - Create an event using user page or group page
-- assing hashtags to event + server categorizes hashtag?
+- assing hashtags to event + server categorizes hashtag? --- this is a ML clustering problem no?
 - promote the event on Tarrie platform and via email
     - emails will have a link-token asking users to sign up if not part of network. 
 - See example of how it looks on mobile app and via email

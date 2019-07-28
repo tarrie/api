@@ -1,5 +1,6 @@
 # api + api planning
 
+View the raml file as documentation by downloading --> https://github.com/mulesoft/api-console
 
 ## Business Value
 

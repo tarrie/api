@@ -88,8 +88,15 @@ List Events:
 
 
 #### Random Notes
+Store authentication + authorization on the users device. Via cookies in the login response, or a sql litedb
+
 Authentication: verifying who the person says he/she is. This may involve checking a username/password or checking that a token is signed and not expired. Authentication does not say this person can access a particular resource.
 
 Authorization: Involves checking resources that the user is authorized to access or modify via defined roles or claims. For example, the authenticated user is authorized for read access to a database but not allowed to modify it. The same can be applied to your API. Maybe most users can access certain resources or endpoints, but special admin users have privileged access.
 
-**JWT (Json Web Tokens) **
+Either use cookies or local store. Local store is the most consisternt w/ authorization headers.Use the session cookie to determine if a user is logged in or not. 
+
+**Opaque Tokens**
+Opaque tokens are literally what they sounds like. Instead of storing user identity and claims in the token, the opaque token is simply a primary key that references a database entry which has the data. Fast key value stores like Redis are perfect for leveraging in memory hash tables for O(1) lookup of the payload. Since the roles are read from a database directly, roles can be changed and the user will see the new roles as soon as the changes propagate through your backend.
+
+Of course, there is the added complexity of maintaining the K/V store and the auth server. Depending on your architecture, each service has to handshake with the auth server to get the claims or roles.

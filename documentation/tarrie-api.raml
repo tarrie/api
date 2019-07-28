@@ -40,20 +40,29 @@ types:
         minLength: 2
         maxLength: 20
   HashTag:
-    description: hast tag to categorize event
-    type: string
-    maxLength: 140
-    example: \#computer_science
+    type: object
+    properties:
+      tag:
+        description: hast tag to categorize event
+        type: string
+        maxLength: 140
+        example: \#computer_science
 
   ProfileImg:
-    type: file
-    fileTypes: ['image/jpeg', 'image/png']
-    maxLength: 307200 #arbitrary selection please make a smarter one
+    type: object
+    properties:
+      img:
+        type: file
+        fileTypes: ['image/jpeg', 'image/png']
+        maxLength: 307200 #arbitrary selection please make a smarter one
 
   EventImg:
-    type: file
-    fileTypes: ['image/jpeg', 'image/png', 'image/gif']
-    maxLength: 307200 #arbitrary selection please make a smarter one
+    type: object
+    properties:
+      img:
+        type: file
+        fileTypes: ['image/jpeg', 'image/png', 'image/gif']
+        maxLength: 307200 #arbitrary selection please make a smarter one
 
 # Minor Tarrie objects. 
   UserEvent:

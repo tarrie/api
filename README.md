@@ -88,6 +88,10 @@ List Events:
 
 
 #### Random Notes
+User creates account it and gets a JWT
+
+When you login using rest api, csrf and logout tokens are generated. use the logout_token generated to logout form your app. 
+
 Store authentication + authorization on the users device. Via cookies in the login response, or a sql litedb
 
 Authentication: verifying who the person says he/she is. This may involve checking a username/password or checking that a token is signed and not expired. Authentication does not say this person can access a particular resource.

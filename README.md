@@ -1,7 +1,7 @@
 # api + api planning
 
 View the raml file as documentation by downloading --> https://github.com/mulesoft/api-console
-
+TODO: Find out how to fucking work this api-console. Fucking redic
 ## Business Value
 
 **Usage** 

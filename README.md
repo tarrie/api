@@ -80,3 +80,16 @@ Use case 9: Use case 1-4 via mobile so think about what this entials
 - Initial Call to platform will include authentication about the resource being requested
 - On the platform side the authication data will be processed by the `auth` class of the platform, if crednetials autheticated (who is it?) and authorized (can they do this action?) request passed through server, and response is sent back. 
 **In general since mobile is lightweight and poor internet connectivity (1) compress data so the app can download it quicky (2) multiple resources can be requested at a time, so one request to server per page (3) selectivity of the shit you want since we dont want to crash app w/ too much data**
+
+## Resources
+
+### Events
+List Events:
+
+
+#### Random Notes
+Authentication: verifying who the person says he/she is. This may involve checking a username/password or checking that a token is signed and not expired. Authentication does not say this person can access a particular resource.
+
+Authorization: Involves checking resources that the user is authorized to access or modify via defined roles or claims. For example, the authenticated user is authorized for read access to a database but not allowed to modify it. The same can be applied to your API. Maybe most users can access certain resources or endpoints, but special admin users have privileged access.
+
+**JWT (Json Web Tokens) **

@@ -1,0 +1,268 @@
+#%RAML 1.0
+title: Tarrie API
+baseUri: http://api.tarrie.com/{version}
+mediaType:
+  - application/json
+version: v1
+
+annotationTypes:
+  note:
+    type: string
+
+#Auxillary helper objects.
+types:
+  Location:
+    description: The location of a Tarrie entity. Its OK if this object is empty because the event could be virtual
+    type: object
+    properties:
+      state?: string #Note the `?' after a name is short form for 'required: false'
+      city?: string
+      country?: string
+      loc-name?: 
+        type: string
+        example: Northwestern University
+      lat-long?:
+        properties:
+          lat: number
+          long: number
+  UserName:
+    description: The name of a Tarrie user
+    type: object
+    properties:       
+      first: 
+        type: string
+        minLength: 2
+        maxLength: 20
+      middle?: 
+        type: string
+      last: 
+        type: string 
+        minLength: 2
+        maxLength: 20
+  ProfileImg:
+    type: file
+    fileTypes: ['image/jpeg', 'image/png']
+    maxLength: 307200 #arbitrary selection please make a smarter one
+  EventImg:
+    type: file
+    fileTypes: ['image/jpeg', 'image/png', 'image/gif']
+    maxLength: 307200 #arbitrary selection please make a smarter one
+
+# Minor Tarrie objects. 
+  UserEvent:
+    description: Esentially a wrapper for the event obejct so user can know if rsvp, saved, or hosting event. Or if the event was share with them
+    type: object
+    properties:       
+      flag:
+        enum: [rsvp, saved, hosted, shared]
+        description: flag to tell how event associated w/ user
+      event:
+        properties:
+          id: #{key} - unique
+            description: id for the event
+            type: number
+            example: 56
+          name:
+            description: event name
+            type: string
+          loc?: Location
+          img: EventImg
+          href:
+            description: the api endpoint for the `Event' object 
+            type: string
+            example: /events/56 
+      user:
+        properties: 
+          id: #{key} - unique
+            description: User or Group id
+            type: number
+            example: 56
+          href:
+            description: the api endpoint for `user'object 
+            type: string
+            example: /events/56 
+
+  Membership:
+    description: Indicates the membership type a `ser has with a Group'
+    type: object
+    properties:
+      memType:
+        description: The membership type of a user
+        enum: [owner,admin,club,subscribe]
+      authkey:
+        description: Used to authenticate membership type for a user
+        type: any
+      user:
+        description: meta data for the `User' 
+        properties:               
+          id: #{key} - unique
+            description: id for the user
+            type: number
+            example: 56
+          name: UserName
+          handle:
+            description: the handle of the user
+            type: string
+          img: ProfileImg
+          href:
+            description: the api endpoint for the `User' object 
+            type: string
+            example: /users/56
+
+# Major Tarrie objects. 
+  Event:
+  # Other possible properties - views, google drive files, tickets, etcs
+    description: A Tarrie event.
+    type: object
+    properties:
+      id: #{key} - unique
+        description: unique identifier for event
+        type: number 
+      name: 
+        description: the name of the event
+        type: string
+        required: true
+      img:
+        description: EventImg
+      loc?: 
+        description: location of event
+        type: Location
+      time:
+        properties: 
+          created:
+            type: datetime-only 
+            description: Time that the event was created (GMT) 
+            example: 2015-07-04T21:00:00
+          start:
+            type: datetime-only 
+            description: time that the event is starting (GMT)
+            example: 2015-07-04T21:00:00          
+          end?:
+            type: datetime-only 
+            description: time that the event is ending (GMT)
+            example: 2015-07-04T21:00:00   
+      groupORuser:
+        description: meta data for the Group or User that created the event
+        properties:                  
+          id: #{key} - unique
+            description: id for the group or user that created event
+            type: number
+            example: 12
+          name:
+            description: name of group or user that created event
+            type: string
+          img: ProfileImg
+          href:
+            description: the api endpoint for the `Group' or `User' object with associated `id' 
+            type: string
+            example: /groups/12 or /user/12
+      rsvps: User[]
+      sharedwith: 
+        description: So an event can keep track of who it has been shared with
+        type: User[]
+      authkey:
+        description: Used to authenticate authorized changes to event
+        type: any 
+
+  Group:
+    description: A Tarrie group organization
+    type: object
+    properties:
+      id: # must be unique
+        description: unique identifier for the group
+        type: number
+      name:
+        description: name of the group
+        type: string
+      handle: 
+        description: unique handle for a user
+        type: string 
+        required: true
+        example: becky_bartolock69
+      img?: ProfileImg
+      loc?: 
+        description: location of event
+        type: Location
+      members: Membership[]
+      events: Event[]
+      authkey:
+        description: Used to authenticate authorized changes to group
+        type: any
+    
+  User:
+    description: A Tarrie user
+    type: object
+    properties:
+      id: 
+        description: unique identifier for the user
+        type: number
+        required: true
+      name: UserName
+      handle: 
+        description: unique handle for a user
+        type: string 
+        required: true
+        example: becky_bartolock69
+      img?: ProfileImg
+      memberships: Membership[]
+      events: UserEvent[]        
+      authkeys: 
+        (note): place holder. Most likely wrong plz ignore
+        description: I have no idea how to authorize/authenticate will tackle this later. Below are concepts that might be important. 
+        properties: 
+          jwt:
+            description: JWT key used to authenticate user. 
+            type: any
+          csrf:
+            description: CSRF token . Basically 
+          logout:
+            description: logout tokem
+
+# Notice that there are no `GET' commands for users or events, this is because no one is suppose to access all users or events, but anyone
+# can access a group page. We can create these functions for us, just make sure they are restricted to a super user level or something. In
+# general the methods defined below are too broad, and so there are `TODO' assigned to incorporate query parameters for a filtered list,
+# or to restrict the number of fields in a object to only be the relevant ones. 
+
+/users:     
+  # TODO: Add query parameters so filter the users returned in list by specific criteria. 
+  # TODO: Add query parameters reduce the number of attributes/fields returned in each object (data saving measure)   
+  post: 
+    description: Add a new user to Tarrie - I think this is were JWT token will be set up
+  /{userID}:
+    get: 
+      description: Get a specific user by userID
+    put:
+      description: Edit an existing user - Edit profile
+    delete:
+      description: Delete an existing user - Deactivate account basically
+
+/events:
+  # TODO: Add query parameters so filter the event returned in list by specific criteria. 
+  # TODO: Add query parameters reduce the number of attributes/fields returned in each object (data saving measure)
+  post: 
+    description: Add a new event to Tarrie 
+  /{eventID}:
+    get: 
+      description: Get a specific event by userID
+    put:
+      description: Edit an existing event - Edit event
+    delete:
+      description: Delete an existing event - Delete Event
+ 
+/groups:
+  # TODO: Add query parameters so filter the groups returned in list by specific criteria. 
+  # TODO: Add query parameters reduce the number of attributes/fields returned in each object (data saving measure)
+  get:
+    description: Get a list of all groups
+  post:
+    description: Creates a new group. 
+  /{groupID}:
+    # TODO: Add query parameters so restrict number of fields returned.
+    get: 
+      description: Get a specific group by userID
+    put:
+      description: Edit an existing group - Edit group
+    delete:
+      description: Delete an existing group - Delete group  
+    
+

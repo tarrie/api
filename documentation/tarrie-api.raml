@@ -39,10 +39,12 @@ types:
         type: string 
         minLength: 2
         maxLength: 20
+        
   ProfileImg:
     type: file
     fileTypes: ['image/jpeg', 'image/png']
     maxLength: 307200 #arbitrary selection please make a smarter one
+
   EventImg:
     type: file
     fileTypes: ['image/jpeg', 'image/png', 'image/gif']
@@ -155,11 +157,11 @@ types:
           href:
             description: the api endpoint for the `Group' or `User' object with associated `id' 
             type: string
-            example: /groups/12 or /user/12
+            example: /groups/12
       rsvps: User[]
       sharedwith: 
         description: So an event can keep track of who it has been shared with
-        type: User[]
+        type: (User | Group)[]
       authkey:
         description: Used to authenticate authorized changes to event
         type: any 

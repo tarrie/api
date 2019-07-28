@@ -39,7 +39,12 @@ types:
         type: string 
         minLength: 2
         maxLength: 20
-        
+  HashTag:
+    description: hast tag to categorize event
+    type: string
+    maxLength: 140
+    example: \#computer_science
+
   ProfileImg:
     type: file
     fileTypes: ['image/jpeg', 'image/png']
@@ -82,7 +87,12 @@ types:
           href:
             description: the api endpoint for `user'object 
             type: string
-            example: /events/56 
+            example: /events/56
+      tags:
+        description: hashtags associated with the event so Tarrie can organize it
+        type: HashTag[]
+        minItems: 1
+        maxItems: 30
 
   Membership:
     description: Indicates the membership type a `ser has with a Group'

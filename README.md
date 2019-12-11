@@ -75,12 +75,12 @@ Use case 8: Manage group and contacts
 - select frequency of push notifications and communications from group to members.  
 
 
-
 Use case 9: Use case 1-4 via mobile so think about what this entials
 - Initial Call to platform will include authentication about the resource being requested
 - On the platform side the authication data will be processed by the `auth` class of the platform, if crednetials autheticated (who is it?) and authorized (can they do this action?) request passed through server, and response is sent back. 
 **In general since mobile is lightweight and poor internet connectivity (1) compress data so the app can download it quicky (2) multiple resources can be requested at a time, so one request to server per page (3) selectivity of the shit you want since we dont want to crash app w/ too much data**
 
+Use case 9: Anonomouys events. Create a event share the link and have the event page be a persistent HTML that people can sign up for: https://www.paperlesspost.com/go/G75WNN2cZXqWWwFwrdMX
 ## Resources
 
 ### Events

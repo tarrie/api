@@ -37,6 +37,12 @@
       <version>1.19.4</version>
     </dependency>
 
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-jersey-jaxrs</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+
     <!-- For below 4 dependencies, see: https://stackoverflow.com/a/43574427/2813182 -->
     <dependency>
       <groupId>javax.xml.bind</groupId>

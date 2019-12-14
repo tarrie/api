@@ -1,4 +1,12 @@
-# api + api planning
+# Configuration
+
+# To Run 
+
+`mvn clean package tomcat7:run`
+
+# References
+https://www.mkyong.com/webservices/jax-rs/jersey-hello-world-example/
+
 
 
 ## Business Value

@@ -8,6 +8,7 @@
 
 # References
 https://www.mkyong.com/webservices/jax-rs/jersey-hello-world-example/
+https://www.mkyong.com/webservices/jax-rs/json-example-with-jersey-jackson/
 
 
 

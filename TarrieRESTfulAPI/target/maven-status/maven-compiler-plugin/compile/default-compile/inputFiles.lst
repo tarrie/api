@@ -1,1 +1,13 @@
-/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/Search.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/ProfileImg.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/Group.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/Location.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/UserName.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/EventTime.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/consumes/AddUserToGroup.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/helperFunctions/Utility.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/Groups.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/User.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/Event.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/exceptions/User.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/Membership.java
+/Users/jideofor/Desktop/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/model/Entity.java

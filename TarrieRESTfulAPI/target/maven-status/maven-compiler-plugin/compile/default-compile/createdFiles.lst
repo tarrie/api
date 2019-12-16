@@ -1,1 +1,15 @@
-io/tarrie/api/Search.class
+io/tarrie/api/model/Location.class
+io/tarrie/api/model/Membership$MemType.class
+io/tarrie/api/model/Event$HostType.class
+io/tarrie/api/model/Entity.class
+io/tarrie/api/model/Membership.class
+io/tarrie/api/model/exceptions/User.class
+io/tarrie/api/model/User.class
+io/tarrie/api/model/consumes/AddUserToGroup.class
+io/tarrie/api/Groups.class
+io/tarrie/api/model/ProfileImg.class
+io/tarrie/api/model/Event.class
+io/tarrie/api/model/helperFunctions/Utility.class
+io/tarrie/api/model/EventTime.class
+io/tarrie/api/model/UserName.class
+io/tarrie/api/model/Group.class

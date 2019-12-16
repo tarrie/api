@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.tarrie.api</groupId>
@@ -42,6 +42,22 @@
       <artifactId>swagger-jersey-jaxrs</artifactId>
       <version>1.5.0</version>
     </dependency>
+
+    <!-- https://www.mkyong.com/webservices/jax-rs/json-example-with-jersey-jackson/ -->
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-server</artifactId>
+      <version>1.19.4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-json</artifactId>
+      <version>1.19.4</version>
+    </dependency>
+
+
 
     <!-- For below 4 dependencies, see: https://stackoverflow.com/a/43574427/2813182 -->
     <dependency>

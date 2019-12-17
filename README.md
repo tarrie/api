@@ -11,6 +11,8 @@
 - https://www.mkyong.com/webservices/jax-rs/json-example-with-jersey-jackson/
 - https://github.com/swagger-api/swagger-core/wiki/Swagger-Core-Jersey-1.X-Project-Setup-1.5#hooking-up-swagger-core-in-your-application
 
+## Setting up DynamoDb
+- https://aws.amazon.com/intellij/
 
 ## Business Value
 

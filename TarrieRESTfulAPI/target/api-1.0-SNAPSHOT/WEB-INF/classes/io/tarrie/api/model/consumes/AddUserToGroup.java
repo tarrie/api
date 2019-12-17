@@ -6,11 +6,11 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
-@ApiModel(description = "NKD MVD")
+@ApiModel
 public class AddUserToGroup {
 
+    @ApiModelProperty(value = "The ID of the user who is initiating the `AddUserToGroup' request")
     @NotNull
-    @ApiModelProperty(value = "The ID of the user who is initiating the `AddUserToGroup' request", example = "1", required = true, position = 0)
     public String userId;
 
     @ApiModelProperty(value = "The ID of the group that the new people will be in")

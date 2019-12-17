@@ -1,5 +1,8 @@
 package io.tarrie.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.swagger.annotations.*;
 //import io.swagger.v3.oas.annotations.Parameter;
 import io.tarrie.api.model.consumes.AddUserToGroup;
@@ -24,7 +27,7 @@ public class Groups {
 
   /**
    * Adds a member to a group
-   *
+   *https://github.com/swagger-api/swagger-core/wiki/annotations
    * @return
    * @throws IOException
    */
@@ -40,13 +43,16 @@ public class Groups {
         @ApiResponse(code = 500, message = "Internal Error")
       })
   public Response addMemberToGroup(
-          AddUserToGroup addUserToGroup) {
+          AddUserToGroup addUserToGroup) throws JsonProcessingException {
     System.out.println(addUserToGroup.groupId);
 
     System.out.println("hefh");
     System.out.println(addUserToGroup);
 
-
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    String json = mapper.writeValueAsString(addUserToGroup);
+    System.out.println(json);
 
     return Response.status(200).entity("SUCCESS").build();
   }

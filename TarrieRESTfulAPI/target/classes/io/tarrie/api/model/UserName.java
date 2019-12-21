@@ -23,13 +23,13 @@ public class UserName {
      *
      * @param firstName
      * @param lastName
-     * @throws io.tarrie.api.model.exceptions.User
+     * @throws io.tarrie.api.model.exceptions.UserException
      */
-    public void setName(String firstName, String lastName) throws io.tarrie.api.model.exceptions.User {
+    public void setName(String firstName, String lastName) throws io.tarrie.api.model.exceptions.UserException {
         if (firstName.length() <= MAX && firstName.length() >= MIN) {
             this.firstName = firstName;
         } else {
-            throw new io.tarrie.api.model.exceptions.User(
+            throw new io.tarrie.api.model.exceptions.UserException(
                     "firstName is too short or too long:"
                             + "min char's is "
                             + MIN
@@ -40,7 +40,7 @@ public class UserName {
         if (lastName.length() <= MAX && lastName.length() >= MIN) {
             this.lastName = lastName;
         } else {
-            throw new io.tarrie.api.model.exceptions.User(
+            throw new io.tarrie.api.model.exceptions.UserException(
                     "lastName is too short or too long:" + "min char's is " + MIN + " max char's is " + MAX);
         }
     }

@@ -1,20 +1,15 @@
 package io.tarrie.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import io.swagger.annotations.*;
 //import io.swagger.v3.oas.annotations.Parameter;
 import io.tarrie.api.model.consumes.AddUserToGroup;
-import io.tarrie.api.model.helperFunctions.Utility;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import io.tarrie.Utility;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.InputStream;
 
 // https://www.mkyong.com/tutorials/jax-rs-tutorials/
 //    * http://localhost:8080/api/search?query=hello
@@ -46,12 +41,6 @@ public class Groups {
   public Response addMemberToGroup(
           AddUserToGroup addUserToGroup) throws JsonProcessingException {
     System.out.println(addUserToGroup.groupId);
-
-    System.out.println("hefh");
-    System.out.println(addUserToGroup);
-    //accessKeys.csv
-
-
     System.out.println(Utility.pojoToJson(addUserToGroup));
 
     return Response.status(200).entity("SUCCESS").build();

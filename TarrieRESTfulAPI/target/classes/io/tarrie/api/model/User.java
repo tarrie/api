@@ -2,7 +2,10 @@ package io.tarrie.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.properties.EmailProperty;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,10 +24,23 @@ public class User extends Entity {
     @NotNull
     private UserName userName;
 
+    @ApiModelProperty(notes = "The email address of the user")
+    @NotNull
+    public InternetAddress emailAddr;
+
     @ApiModelProperty(notes = "Array of group memberships")
     @NotNull
     private ArrayList<Membership> memberships = new ArrayList<>();
 
+    /**
+     * Add email address
+     * @param email
+     * @throws AddressException
+     */
+    void addEmail(String email) throws AddressException {
+        emailAddr = new InternetAddress(email);
+        emailAddr.validate();
+    }
 
     /**
      * Adds a membership to the user list of memberships

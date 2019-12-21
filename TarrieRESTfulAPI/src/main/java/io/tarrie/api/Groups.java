@@ -41,12 +41,6 @@ public class Groups {
   public Response addMemberToGroup(
           AddUserToGroup addUserToGroup) throws JsonProcessingException {
     System.out.println(addUserToGroup.groupId);
-
-    System.out.println("hefh");
-    System.out.println(addUserToGroup);
-    //accessKeys.csv
-
-
     System.out.println(Utility.pojoToJson(addUserToGroup));
 
     return Response.status(200).entity("SUCCESS").build();

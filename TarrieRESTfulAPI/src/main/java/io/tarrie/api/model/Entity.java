@@ -25,6 +25,9 @@ public abstract class Entity {
     @NotNull
     private ArrayList<Event> hostedEvents = new ArrayList<>();
 
+    @ApiModelProperty(notes = "The contacts of the entity")
+    @NotNull
+    private ArrayList<Entity> contacts = new ArrayList<>();
     // The constructor.
     public Entity(String id){
         this.id = id;

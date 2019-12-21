@@ -40,6 +40,7 @@
           <element id="library" level="project" name="Maven: org.jvnet:mimepull:1.6" />
           <element id="library" level="project" name="Maven: com.sun.jersey:jersey-client:1.13" />
           <element id="library" level="project" name="Maven: commons-io:commons-io:2.6" />
+          <element id="library" level="project" name="Maven: javax.mail:mail:1.5.0-b01" />
           <element id="library" level="project" name="Maven: com.amazonaws:aws-java-sdk-dynamodb:1.11.693" />
           <element id="library" level="project" name="Maven: com.amazonaws:aws-java-sdk-s3:1.11.693" />
           <element id="library" level="project" name="Maven: com.amazonaws:aws-java-sdk-kms:1.11.693" />

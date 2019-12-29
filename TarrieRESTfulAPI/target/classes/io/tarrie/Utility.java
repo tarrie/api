@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 public class Utility {
 
   /**
@@ -15,6 +18,16 @@ public class Utility {
     return (prop != null)? prop : System.getenv(paramName);
   }
 
+  /**
+   * Add email address
+   * @param email
+   * @throws AddressException
+   */
+  public static InternetAddress getEmailAddressFromString(String email) throws AddressException {
+    InternetAddress emailAddr = new InternetAddress(email);
+    emailAddr.validate();
+    return emailAddr;
+  }
   /**
    * Checks if a string is null or empty
    *

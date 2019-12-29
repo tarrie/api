@@ -6,14 +6,10 @@ import io.tarrie.api.model.constants.MembershipType;
 
 @ApiModel
 public class ChangeMembershipGroup {
-  @ApiModelProperty(notes = "groupId of the group")
-  public String groupId;
 
   @ApiModelProperty(notes = "UserId of the user that is initiating the membership change")
   public String adminUserId;
 
-  @ApiModelProperty(notes = "groupId of the group member who is getting membership changed")
-  public String memberUserId;
 
   @ApiModelProperty(
       notes = "Membership Type of User to change to",
@@ -24,12 +20,8 @@ public class ChangeMembershipGroup {
 
   @Override
   public String toString() {
-    return "ChangeMembershipGroup [groupId="
-        + groupId
-        + ", adminUserId="
+    return "ChangeMembershipGroup [adminUserId="
         + adminUserId
-        + ", memberUserId="
-        + memberUserId
         + ", newMemType="
         + newMemType
         + "]";

@@ -3,16 +3,19 @@ package io.tarrie.api.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.tarrie.api.model.constants.CharacterLimit;
+import io.tarrie.api.model.constants.EventLimits;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * ToDo: Add support for polls, documents associated with event
+ */
 @ApiModel(description="A Tarrie event")
 public class Event {
-    private static final int MIN = 2;
-    private static final int MAX = 20;
+
 
 
     @ApiModelProperty(notes = "The unique identifier for the event")
@@ -20,14 +23,15 @@ public class Event {
     String id;
 
     @ApiModelProperty(notes = "The name of the event")
-    @Size(min = MIN, max = MAX)
+    @Size(min = 1, max = CharacterLimit.SMALL)
     @NotNull
     String title;
 
 
     @ApiModelProperty(notes = "url on S3 that holds the events image")
     @NotNull
-    String eventImgUrl;
+            @Size(min=0, max = EventLimits.MAX_NUM_OF_IMGS)
+    Collection<String> eventImgUrls;
 
     @ApiModelProperty(notes = "url on S3 that holds the events image")
     @NotNull
@@ -36,14 +40,6 @@ public class Event {
     @ApiModelProperty(notes = "the time of the event")
     @NotNull
     EventTime eventTime;
-
-    @ApiModelProperty(notes = "the type of entity hosting the event", allowableValues = "User, Group")
-    @NotNull
-    HostType hostType;
-
-    enum HostType{
-        User, Group
-    }
 
     @ApiModelProperty(notes = "the entity hosting the event. Either a User or a Group")
     @NotNull

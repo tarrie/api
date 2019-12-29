@@ -13,15 +13,18 @@ import java.util.Collection;
 
 /**
  * <ul>
- *   <li>edit event
+ *   <li>edit event. ToDo: In creating event we need rich text editor.
  *   <li>create event
  *   <li>delete event
+ *   <li>get a event by id
  *   <li>get events hosted by a group - multiple groups allowed
  *   <li>get event hosted by a user - multiple users allowed
- *   <li>get events with a given hashtag - multiple hashtags allowed
- *   <li>ToDo: shareEvent via email - Needs email service
- *   <li>ToDo: shareEvent via Tarrie - Needs notification object and SNS
- *   <li>ToDo: List related events to a given Hashtag - Needs ML + clustering
+ *   <li> ToDo: Write on the events page??? --- Probably won't implement. This is last.
+ *   <li> ToDo: shareEvent via email - Needs email service
+ *   <li> ToDo: shareEvent via Tarrie - Needs notification object and SNS
+ *   <li> ToDo: List related events to a given Hashtag - Needs ML + clustering
+ *   <li> ToDo: Support for multiple images when creating a event, and to rearrange order of imgs in creation or edits
+ *   <li> ToDo: Attach file to event -- but this can just be a cloud link
  * </ul>
  *
  * ToDo: Introduce pagination.
@@ -31,6 +34,26 @@ import java.util.Collection;
     tags = {@Tag(name = "Events endpoint", description = "Used to create, modify, and get events")})
 @Path("/events")
 public interface Events {
+
+  /**
+   * Get event by event id
+   * @param userId userId userId of the requester
+   * @return pojo that represents a event
+   */
+  @ApiOperation(value = "Get a event")
+  @Path("{eventId}")
+  @GET
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiResponses(
+          value = {
+                  @ApiResponse(code = 201, message = "OK", response = Event.class),
+                  @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+                  @ApiResponse(code = 401, message = "User unauthorized to view event"),
+                  @ApiResponse(code = 500, message = "Internal server error")
+          })
+  Response getEvent(UserId userId);
+
 
   /**
    * Create event
@@ -176,29 +199,4 @@ public interface Events {
           String endDateTimeString,
       UserId requesterUserId);
 
-  /**
-   * List events associated with hashTags. Uses ElasticSearch. Can search on multiple
-   * hashtags (e.g /events/hashtags/query?hashtag=yeet&hashtag=free%20food)
-   * ToDo: ElasticSearch fuzzy matching for misspelled hashTags
-   * @param hashTag the hastag string to search on
-   * @param requesterUserId the id of user requesting the search
-   * @return response
-   */
-  @GET
-  @Path("/hashtags")
-  @ApiOperation(value = "List events associated with a hashTag")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @ApiResponses(
-          value = {
-                  @ApiResponse(
-                          code = 200,
-                          message = "OK",
-                          responseContainer = "List",
-                          response = Event.class),
-                  @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
-                  @ApiResponse(code = 500, message = "Internal server error")
-          })
-  Response listEventsByHashTag(@ApiParam(name = "hashtag", value = "hashTag to search on", required = true) @QueryParam("hashtag")
-                                       Collection<String> hashTag, UserId requesterUserId);
 }

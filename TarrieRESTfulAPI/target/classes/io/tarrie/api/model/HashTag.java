@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
+
 @ApiModel
 public class HashTag {
     @ApiModelProperty(value="hash tag value")

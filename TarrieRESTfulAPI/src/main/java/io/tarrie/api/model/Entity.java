@@ -2,8 +2,10 @@ package io.tarrie.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.tarrie.api.model.constants.CharacterLimit;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +17,13 @@ import java.util.Collection;
 public abstract class Entity {
 
     @ApiModelProperty(notes = "The unique identifier for the entity", example = "xr563",  required = true, position = 0)
+    @Size(min=1, max= CharacterLimit.SMALL)
     private String id;
+
+    @ApiModelProperty(notes = "The name of the entity", example = "Becky")
+    @NotNull
+    @Size(min=1, max= CharacterLimit.SMALL)
+    private String name;
 
     @ApiModelProperty(notes = "url on S3 that holds the entities profile picture")
     @NotNull

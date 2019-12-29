@@ -4,5 +4,5 @@ import io.swagger.annotations.ApiModel;
 
 @ApiModel
 public enum MembershipType {
-    Owner, Admin, Subscriber
+    Owner, Admin, GroupMember, Follower
 }

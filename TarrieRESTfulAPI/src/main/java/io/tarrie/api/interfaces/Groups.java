@@ -1,32 +1,35 @@
 package io.tarrie.api.interfaces;
 
 import io.swagger.annotations.*;
+import io.tarrie.api.model.Event;
 import io.tarrie.api.model.Group;
 import io.tarrie.api.model.consumes.UserId;
 import io.tarrie.api.model.consumes.*;
+import io.tarrie.api.model.produces.GroupCondensed;
 import io.tarrie.api.model.produces.UserCondensed;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 
 /**
  *
  *
  * <ul>
- *   <li> add user to group
- *   <li> delete user from group
- *   <li> delete group
- *   <li> create group
- *   <li> change a user's membership
- *   <li> edit group info
- *   <li> ToDo: invite user to join a group via Name, email address, or handle -- similar to Github -- uses ElasticSearch
- *   <li> ToDo: Email blast members of the group
- *   <li> ToDo: Message the members of the group
+ *   <li>get a group by group id
+ *   <li>add user to group
+ *   <li>delete user from group
+ *   <li>delete group
+ *   <li>create group
+ *   <li>change a user's membership
+ *   <li>edit group info *
+ *   <li>ToDo: invite user to join a group via Name, email address, or handle -- similar to Github
+ *       -- uses ElasticSearch
+ *   <li>ToDo: Email blast members of the group
+ *   <li>ToDo: Message the members of the group
  *   <li? ToDo: Chat with group
  * </ul>
- *
- * ToDo: Messaging and email blasting. ToDo: GroupChat?
  */
 @Api(tags = "Group endpoints")
 @SwaggerDefinition(
@@ -36,6 +39,26 @@ import javax.ws.rs.core.Response;
 @Path("/groups")
 public interface Groups {
 
+    /**
+     * Gets a group
+     * @param userId userId of the requester
+     * @return pojo that represents a group
+     */
+    @Path("{groupId}")
+    @ApiOperation(value = "Gets a group")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK", response = Groups.class),
+                    @ApiResponse(code = 404, message = "Group does not exist"),
+                    @ApiResponse(code = 401, message = "Unauthorized"),
+                    @ApiResponse(code = 500, message = "Internal server error")
+            })
+    @GET
+    Response getGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
+                      @PathParam("groupId") String groupId, UserId userId);
+
 
   /**
    * Edits a group. Only a admin or a owner can edit a group
@@ -43,7 +66,7 @@ public interface Groups {
    * @param editGroup pojo of editable items
    * @return the group w/ new edits reflected
    */
-  @Path("{groupId}/users")
+  @Path("{groupId}")
   @ApiOperation(value = "Edit group")
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
@@ -53,7 +76,7 @@ public interface Groups {
                   @ApiResponse(
                           code = 200,
                           message = "OK",
-                          response = Group.class),
+                          response = GroupCondensed.class),
                   @ApiResponse(code = 404, message = "Group does not exist"),
                   @ApiResponse(code = 401, message = "User unauthorized to edit group"),
                   @ApiResponse(code = 500, message = "Internal server error")
@@ -186,4 +209,164 @@ public interface Groups {
       })
   Response deleteGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
                        @PathParam("groupId") String groupId, UserId ownerUserId);
+
+  /* ******************* Events *************/
+
+  /**
+   * <ul>
+   *   <li>[] create group
+   *   <li>[{groupId}] get a group by group id
+   *   <li>[users] add user to group
+   *   <li>[users/{userId}] delete user from group
+   *   <li>[{groupId}] delete group
+   *   <li>[{groupId}/users/{userId}/membership] change a user's membership
+   *   <li>[{groupId}] edit group info
+   *   <li>[{groupId}/events/{eventId}] get a event group is hosting
+   *   <li>[{groupId}/events] create a event in a group
+   *   <li>[{groupId}/events/{eventId}] delete a event group is hosting
+   *   <li>[{groupId}/events/{eventId}] edit a existing event group is hosting
+   *   <li>[{groupId}/events] list events group is hosting - filterable by date
+   *   <li>ToDo: invite user to join a group via Name, email address, or handle -- similar to Github
+   *       -- uses ElasticSearch
+   *   <li>ToDo: Email blast members of the group
+   *   <li>ToDo: Message the members of the group
+   *   <li? ToDo: Chat with group clubMembers
+   * </ul>
+   */
+
+  /**
+   * Get a event that group is hosting
+   *
+   * @param userId userId userId of the requester
+   * @return pojo that represents a event
+   */
+  @ApiOperation(value = "Get a event a group is hosting")
+  @Path("{groupId}/events/{eventId}")
+  @GET
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 201, message = "OK", response = Event.class),
+        @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+        @ApiResponse(code = 401, message = "User unauthorized to view event"),
+        @ApiResponse(code = 500, message = "Internal server error")
+      })
+  Response getEvent(UserId userId);
+
+    /**
+     * Create event for a group
+     *
+     * <ul>
+     *   <li>Admin's and Owner of a group can edit a event
+     *   <li>Otherwise, only the user creator can edit the event
+     * </ul>
+     */
+    @ApiOperation(value = "Create a event")
+    @Path("{groupId}/events")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 201, message = "Created", response = Event.class),
+                    @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+                    @ApiResponse(code = 401, message = "User unauthorized to create event"),
+                    @ApiResponse(code = 500, message = "Internal server error")
+            })
+    Response createEvent(CreateEvent createEvent);
+
+    /**
+     * Delete a event a group is hosting
+     *
+     * @param eventId id of event to delete
+     * @param userId id of user issuing delete event request
+     * @return response
+     */
+    @ApiOperation(value = "Delete a event")
+    @Path("{groupId}/events/{eventId}")
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "Deleted"),
+                    @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+                    @ApiResponse(code = 404, message = "No content; event does not exist"),
+                    @ApiResponse(code = 401, message = "User unauthorized to delete event"),
+                    @ApiResponse(code = 500, message = "Internal server error")
+            })
+    Response deleteEvent(
+            @ApiParam(name = "eventId", value = "ID of event to delete", required = true)
+            @PathParam("eventId")
+                    String eventId,
+            @ApiParam(name = "groupId", value = "ID of group", required = true)
+            @PathParam("groupId")
+                    String groupId,
+            UserId userId);
+
+    /**
+     * Edit a group existing event
+     *
+     * @param eventId id of event to edit
+     * @param editEvent pojo of editable attributes of the event
+     * @return response
+     */
+    @ApiOperation(value = "Edit a event")
+    @Path("{groupId}/events/{eventId}")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(code = 200, message = "OK"),
+                    @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+                    @ApiResponse(code = 404, message = "No content; event does not exist"),
+                    @ApiResponse(code = 401, message = "User unauthorized to edit event"),
+                    @ApiResponse(code = 500, message = "Internal server error")
+            })
+    Response editEvent(
+            @ApiParam(name = "eventId", value = "ID of event to delete", required = true)
+            @PathParam("eventId")
+                    String eventId,
+            @ApiParam(name = "groupId", value = "ID of group", required = true)
+            @PathParam("groupId")
+                    String groupId,
+            EditEvent editEvent);
+
+    /**
+     * List events thrown by group
+     *
+     * @param groupId id of group
+     * @param startDateTimeString (optional) query filter parameter of start time (ISO 8601 format)
+     * @param endDateTimeString (optional) query filter parameter of end time (ISO 8601 format)
+     * @param requesterUserId id of user requesting the information
+     * @return response
+     */
+    @ApiOperation(value = "List Events thrown by a group")
+    @Path("{groupId}/events")
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK",
+                            responseContainer = "List",
+                            response = Event.class),
+                    @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+                    @ApiResponse(code = 401, message = "User unauthorized to view event"),
+                    @ApiResponse(code = 500, message = "Internal server error")
+            })
+    Response listGroupEvents(
+            @ApiParam(name = "groupId", value = "ID of group", required = true) @PathParam("groupId")
+                    String groupId,
+            @ApiParam(name = "startTime", value = "start time in (ISO 8601 format)")
+            @QueryParam("startTime")
+                    String startDateTimeString,
+            @ApiParam(name = "endTime", value = "end time in (ISO 8601 format)") @QueryParam("endTime")
+                    String endDateTimeString,
+            UserId requesterUserId);
+
 }

@@ -3,7 +3,6 @@ package io.tarrie.api.model.produces;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.tarrie.api.model.ProfileImg;
-import io.tarrie.api.model.UserName;
 
 import javax.mail.internet.InternetAddress;
 import javax.validation.constraints.NotNull;
@@ -15,7 +14,7 @@ public class UserCondensed {
     public String id;
 
     @NotNull
-    UserName userName;
+    String userName;
 
     @NotNull
     public ProfileImg profileImg;

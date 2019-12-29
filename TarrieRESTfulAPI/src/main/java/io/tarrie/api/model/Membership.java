@@ -2,9 +2,11 @@ package io.tarrie.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.tarrie.api.model.constants.CharacterLimit;
 import io.tarrie.api.model.constants.MembershipType;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @ApiModel(description="Indicates the membership type a `user' has with a Group")
 public class Membership {
@@ -14,7 +16,8 @@ public class Membership {
 
     @ApiModelProperty(notes = "The name of the  user")
     @NotNull
-    public UserName userName;
+    @Size(min=1, max= CharacterLimit.SMALL)
+    public String userName;
 
     @ApiModelProperty(notes = "The profile img of the user")
     public ProfileImg userProfileImg;

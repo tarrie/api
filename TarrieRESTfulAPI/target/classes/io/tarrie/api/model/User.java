@@ -3,6 +3,7 @@ package io.tarrie.api.model;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.models.properties.EmailProperty;
+import io.tarrie.Utility;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -17,13 +18,6 @@ public class User extends Entity {
         super(id);
     }
 
-    private static final int MIN = 2;
-    private static final int MAX = 20;
-
-    @ApiModelProperty(notes = "The name of the user", example = "Becky")
-    @NotNull
-    private UserName userName;
-
     @ApiModelProperty(notes = "The email address of the user")
     @NotNull
     public InternetAddress emailAddr;
@@ -32,14 +26,13 @@ public class User extends Entity {
     @NotNull
     private ArrayList<Membership> memberships = new ArrayList<>();
 
+
     /**
      * Add email address
-     * @param email
-     * @throws AddressException
+     * @throws AddressException if email is malformed
      */
-    void addEmail(String email) throws AddressException {
-        emailAddr = new InternetAddress(email);
-        emailAddr.validate();
+    void setEmailAddr(String email) throws AddressException {
+        emailAddr= Utility.getEmailAddressFromString(email);
     }
 
     /**

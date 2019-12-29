@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 @ApiModel
 public class UserId {
 
-    @ApiModelProperty(value = "The id of the event")
+    @ApiModelProperty(value = "The id of the user")
     @NotNull
-    public String eventId;
+    public String userId;
 }

@@ -12,13 +12,9 @@ public class DeleteGroup {
     @NotNull
     public String userId;
 
-    @ApiModelProperty(value = "The ID of the group that is getting deleted")
-    @NotNull
-    public String groupId;
-
     @Override
     public String toString() {
-        return "DeleteGroup [userId=" + userId + ", groupId=" + groupId +"]";
+        return "DeleteGroup [userId=" + userId +"]";
     }
 }
 

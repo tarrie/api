@@ -27,15 +27,15 @@ public abstract class Entity {
 
     @ApiModelProperty(notes = "url on S3 that holds the entities profile picture")
     @NotNull
-    private ProfileImg profileImg;
+    private ProfileImg profileImgUrl;
 
     @ApiModelProperty(notes = "The events that the entity is hosting")
     @NotNull
-    private ArrayList<Event> hostedEvents = new ArrayList<>();
+    private Collection<Event> hostedEvents;
 
     @ApiModelProperty(notes = "The contacts of the entity")
     @NotNull
-    private ArrayList<Entity> contacts = new ArrayList<>();
+    private Collection<Entity> contacts;
     // The constructor.
     public Entity(String id){
         this.id = id;
@@ -61,7 +61,7 @@ public abstract class Entity {
      * Gets the list of events for the entity.
      * @return
      */
-    public ArrayList<Event> getHostedEvents() {
+    public Collection<Event> getHostedEvents() {
         return hostedEvents;
     }
 
@@ -70,7 +70,7 @@ public abstract class Entity {
      * @param profileImgUrl
      */
     public void setProfileImgUrl(String profileImgUrl) throws MalformedURLException {
-        this.profileImg = new ProfileImg(profileImgUrl);
+        this.profileImgUrl = new ProfileImg(profileImgUrl);
     }
 
     /**
@@ -78,7 +78,7 @@ public abstract class Entity {
      * @return
      */
     public String getProfileImgUrl() {
-        return profileImg.toString();
+        return profileImgUrl.toString();
     }
 
     /**

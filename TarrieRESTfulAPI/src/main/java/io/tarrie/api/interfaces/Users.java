@@ -8,13 +8,67 @@ import io.tarrie.api.model.produces.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Collection;
 
-
+/**
+ * <ul>
+ *   <li> Create a user
+ *   <li> Delete a user
+ *   <li> Get a user by userId
+ *   <li> Edit a user
+ *   <li>[events] Get the events the user is hosting, rsvp'd , or saved
+ *   <li>[events/saved] Save a event
+ *   <li>[events/saved] Remove event from saved list
+ *   <li>[events/saved] List events user has saved
+ *   <li>[events/rsvp] Rsvp to event
+ *   <li>[events/rsvp] Remove event from Rsvp
+ *   <li>[events/rsvp] List event user has Rsvp
+ *   <li>[contacts] Add entity to user contacts
+ *   <li>[contacts] List a user's contacts
+ *   <li>[contacts] Remove entity from user's contacts
+ *   <li>[groups] List groups that user is affiliated with (member, following, Owner, Admin)
+ *   <li>[groups/following] User follow a new group
+ *   <li>[groups/following] List the groups user is following
+ *   <li>[groups/following] Un-follow a group
+ *   <li>[groups/member] User member of a new group
+ *   <li>[groups/member] List the groups user is a member of
+ *   <li>[groups/member] Leave a group
+ *   <li>[browsing/groups] view the `viewable' events that a group is hosting
+ *   <li>[browsing/explore/events] view the top level events public across the network or across home
+ *   <li> ToDo: [browsing/groups/{groupId} DELETE] - Blocks a group from posting on user feed
+ *   <li> ToDo: [groups/{groupId}/message POST] - Messages a group
+ *   <li>[groups/favorites] add group to favorites
+ *   <li>[groups/favorites] remove group from favorites
+ *   <li>[groups/favorites] view group favorites
+ * </ul>
+ */
 @Api(tags = "User endpoints")
 @SwaggerDefinition(
     tags = {@Tag(name = "User endpoints", description = "Used to create, modify, and get users")})
 @Path("/users")
 public interface Users {
+
+
+  /**
+   * Check if a collection of users actually exist in tarrie
+   * @param userIds collection of groupIds to check
+   * @param userId id of user making request
+   * @return subset of userIds that exist in Tarrie
+   */
+  @ApiOperation(value = "Check if a collection of users exist. Returns the list of userIds that exist from query")
+  @GET
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/exists")
+  @ApiResponses(
+          value = {
+                  @ApiResponse(code = 201, message = "OK",responseContainer = "List",response = UserId.class),
+                  @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+                  @ApiResponse(code = 500, message = "Internal server error")
+          })
+  Response userExists(@ApiParam(name = "userId", value = "The userId")
+                      @QueryParam("userId")
+                              Collection<String> userIds, UserId userId);
 
   /** Create a Tarrie user. */
   @ApiOperation(value = "Creates a user")
@@ -220,40 +274,6 @@ public interface Users {
       @ApiParam(name = "userId", value = "ID of user", required = true) @PathParam("userId")
           String userId);
 
-  /**
-   * <ul>
-   *   <li> Create a user
-   *   <li> Delete a user
-   *   <li> Get a user by userId
-   *   <li> Edit a user
-   *   <li>[events] Get the events the user is hosting, rsvp'd , or saved
-   *   <li>[events/saved] Save a event
-   *   <li>[events/saved] Remove event from saved list
-   *   <li>[events/saved] List events user has saved
-   *   <li>[events/rsvp] Rsvp to event
-   *   <li>[events/rsvp] Remove event from Rsvp
-   *   <li>[events/rsvp] List event user has Rsvp
-   *   <li>[contacts] Add entity to user contacts
-   *   <li>[contacts] List a user's contacts
-   *   <li>[contacts] Remove entity from user's contacts
-   *   <li>[groups] List groups that user is affiliated with (member, following, Owner, Admin)
-   *   <li>[groups/following] User follow a new group
-   *   <li>[groups/following] List the groups user is following
-   *   <li>[groups/following] Un-follow a group
-   *   <li>[groups/member] User member of a new group
-   *   <li>[groups/member] List the groups user is a member of
-   *   <li>[groups/member] Leave a group
-   *   <li>[browsing/groups] view the `viewable' events that a group is hosting
-   *   <li>[browsing/explore/events] view the top level events public across the network or across home
-   *   <li> ToDo: [browsing/groups/{groupId} DELETE] - Blocks a group from posting on user feed
-   *   <li> ToDo: [groups/{groupId}/message POST] - Messages a group
-   *   <li>[groups/favorites] add group to favorites
-   *   <li>[groups/favorites] remove group from favorites
-   *   <li>[groups/favorites] view group favorites
-   * </ul>
-   */
-
-
   /* **************   Contacts ********************/
   @Path("{userId}/contacts")
   @ApiOperation(value = "add a entity to a users contacts (User and Groups)")
@@ -387,8 +407,9 @@ public interface Users {
           String groupId);
 
   /* **************  Group- Club ********************/
+
   @Path("{userId}/groups/member")
-  @ApiOperation(value = "user is joining a group as a group member")
+  @ApiOperation(value = "user is requesting to join a group as a group member")
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)

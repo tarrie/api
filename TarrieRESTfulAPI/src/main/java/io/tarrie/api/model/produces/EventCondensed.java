@@ -13,7 +13,7 @@ import java.util.Collection;
 public class EventCondensed extends Event {
     @ApiModelProperty(notes = "The unique identifier for the event")
     @NotNull
-    public String id;
+    public String eventId;
 
     @ApiModelProperty(notes = "The name of the event")
     @Size(min = 1, max = CharacterLimit.SMALL)
@@ -33,13 +33,13 @@ public class EventCondensed extends Event {
 
     @ApiModelProperty(notes = "the number of rsvps to the event")
     @NotNull
-    int rsvpNum;
+    int rsvpsNum;
 
     @ApiModelProperty(notes = "The unique identifier for creator of event (groupId or userId)")
      @NotNull
     public String creatorId;
 
-    @ApiModelProperty(notes = "The name of the creator of the event")
+    @ApiModelProperty(notes = "The unique identifier for creator of event (groupId or userId)")
     @NotNull
     public String creatorName;
 
@@ -47,6 +47,8 @@ public class EventCondensed extends Event {
     @NotNull
     public ProfileImg creatorProfileImg;
 
+    @ApiModelProperty(notes = "hash tags associated with event")
+    Collection<HashTag> hashTags;
 
 
 }

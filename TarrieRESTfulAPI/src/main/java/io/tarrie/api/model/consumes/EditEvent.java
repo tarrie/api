@@ -2,6 +2,7 @@ package io.tarrie.api.model.consumes;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.tarrie.api.model.EventPrivacy;
 import io.tarrie.api.model.EventTime;
 import io.tarrie.api.model.HashTag;
 import io.tarrie.api.model.Location;
@@ -18,6 +19,9 @@ public class EditEvent {
     @NotNull
     public String userId;
 
+    @ApiModelProperty(notes = "The privacy specifications of the event")
+    EventPrivacy eventPrivacy;
+
     @ApiModelProperty(value = "The time of the event")
     public EventTime eventTime;
 
@@ -27,9 +31,9 @@ public class EditEvent {
     @ApiModelProperty(value = "The profile pic of the event")
     public Image eventProfilePic;
 
-    @ApiModelProperty(value = "Collection of userIds invited to event")
+    @ApiModelProperty(value = "Collection of entityIds invited to event")
     @NotNull
-    public Collection<String> invitedUserIds;
+    public Collection<String> invitedEntityIds;
 
     @ApiModelProperty(value = "The description of the event")
     @Size(min=0, max= CharacterLimit.LARGE)
@@ -40,7 +44,8 @@ public class EditEvent {
     public String eventTitle;
 
     @ApiModelProperty(notes = "hash tags associated with event")
-    Collection<HashTag> hashTags;
+    public Collection<HashTag> hashTags;
 
-
+    @ApiModelProperty(value = "Boolean saying if link sharing is on or not(default is off)")
+    public boolean isLinkSharingOn;
 }

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.models.properties.EmailProperty;
 import io.tarrie.Utility;
+import io.tarrie.api.model.produces.EventCondensed;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -24,8 +25,13 @@ public class User extends Entity {
 
     @ApiModelProperty(notes = "Array of group memberships")
     @NotNull
-    private ArrayList<Membership> memberships = new ArrayList<>();
+    private Collection<Membership> memberships;
 
+    @ApiModelProperty(notes = "events the user has saved")
+    public Collection<EventCondensed> savedEvents;
+
+    @ApiModelProperty(notes = "events the user is going to")
+    public Collection<EventCondensed> rsvpEvents;
 
     /**
      * Add email address

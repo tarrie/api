@@ -14,7 +14,7 @@ public class EventTime {
     private LocalDateTime created;
 
     @ApiModelProperty(notes = "Time that the event starts (GMT)", required = true)
-    private LocalDateTime starts;
+    private LocalDateTime start;
 
     @ApiModelProperty(notes = "Time that the event ends (GMT)", required = true)
     private LocalDateTime ends;

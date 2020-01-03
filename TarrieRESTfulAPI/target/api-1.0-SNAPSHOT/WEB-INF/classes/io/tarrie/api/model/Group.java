@@ -24,4 +24,13 @@ public class Group extends Entity{
     @ApiModelProperty(value = "The biography of the group")
     public String bio;
 
+    @ApiModelProperty(notes = "The state of the group ", example = "CA", position = 0)
+    private String state;
+
+    @ApiModelProperty(notes = "The city  of the group ", example = "Redlands", position = 1)
+    private String city;
+
+    @Size(min=0, max=30)
+    @ApiModelProperty(notes="The name of the loc group is at", example="Northwestern University", position=3)
+    private String locName;
 }

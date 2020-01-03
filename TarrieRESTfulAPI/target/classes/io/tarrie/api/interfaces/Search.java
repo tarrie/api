@@ -20,6 +20,7 @@ import java.util.Collection;
  *     <li> Search for users based on diff user attributes
  *     <li> Search for events based on diff attributes
  * </ul>
+ * ToDo: Introduce pagination.
  */
 @Api(tags = "Search endpoints")
 @SwaggerDefinition(
@@ -29,9 +30,9 @@ public interface Search {
 
   /**
    *
-   * @param groupName (optional) groupName to search on
+   * @param groupNames (optional) groupName to search on
    * @param groupBio (optional) groupBio to search on
-   * @param groupId (optional) groupId to search on
+   * @param groupIds (optional) groupId to search on
    * @param searcherUserId the id of user doing the searching
    * @return list of groups that match the search
    */
@@ -52,13 +53,13 @@ public interface Search {
   Response searchForGroup(
           @DefaultValue("-1") @ApiParam(name = "groupName", value = "The groupName of group to search on")
           @QueryParam("groupName")
-                  String groupName,
+                  Collection<String> groupNames,
           @DefaultValue("-1") @ApiParam(name = "groupBio", value = "The group description of group to search on")
           @QueryParam("groupBio")
                   String groupBio,
           @DefaultValue("-1") @ApiParam(name = "groupId", value = "The groupId of group to search on")
           @QueryParam("groupId")
-                  String groupId,
+                  Collection<String> groupIds,
           UserId searcherUserId);
 
   /**
@@ -99,10 +100,10 @@ public interface Search {
    * Searches for Tarrie event based on different attributes
    * @param startDateTimeString (optional) start of time interval
    * @param endDateTimeString (optional)  end of time interval
-   * @param eventName (optional) name of event
-   * @param userId (optional) Search for events hosted by userId
-   * @param groupId (optional) Search for events hosted by groupId
-   * @param hashTag (optional) Searcb events associated with a hashTag
+   * @param eventNames (optional) name of event
+   * @param userIds (optional) Search for events hosted by userId
+   * @param groupIds (optional) Search for events hosted by groupId
+   * @param hashTags (optional) Searcb events associated with a hashTag
    * @param searchEvent pojo w/ userId of requestor and optional search location
    * @return
    */
@@ -126,15 +127,15 @@ public interface Search {
                   String startDateTimeString,
           @DefaultValue("-1") @ApiParam(name = "endTime", value = "end time in (ISO 8601 format)") @QueryParam("endTime")
                   String endDateTimeString,
-          @DefaultValue("-1") @ApiParam(name = "eventName", value = "The eventName to search on")
-          @QueryParam("eventName")
-                  String eventName,
-          @DefaultValue("-1") @ApiParam(name = "userId", value = "Search for events hosted by userId") @QueryParam("userId")
-                  String userId,
-          @DefaultValue("-1") @ApiParam(name = "groupId", value = "Search for events hosted by groupId") @QueryParam("groupId")
-                  String groupId,
-          @DefaultValue("-1") @ApiParam(name = "hashtag", value = "hashTag to search on") @QueryParam("hashtag")
-                  Collection<String> hashTag,
+          @DefaultValue("-1") @ApiParam(name = "eventNames", value = "The eventName to search on")
+          @QueryParam("eventNames")
+                  Collection<String>  eventNames,
+          @DefaultValue("-1") @ApiParam(name = "userIds", value = "Search for events hosted by userIds") @QueryParam("userIds")
+                  Collection<String>  userIds,
+          @DefaultValue("-1") @ApiParam(name = "groupIds", value = "Search for events hosted by groupIds") @QueryParam("groupIds")
+                  Collection<String> groupIds,
+          @DefaultValue("-1") @ApiParam(name = "hashtags", value = "hashTags to search on") @QueryParam("hashtags")
+                  Collection<String> hashTags,
           SearchEvent searchEvent);
 
 

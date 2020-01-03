@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import java.util.Map;
 
 public class Utility {
 

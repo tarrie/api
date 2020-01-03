@@ -2,6 +2,7 @@ package io.tarrie.api.model.consumes;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.tarrie.api.model.Location;
 import io.tarrie.api.model.constants.CharacterLimit;
 
 import javax.validation.constraints.NotNull;
@@ -32,7 +33,8 @@ public class CreateGroup {
     @ApiModelProperty(value = "The profile pic of the group")
     public Image groupProfilePic;
 
-
+    @ApiModelProperty(value = "The location of the group")
+    public Location location;
 
 
     @Override

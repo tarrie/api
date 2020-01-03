@@ -7,6 +7,8 @@ import io.tarrie.api.model.consumes.AddUserToGroup;
 import io.tarrie.Utility;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
@@ -45,4 +47,14 @@ public class Groups {
 
     return Response.status(200).entity("SUCCESS").build();
   }
+
+  /*
+  public Response doSomething(@Context HttpHeaders headers) {
+    String accept = headers.getMediaType()
+    List<MediaType> acceptableType = headers.getAcceptableMediaTypes();
+    MediaType.
+
+            image/gif, image/jpg, image/jpeg, image/png,
+  }
+  */
 }

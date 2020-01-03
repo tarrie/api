@@ -22,7 +22,7 @@ public class Membership {
     @ApiModelProperty(notes = "The profile img of the user")
     public ProfileImg userProfileImg;
 
-    @ApiModelProperty(notes = "Membership Type of User",allowableValues = "Owner, Admin, Subscriber",example = "Subscriber",  required = true, position = 0)
+    @ApiModelProperty(notes = "Membership Type of User",allowableValues = "Owner, Admin, Member, Follower",example = "Subscriber",  required = true, position = 0)
     public MembershipType memType;
 
 

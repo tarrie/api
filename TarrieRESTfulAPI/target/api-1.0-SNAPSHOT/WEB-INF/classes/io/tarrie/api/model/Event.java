@@ -17,10 +17,16 @@ import java.util.Collection;
 public class Event {
 
 
-
+    /**
+     * Link sharing is ON - When click shrarablelink
+     */
     @ApiModelProperty(notes = "The unique identifier for the event")
     @NotNull
-    String id;
+    String eventId;
+
+    @ApiModelProperty(notes = "The privacy specifications of the events")
+    @NotNull
+    EventPrivacy privacy;
 
     @ApiModelProperty(notes = "The name of the event")
     @Size(min = 1, max = CharacterLimit.SMALL)
@@ -30,10 +36,10 @@ public class Event {
 
     @ApiModelProperty(notes = "url on S3 that holds the events image")
     @NotNull
-            @Size(min=0, max = EventLimits.MAX_NUM_OF_IMGS)
-    Collection<String> eventImgUrls;
+            @Size(min=1, max = EventLimits.MAX_NUM_OF_IMGS)
+    String eventImgUrl;
 
-    @ApiModelProperty(notes = "url on S3 that holds the events image")
+    @ApiModelProperty(notes = "the location of event")
     @NotNull
     Location location;
 
@@ -56,9 +62,16 @@ public class Event {
     @Size(min=0, max= CharacterLimit.LARGE)
     public String eventDescription;
 
-    @ApiModelProperty(value = "Collection of userIds invited to event")
+    @ApiModelProperty(value = "Collection of entityIds invited to event")
     @NotNull
-    public Collection<String> invitedUserIds;
+    public Collection<String> invitedEntityIds;
+
+    @ApiModelProperty(value = "Boolean saying if link sharing is on or not(default is off)")
+    public boolean isLinkSharingOn;
+
+    @ApiModelProperty(value = "Collection of SharableLinks associated to the event",hidden = true)
+    @NotNull
+    public Collection<SharableLink> sharableLinks;
 
     //FixMe: Should we add shared with. How to we want the business logic of sharing to be?
 

@@ -18,6 +18,12 @@
   </properties>
 
   <dependencies>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <!-- version number is not needed due to the BOM below -->
+    </dependency>
+
     <!-- search for more libraries at https://search.maven.org -->
     <dependency>
       <groupId>junit</groupId>

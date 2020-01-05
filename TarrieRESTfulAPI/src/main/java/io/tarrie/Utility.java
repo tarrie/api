@@ -6,9 +6,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class Utility {
+
 
   /**
    * This is useful for getting parameters that might be defined either in system properties

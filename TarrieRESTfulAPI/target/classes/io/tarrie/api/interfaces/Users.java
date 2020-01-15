@@ -1,9 +1,12 @@
 package io.tarrie.api.interfaces;
 
 import io.swagger.annotations.*;
-import io.tarrie.api.model.User;
-import io.tarrie.api.model.consumes.*;
-import io.tarrie.api.model.produces.*;
+import io.tarrie.model.User;
+import io.tarrie.model.events.EventCondensed;
+import io.tarrie.model.condensed.GroupCondensed;
+import io.tarrie.model.condensed.UserCondensed;
+import io.tarrie.model.consumes.*;
+import io.tarrie.model.produces.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

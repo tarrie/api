@@ -1,11 +1,11 @@
 package io.tarrie.api.interfaces;
 
 import io.swagger.annotations.*;
-import io.tarrie.api.model.*;
-import io.tarrie.api.model.consumes.CreateEvent;
-import io.tarrie.api.model.consumes.EditEvent;
-import io.tarrie.api.model.consumes.EventId;
-import io.tarrie.api.model.consumes.UserId;
+import io.tarrie.model.consumes.CreateEvent;
+import io.tarrie.model.consumes.EditEvent;
+import io.tarrie.model.consumes.EventId;
+import io.tarrie.model.consumes.UserId;
+import io.tarrie.model.events.Event;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

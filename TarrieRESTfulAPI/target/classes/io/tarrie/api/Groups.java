@@ -3,12 +3,10 @@ package io.tarrie.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.*;
 //import io.swagger.v3.oas.annotations.Parameter;
-import io.tarrie.api.model.consumes.AddUserToGroup;
+import io.tarrie.model.consumes.AddUserToGroup;
 import io.tarrie.Utility;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;

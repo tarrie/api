@@ -1,9 +1,9 @@
 package io.tarrie.api;
 
-import io.tarrie.api.model.Entity;
-import io.tarrie.api.model.EventTime;
-import io.tarrie.api.model.Location;
-import io.tarrie.api.model.ProfileImg;
+import io.tarrie.model.Entity;
+import io.tarrie.model.EventTime;
+import io.tarrie.model.Location;
+import io.tarrie.model.ProfileImg;
 
 import java.util.Collection;
 
@@ -14,15 +14,6 @@ import java.util.Collection;
  */
 public class Events {
 
-    /**
-     * Create event
-     */
-    void createEvent(ProfileImg profileImg, EventTime eventTime, Location location){}
-
-    /**
-     * Share a event with User or Group
-     */
-    void eventShare(Entity tarrieEntity, Collection<Entity> entitiesToShareWith){}
 
 
 }

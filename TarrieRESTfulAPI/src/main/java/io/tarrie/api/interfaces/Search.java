@@ -1,13 +1,11 @@
 package io.tarrie.api.interfaces;
 
 import io.swagger.annotations.*;
-import io.tarrie.api.model.Event;
-import io.tarrie.api.model.Location;
-import io.tarrie.api.model.consumes.SearchEvent;
-import io.tarrie.api.model.consumes.UserId;
-import io.tarrie.api.model.produces.EventCondensed;
-import io.tarrie.api.model.produces.GroupCondensed;
-import io.tarrie.api.model.produces.UserCondensed;
+import io.tarrie.model.consumes.SearchEvent;
+import io.tarrie.model.consumes.UserId;
+import io.tarrie.model.events.EventCondensed;
+import io.tarrie.model.condensed.GroupCondensed;
+import io.tarrie.model.condensed.UserCondensed;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

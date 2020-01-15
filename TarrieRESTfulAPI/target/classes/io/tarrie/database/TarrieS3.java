@@ -37,7 +37,7 @@ public class TarrieS3 {
           .withRegion(DbConstants.S3_REGION)
           .build();
 
-  public static void main(String[] args) throws IOException, URISyntaxException, EncoderException {
+  public static void main(String[] args) throws URISyntaxException, EncoderException, IOException {
     TarrieS3 test = new TarrieS3();
     test.listBucketContent(DbConstants.IMG_S3_BUCKET);
     //test.createFolder("tarrie.io","test");

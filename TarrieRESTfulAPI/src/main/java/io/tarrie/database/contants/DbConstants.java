@@ -8,7 +8,7 @@ import java.util.HashSet;
 
 public class DbConstants {
   public static final String BASE_TABLE = "tarrie.io";
-    public static final String DEFAULT_EVENT_IMG =
+  public static final String DEFAULT_EVENT_IMG =
       "https://s3.us-east-2.amazonaws.com/tarrie.io/events/pictures/default-event-profile.png";
   public static final String DEFAULT_USER_IMG =
       "https://s3.us-east-2.amazonaws.com/tarrie.io/users/pictures/default-user-profile.png";
@@ -19,6 +19,10 @@ public class DbConstants {
   public static final HashSet<String> ACCEPTABLE_MIME_IMAGES =
       new HashSet<String>(Arrays.asList("image/gif", "image/jpg", "image/jpeg", "image/png"));
   public static final String IMG_S3_BUCKET = "tarrie.io";
-    public static final String S3_HOSTNAME = "https://s3.us-east-2.amazonaws.com/"+IMG_S3_BUCKET;
+  public static final String S3_HOSTNAME = "https://s3.us-east-2.amazonaws.com/" + IMG_S3_BUCKET;
 
+  public static final int MAX_ITEMS_DYNAMODB_BATCH = 100;
+  public static final int SHARABLE_LINK_LENGTH = 6;
+  public static final String HASH_TAG = "TAG";
+  public static final int HASH_TAG_PER_EVENT = 30;
 }

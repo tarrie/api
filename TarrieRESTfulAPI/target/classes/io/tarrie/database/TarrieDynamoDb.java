@@ -127,7 +127,7 @@ public class TarrieDynamoDb {
    * @param ids collection of ids to check existence of
    * @return subset of ids that actually exist
    */
-  public static List<String> doItemsExist(List<String> ids) {
+  public static List<String> doItemsExist(List<String> ids) throws MalformedInputException {
     // ToDo: exception handling on DynamoDb
 
     if (ids.size() > 100) {

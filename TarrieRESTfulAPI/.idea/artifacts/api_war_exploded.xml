@@ -102,7 +102,7 @@
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-simple:1.7.28" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.7.28" />
           <element id="library" level="project" name="Maven: org.json:json:20190722" />
-          <element id="library" level="project" name="Maven: org.jetbrains:annotations:18.0.0" />
+          <element id="library" level="project" name="Maven: org.jetbrains:annotations:19.0.0" />
         </element>
       </element>
       <element id="directory" name="META-INF">

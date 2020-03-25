@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
 import io.tarrie.database.contants.EntityType;
+import io.tarrie.database.contants.ImgTypes;
 import io.tarrie.database.exceptions.MalformedInputException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.IOUtils;
@@ -37,7 +38,7 @@ public class TarrieS3 {
           .withRegion(DbConstants.S3_REGION)
           .build();
 
-  public static void main(String[] args) throws URISyntaxException, EncoderException, IOException {
+  public static void main(String[] args) throws URISyntaxException, EncoderException, IOException, MalformedInputException {
     TarrieS3 test = new TarrieS3();
     test.listBucketContent(DbConstants.IMG_S3_BUCKET);
     //test.createFolder("tarrie.io","test");
@@ -84,7 +85,7 @@ public class TarrieS3 {
     String info = String.format("{entityId:%s, mimeType:%s}",entityId, mimeType );
 
     // check if mimeType is in required types
-    if (!(DbConstants.ACCEPTABLE_MIME_IMAGES.contains(mimeType))){
+    if (!(ImgTypes.ACCEPTABLE_MIME_IMAGES.contains(mimeType))){
       throw new MalformedInputException("Invalid img MIME type:"+info );
     }
 
@@ -143,7 +144,7 @@ public class TarrieS3 {
   }
 
 
-  public void deleteProfileImg(String s3url){
+  public void deleteProfileImg(String s3url) throws MalformedInputException {
     Pattern pattern = Pattern.compile(".*amazonaws\\.com/"+DbConstants.IMG_S3_BUCKET+"/(?<fileName>.*)\\.*");
     Matcher matcher = pattern.matcher(s3url);
 

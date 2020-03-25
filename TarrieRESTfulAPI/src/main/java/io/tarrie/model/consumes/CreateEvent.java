@@ -8,15 +8,12 @@ import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.EventPrivacy;
-import io.tarrie.model.EventTime;
 import io.tarrie.model.HashTag;
 import io.tarrie.model.Location;
 import io.tarrie.model.constants.CharacterLimit;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.awt.*;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +32,7 @@ public class CreateEvent {
     private static final boolean linkSharing=false;
     private List<String> invitedEntityIds;
     private String bio;
-    private List<HashTag> hashTags;
+    private Set<String> hashTags;
     private String eventId;
     private String eventIdCopy;
     private String startTime;
@@ -164,10 +161,11 @@ public class CreateEvent {
     // relationship -> ignore we treat this specially
     @DynamoDBIgnore
     @ApiModelProperty(notes = "hash tags associated with event")
-    public List<HashTag> getHashTags() {
+    public Set<String> getHashTags() {
         return hashTags;
     }
-    public void setHashTags(List<HashTag> hashTags) {
+    public void setHashTags(Set<String> hashTags) throws MalformedInputException {
+        Utility.verifyHashTags(hashTags);
         this.hashTags = hashTags;
     }
 

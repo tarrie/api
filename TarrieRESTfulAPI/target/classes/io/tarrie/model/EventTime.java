@@ -23,7 +23,7 @@ public class EventTime {
     public String getCreatedTime() {
         return createdTime;
     }
-    public void setCreatedTime(String created) {
+    public void setCreatedTime(String created) throws MalformedInputException {
         Utility.isDateTimeValid(created);
         this.createdTime = created;
     }

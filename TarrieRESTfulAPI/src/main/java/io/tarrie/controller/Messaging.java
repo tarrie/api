@@ -1,6 +1,5 @@
 package io.tarrie.controller;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTransactionWriteExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.TransactionWriteRequest;
 import io.tarrie.database.TarrieDynamoDb;
@@ -20,24 +19,17 @@ import java.time.Instant;
  class Messaging {
     /**
      * A user is requesting to join a group
-     * @param sender
-     * @param receiver
-     * @param textMessage
      */
-    public static void sendGroupJoin(Entity sender, Entity receiver, TextMessage textMessage){
+    public static void sendGroupJoin(Entity sender, Entity receiver, TextMessage textMessage) throws MalformedInputException {
         sendMessage(MessageType.groupJoin, sender,  receiver, null, null, textMessage);
     }
 
   /**
    * A group/user is inviting another group/user to attend a event
    *
-   * @param sender
-   * @param receiver
-   * @param eventInfo
-   * @param textMessage
    */
   public static void sendEventInvite(
-      Entity sender, Entity receiver, Event eventInfo, TextMessage textMessage) {
+      Entity sender, Entity receiver, Event eventInfo, TextMessage textMessage) throws MalformedInputException {
         sendMessage(MessageType.eventInvite, sender,  receiver, eventInfo, null, textMessage);
 
     }
@@ -49,7 +41,7 @@ import java.time.Instant;
      * @param groupInfo
      * @param textMessage
      */
-    public static void sendGroupInvite(Entity sender, Entity receiver,Group groupInfo, TextMessage textMessage){
+    public static void sendGroupInvite(Entity sender, Entity receiver,Group groupInfo, TextMessage textMessage) throws MalformedInputException {
 
         sendMessage(MessageType.groupInvite, sender,  receiver, null, groupInfo, textMessage);
     }
@@ -61,11 +53,10 @@ import java.time.Instant;
      * @param eventInfo
      * @param textMessage
      */
-     static void sendMessage(MessageType messageType, Entity sender, Entity receiver, Event eventInfo, Group groupInfo, TextMessage textMessage){
+     static void sendMessage(MessageType messageType, Entity sender, Entity receiver, Event eventInfo, Group groupInfo, TextMessage textMessage) throws MalformedInputException {
          DynamoDBTransactionWriteExpression conditionExpressionForConditionCheck = new DynamoDBTransactionWriteExpression()
                  .withConditionExpression(String.format("attribute_not_exists(%s) AND attribute_not_exists(%s)", DbAttributes.HASH_KEY,DbAttributes.SORT_KEY));
 
-         DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
         TransactionWriteRequest transactionWriteRequest = new TransactionWriteRequest();
         Instant instant = Instant.now();
 
@@ -99,7 +90,7 @@ import java.time.Instant;
         return invite;
     }
 
-    private static Invite addInvite(Group group, Entity receiver){
+    private static Invite addInvite(Group group, Entity receiver) throws MalformedInputException {
         if (group==null || receiver==null){
             throw new MalformedInputException("Missing required input");
         }
@@ -117,7 +108,7 @@ import java.time.Instant;
      * @param time time instance
      * @return formatted time stamp
      */
-    private static String formatTimeStamp(String fromOrTo,Instant time){
+    private static String formatTimeStamp(String fromOrTo,Instant time) throws MalformedInputException {
          if (fromOrTo.equals("FROM") || fromOrTo.equals("TO")){
              return String.format("%s#%s", fromOrTo, time.toString());
          }else{
@@ -137,7 +128,6 @@ import java.time.Instant;
 
 
     private static From sendFromMessage(Instant time, MessageType messageType, Entity sender, Entity receiver, Event eventInfo, Group groupInfo, TextMessage textMessage) throws MalformedInputException{
-        String currentInstant = time.toString();
         From messageFrom  = new From();
 
 

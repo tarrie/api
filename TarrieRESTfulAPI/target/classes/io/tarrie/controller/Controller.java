@@ -1,12 +1,14 @@
 package io.tarrie.controller;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.S3Link;
 import com.amazonaws.services.dynamodbv2.datamodeling.TransactionWriteRequest;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.google.common.collect.Lists;
 import io.tarrie.Utility;
+import io.tarrie.database.exceptions.TarrieGroupException;
 import io.tarrie.model.*;
 import io.tarrie.model.condensed.UserCondensed;
 import io.tarrie.model.constants.EventRelationship;
@@ -26,8 +28,12 @@ import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import javax.imageio.ImageIO;
 import javax.mail.internet.AddressException;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -37,7 +43,7 @@ import java.util.stream.Collectors;
 public class Controller {
   private static final Logger LOG = LogManager.getLogger(Controller.class);
 
-  public static void main(String[] args) throws AddressException, IOException {
+  public static void main(String[] args) throws AddressException, IOException, MalformedInputException {
     Controller controller = new Controller();
 
     UserCondensed owner = new UserCondensed();
@@ -67,8 +73,8 @@ public class Controller {
 
       //controller.createUser(newUser);
 
-      addConnection("USR#jide69","GRP#boogoParty", ConnectionType.Member, Optional.of(MembershipType.OWNER));
-      addConnection("USR#northwestern_69","GRP#boogoParty", ConnectionType.Member, Optional.empty());
+      //addConnection("USR#jide69","GRP#boogoParty", ConnectionType.Member, Optional.of(MembershipType.OWNER));
+      //addConnection("USR#northwestern_69","GRP#boogoParty", ConnectionType.Member, Optional.empty());
 
       System.out.println(getMembershipTypeOfUser("USR#jide69","GRP#boogoParty"));
       System.out.println(getMembershipTypeOfUser("USR#northwestern_69","GRP#boogoParty"));
@@ -150,6 +156,8 @@ public class Controller {
   public static boolean isNewIdValid(String newTarrieId){
       return isGroupIdOrUserIdValid(newTarrieId) && isIdUnique(newTarrieId);
   }
+
+
   /**
    * Creates a tarrie user
    *
@@ -157,7 +165,7 @@ public class Controller {
    * @throws AddressException thrown if email address is malformed
    * @throws MalformedInputException thrown if userId is not alphanumeric
    */
-  public static void createUser(CreateUser user) throws AddressException, MalformedInputException {
+  public static void createUser(CreateUser user) throws AddressException, MalformedInputException, IOException {
     // format the userId
     String formattedUserId = String.format("%s#%s", EntityType.USER,user.getId() );
 
@@ -166,6 +174,9 @@ public class Controller {
         user.setIdCopy(formattedUserId);
         DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
         mapper.save(user);
+        // add the default img to the user's newly created image path
+        //uploadProfileImg(Utility.getInputStreamFromS3ImgUrl(DbConstants.DEFAULT_USER_IMG), ImgTypes.JPG, formattedUserId);
+
         LOG.info(String.format("Created new user: %s", formattedUserId));
     }else{
         throw new MalformedInputException("userId already exists or is malformed: " + formattedUserId);
@@ -177,7 +188,7 @@ public class Controller {
      * Creates a tarrie group
      * @param createGroup the group to create
      */
-    public static void createGroup(CreateGroup createGroup){
+    public static void createGroup(CreateGroup createGroup) throws MalformedInputException {
         // format the groupId
         String formattedGroupId = String.format("%s#%s", EntityType.GROUP,createGroup.getGroupId());
         String ownerId = createGroup.getOwner().getId();
@@ -199,6 +210,8 @@ public class Controller {
             throw new MalformedInputException(String.format("groupId already exists, or groupId is malformed, or ownerId does not exist: [groupId=%s,ownerId=%s]",formattedGroupId,ownerId));
         }
     }
+
+
 
 
 
@@ -228,12 +241,9 @@ public class Controller {
         hostInfo.setImgPath(creator.getImgPath());
         hostInfo.setId(creator.getId());
 
-        // format hashtags and store as a set
+        // format hashtags
         Set<String> hashTagSet =createEvent.getHashTags().stream()
-                .map(String::valueOf).map(s->{
-                    Utility.verifyHashTag(DbConstants.HASH_TAG);
-                    return String.format("%s%s", DbConstants.HASH_TAG, s);
-                })
+                .map(String::valueOf).map(s-> String.format("%s%s", DbConstants.HASH_TAG, s))
                 .collect(Collectors.toSet());
 
 
@@ -275,9 +285,10 @@ public class Controller {
         eventCondensed.setName(createEvent.getName());
 
         // invite the entities in the list
-        createEvent.getInvitedEntityIds().forEach((id)->{
+        for (String id: createEvent.getInvitedEntityIds()){
             Messaging.sendEventInvite(hostInfo, mapper.load(Entity.class,id,id),eventCondensed, null);
-        });
+        }
+
 
 
 
@@ -298,10 +309,16 @@ public class Controller {
    * @throws IOException
    * @throws MalformedInputException
    */
-  public void uploadProfileImg(InputStream is, String mimeType, String entityId)
+  public static void uploadProfileImg(InputStream is, String mimeType, String entityId)
       throws IOException, MalformedInputException {
-    String s3Url = TarrieS3.uploadProfileImg(is, mimeType, entityId);
-    TarrieDynamoDb.updateAttribute(entityId, DbAttributes.IMG_PATH, s3Url);
+
+      if (TarrieDynamoDb.doesItemExist(entityId)){
+          String s3Url = TarrieS3.uploadProfileImg(is, mimeType, entityId);
+          TarrieDynamoDb.updateAttribute(entityId, DbAttributes.IMG_PATH, s3Url);
+      }else{
+          throw new MalformedInputException("entity does not exist: "+ entityId);
+      }
+
   }
 
 
@@ -311,7 +328,7 @@ public class Controller {
    * @param userIds the userIds to check
    * @return subset of userIds that exist
    */
-  public List<String> userExists(List<String> userIds) {
+  public List<String> userExists(List<String> userIds) throws MalformedInputException {
     // Batch request can only be 100 at a time so partition the input into chunks of 100
     List<List<String>> partition = Lists.partition(userIds, 100);
 
@@ -362,7 +379,8 @@ public class Controller {
      * @param groupId to check against
      * @return null if not a member otherwise MEMBER, OWNER, or ADMIN
      */
-    public static MembershipType getMembershipTypeOfUser(String userId,  String groupId){
+    public static MembershipType getMembershipTypeOfUser(String userId,  String groupId) throws MalformedInputException{
+
         if (!(Utility.getEntityType(userId).equals(EntityType.USER))){
             return MembershipType.NULL;
         }
@@ -373,7 +391,6 @@ public class Controller {
         nameMap.put("#memType", DbAttributes.DATA);
 
         // query the table
-        Table table = TarrieDynamoDb.dynamoDB.getTable(DbConstants.BASE_TABLE);
         GetItemSpec spec =
                 new GetItemSpec()
                         .withPrimaryKey(
@@ -414,7 +431,7 @@ public class Controller {
      * @param newMemTypeOfOldOwner The new memType of the owner
      * @throws MalformedInputException if transferId is not owner of group or recipientId is not a member of the group
      */
-    public static void transferGroupOwner(String transferId, String recipientId, String groupId, MembershipType newMemTypeOfOldOwner){
+    public static void transferGroupOwner(String transferId, String recipientId, String groupId, MembershipType newMemTypeOfOldOwner) throws MalformedInputException {
 
         // check if user is in fact the owner
         MembershipType memTypeOfTransfer = getMembershipTypeOfUser(transferId,groupId);
@@ -475,6 +492,47 @@ public class Controller {
     }
 
     /**
+     * userId is joining groupId
+     * @param userId
+     * @param groupId
+     * @throws MalformedInputException
+     */
+    public static void joinGroup(String userId, String groupId) throws MalformedInputException{
+        addConnection(userId,groupId,ConnectionType.Member,Optional.of(MembershipType.MEMBER));
+    }
+
+    /**
+     * Promotes a group member to admin status
+     */
+    public static void promoteUserToAdmin(String ownerId, String userId, String groupId) throws MalformedInputException, TarrieGroupException {
+
+        MembershipType memType;
+        if ((memType = getMembershipTypeOfUser(ownerId,groupId)) != MembershipType.OWNER){
+            throw new TarrieGroupException(String.format("Only a owner can promote members to admin: [userId=%s,groupId=%s, memType=%s]",ownerId,groupId,memType));
+
+        }
+
+        if (getMembershipTypeOfUser(userId,groupId) == MembershipType.NULL){
+            throw new TarrieGroupException(String.format("User must be a member of group to be promoted to admin: [userId=%s,groupId=%s]",userId,groupId));
+        }
+
+        addConnection(userId,groupId, ConnectionType.Member, Optional.of(MembershipType.ADMIN));
+    }
+
+    public static void demoteGroupAdmin(String ownerId, String userId, String groupId) throws TarrieGroupException, MalformedInputException {
+        MembershipType memType;
+        if ((memType = getMembershipTypeOfUser(ownerId,groupId)) != MembershipType.OWNER){
+            throw new TarrieGroupException(String.format("Only a owner can promote members to admin: [userId=%s,groupId=%s, memType=%s]",ownerId,groupId,memType));
+
+        }
+
+        if (getMembershipTypeOfUser(userId,groupId) == MembershipType.NULL){
+            throw new TarrieGroupException(String.format("User must be a member of group to be promoted to admin: [userId=%s,groupId=%s]",userId,groupId));
+        }
+        addConnection(userId,groupId, ConnectionType.Member, Optional.of(MembershipType.MEMBER));
+
+    }
+    /**
      * User/Group add a contact
      * @param entityId the id of entity adding contact
      * @param connectionId the contact to add
@@ -520,7 +578,7 @@ public class Controller {
                 // set FAVE
                 tarrieConnection.setFavorite(0);
 
-                // set membership type - membershiptype should not be present for a contact or a follow
+                // set membership type - membership type should not be present for a contact or a follow
                 if (OptionalOfmemType.isPresent()){
                     MembershipType memType = OptionalOfmemType.get();
                     switch (memType){

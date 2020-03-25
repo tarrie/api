@@ -7,41 +7,60 @@ import io.tarrie.database.contants.DbConstants;
 import io.tarrie.database.contants.EntityType;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.constants.CharacterLimit;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.DateTime;
 
+import javax.imageio.ImageIO;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import java.io.UnsupportedEncodingException;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utility {
 
   /**
+   * Downloads img from S3 and returns the input stream.
+   */
+  public static InputStream getInputStreamFromS3ImgUrl(String s3Url) throws IOException {
+    URL url = new URL(s3Url);
+    URLConnection connection = url.openConnection();
+    return connection.getInputStream();
+  }
+
+
+  /**
    * Hashtags can only contain letters, numbers, and underscores (_), no special characters. 140 character limit. Must start with #
-   * @param hashTag hashtag to check
+   * @param hashTags hashtag to check
    * @throws MalformedInputException if invalid hashtag
    */
-  public static void verifyHashTag(String hashTag) throws MalformedInputException{
-    if (hashTag.charAt(0) !='#'){
-      throw new MalformedInputException("Hashtags must start with (#): "+ hashTag);
-    }
+  public static void verifyHashTags(Set<String> hashTags) throws MalformedInputException{
+    for (String tag: hashTags){
+      if (tag.charAt(0) !='#'){
+        throw new MalformedInputException("Hashtags must start with (#): "+ tag);
+      }
 
-    if (!(hashTag.matches("[a-zA-Z0-9_]+"))){
-      throw new MalformedInputException("Hashtags can only contain letters, numbers, and underscores (_), no special characters.:"+ hashTag);
-    }
+      if (!(tag.matches("[a-zA-Z0-9_]+"))){
+        throw new MalformedInputException("Hashtags can only contain letters, numbers, and underscores (_), no special characters.:"+ tag);
+      }
 
-    if (!(hashTag.length() < CharacterLimit.MEDIUM-10)){
-      throw new MalformedInputException("Hashtags are subject to the standard "+ (CharacterLimit.MEDIUM - 10) +" characters limit");
+      if (!(tag.length() < CharacterLimit.MEDIUM-10)){
+        throw new MalformedInputException("Hashtags are subject to the standard "+ (CharacterLimit.MEDIUM - 10) +" characters limit");
+      }
     }
-
   }
 
   public static boolean isUrlvalid(String url){
@@ -83,7 +102,7 @@ public class Utility {
    * @param rawId Tarrie id
    * @return entity identifier
    */
-  public static String getEntityType(String rawId){
+  public static String getEntityType(String rawId) throws MalformedInputException {
     Pattern pattern = Pattern.compile(String.format("(?<entityType>%s|%s|%s)#",EntityType.GROUP,EntityType.EVENT,EntityType.USER));
     Matcher matcher = pattern.matcher(rawId);
     if (matcher.find()){
@@ -98,7 +117,7 @@ public class Utility {
    * @param rawId Tarrie id
    * @return Tarrie id w/o the entity identifier
    */
-  public static String getEntityId(String rawId){
+  public static String getEntityId(String rawId) throws MalformedInputException {
     Pattern pattern = Pattern.compile(String.format("(%s#|%s#|%s#)(?<idActual>.*)",EntityType.GROUP,EntityType.EVENT,EntityType.USER));
     Matcher matcher = pattern.matcher(rawId);
 

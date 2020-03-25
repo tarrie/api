@@ -1,12 +1,17 @@
 package io.tarrie;
 
 import io.tarrie.controller.Controller;
+import io.tarrie.database.contants.DbConstants;
+import io.tarrie.database.contants.ImgTypes;
+import io.tarrie.database.exceptions.MalformedInputException;
+import io.tarrie.database.exceptions.TarrieGroupException;
 import io.tarrie.model.Location;
 import io.tarrie.model.condensed.UserCondensed;
 import io.tarrie.model.consumes.CreateGroup;
 import io.tarrie.model.consumes.CreateUser;
 
 import javax.mail.internet.AddressException;
+import java.io.*;
 
 public class Test {
   public static final String userName1 = "Jake Stricht";
@@ -22,15 +27,19 @@ public class Test {
   public static final String groupId1 = "boogoParty33333";
   public static final String formattedGroupId1 = "GRP#boogoParty33333";
 
-  public static void main(String[] args) throws AddressException {
+  public static void main(String[] args) throws AddressException, IOException, MalformedInputException, TarrieGroupException {
     //createDummyUsers();
     //createDummyGroup();
     //createDummyFollowers();
-    createDummyContacts();
+    // createDummyContacts();
+    // joinDummyGroup();
+    //uploadDummyImg();
+     //promoteToAdmin();
+    demoteFromAdmin();
 
   }
 
-  static void createDummyUsers() throws AddressException {
+  static void createDummyUsers() throws AddressException, IOException, MalformedInputException {
     CreateUser newUser1 = new CreateUser();
     newUser1.setId(unformattedUserId1);
     newUser1.setName(userName1);
@@ -45,7 +54,7 @@ public class Test {
     Controller.createUser(newUser2);
   }
 
-  static void createDummyGroup(){
+  static void createDummyGroup() throws MalformedInputException {
     UserCondensed owner = new UserCondensed();
     owner.setId(formattedUserId1);
     owner.setName(userName1);
@@ -65,7 +74,7 @@ public class Test {
     Controller.createGroup(group);
   }
 
-  static void createDummyFollowers(){
+  static void createDummyFollowers() throws MalformedInputException {
     // group1 is following user2
     Controller.followEntity(formattedGroupId1,formattedUserId2);
 
@@ -77,7 +86,7 @@ public class Test {
 
   }
 
-  static void createDummyContacts(){
+  static void createDummyContacts() throws MalformedInputException {
     // group1 is following user2
     Controller.addContact(formattedGroupId1,formattedUserId2);
 
@@ -86,6 +95,35 @@ public class Test {
 
     // user2 is following user1
     Controller.addContact(formattedUserId2,formattedUserId1);
+  }
+
+  static void joinDummyGroup() throws MalformedInputException {
+    Controller.joinGroup(formattedUserId2,formattedGroupId1);
+  }
+
+  static void promoteToAdmin() throws MalformedInputException, TarrieGroupException {
+    String owner = formattedUserId1;
+    String user = formattedUserId2;
+    String group = formattedGroupId1;
+    Controller.promoteUserToAdmin(owner, user,group );
+  }
+
+static void demoteFromAdmin() throws MalformedInputException, TarrieGroupException {
+  String owner = formattedUserId1;
+  String user = formattedUserId2;
+  String group = formattedGroupId1;
+  Controller.demoteGroupAdmin(owner, user,group );
+}
+
+
+  static void uploadDummyImg() throws IOException, MalformedInputException {
+    File dummyImg = new File("../pictures/coolpic.jpeg");
+    InputStream is = new FileInputStream(dummyImg);
+    Controller.uploadProfileImg(is, ImgTypes.JPEG,formattedGroupId1);
+
+    dummyImg = new File("../pictures/dancing80s.gif");
+    is = new FileInputStream(dummyImg);
+    Controller.uploadProfileImg(is, ImgTypes.GIF,formattedUserId1);
 
   }
 }

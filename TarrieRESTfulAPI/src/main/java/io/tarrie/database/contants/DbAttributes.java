@@ -44,4 +44,6 @@ public class DbAttributes {
     public static final String RELATED_TAGS = "relatedTags";
     public static final String TAG = "tag";
 
+    public static final String EVENT_COORDINATORS = "coordinators";
+
 }

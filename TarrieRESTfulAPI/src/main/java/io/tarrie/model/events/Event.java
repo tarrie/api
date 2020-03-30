@@ -31,6 +31,8 @@ public class Event {
     private String endTime;
     private boolean linkSharing;
     private String bio;
+    private Set<String> coordinators;
+
 
     private Entity hostInfo;// has to be queried
     private List<User> rsvps; // has to be queried
@@ -57,6 +59,10 @@ public class Event {
     public int getRsvpNum() {
         return rsvpNum;
     }
+
+    @DynamoDBAttribute(attributeName = DbAttributes.EVENT_COORDINATORS)
+    @ApiModelProperty(notes = "the id's of the hosts of the event")
+    public Set<String> getCoordinators() { return coordinators; }
 
     @DynamoDBAttribute(attributeName = DbAttributes.LOC)
     @ApiModelProperty(notes = "the location of event")
@@ -207,6 +213,8 @@ public class Event {
     public void setSharableLinks(List<SharableLink> sharableLinks) {
         this.sharableLinks = sharableLinks;
     }
+
+    public void setCoordinators(Set<String> coordinators) { this.coordinators = coordinators; }
 
     public void setIdCopy(String idCopy) {
         this.idCopy = idCopy;

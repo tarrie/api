@@ -4,13 +4,17 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import io.swagger.annotations.ApiModel;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.model.Entity;
 import io.tarrie.model.EventPrivacy;
 import io.tarrie.model.Location;
 
+import java.util.Set;
+
 @DynamoDBTable(tableName = DbConstants.BASE_TABLE)
+@ApiModel(description="This is what saved under the the creator of the event. ")
 public class HostEvent extends Event {
     private String hostId;
     private String eventId;
@@ -20,6 +24,7 @@ public class HostEvent extends Event {
     private String name;
     private String imgPath;
     private Location loc;
+    private Set<String> coordinators;
 
 
     /* ********** Getters *************/
@@ -33,6 +38,12 @@ public class HostEvent extends Event {
     @DynamoDBRangeKey(attributeName = DbAttributes.SORT_KEY)
     public String getEventId() {
         return eventId;
+    }
+
+    @Override
+    @DynamoDBAttribute(attributeName = DbAttributes.EVENT_COORDINATORS)
+    public Set<String> getCoordinators() {
+        return coordinators;
     }
 
     @Override
@@ -110,4 +121,8 @@ public class HostEvent extends Event {
         this.hostId = hostId;
     }
 
+    @Override
+    public void setCoordinators(Set<String> coordinators) {
+        this.coordinators = coordinators;
+    }
 }

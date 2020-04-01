@@ -2,7 +2,12 @@ package io.tarrie.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.properties.EmailProperty;
+import io.tarrie.Utility;
+import io.tarrie.api.model.produces.EventCondensed;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,17 +19,27 @@ public class User extends Entity {
         super(id);
     }
 
-    private static final int MIN = 2;
-    private static final int MAX = 20;
-
-    @ApiModelProperty(notes = "The name of the user", example = "Becky")
+    @ApiModelProperty(notes = "The email address of the user")
     @NotNull
-    private UserName userName;
+    public InternetAddress emailAddr;
 
     @ApiModelProperty(notes = "Array of group memberships")
     @NotNull
-    private ArrayList<Membership> memberships = new ArrayList<>();
+    private Collection<Membership> memberships;
 
+    @ApiModelProperty(notes = "events the user has saved")
+    public Collection<EventCondensed> savedEvents;
+
+    @ApiModelProperty(notes = "events the user is going to")
+    public Collection<EventCondensed> rsvpEvents;
+
+    /**
+     * Add email address
+     * @throws AddressException if email is malformed
+     */
+    void setEmailAddr(String email) throws AddressException {
+        emailAddr= Utility.getEmailAddressFromString(email);
+    }
 
     /**
      * Adds a membership to the user list of memberships

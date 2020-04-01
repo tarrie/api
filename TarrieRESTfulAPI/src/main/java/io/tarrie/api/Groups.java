@@ -1,16 +1,15 @@
 package io.tarrie.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.annotations.*;
 //import io.swagger.v3.oas.annotations.Parameter;
-import io.tarrie.api.model.consumes.AddUserToGroup;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import io.tarrie.model.consumes.AddUserToGroup;
+import io.tarrie.Utility;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.InputStream;
 
 // https://www.mkyong.com/tutorials/jax-rs-tutorials/
 //    * http://localhost:8080/api/search?query=hello
@@ -24,7 +23,7 @@ public class Groups {
 
   /**
    * Adds a member to a group
-   *
+   *https://github.com/swagger-api/swagger-core/wiki/annotations
    * @return
    * @throws IOException
    */
@@ -40,14 +39,20 @@ public class Groups {
         @ApiResponse(code = 500, message = "Internal Error")
       })
   public Response addMemberToGroup(
-          AddUserToGroup addUserToGroup) {
-    System.out.println(addUserToGroup.groupId);
-
-    System.out.println("hefh");
-    System.out.println(addUserToGroup);
-
-
+          AddUserToGroup addUserToGroup) throws JsonProcessingException {
+    System.out.println(addUserToGroup.adminUserId);
+    System.out.println(Utility.pojoToJson(addUserToGroup));
 
     return Response.status(200).entity("SUCCESS").build();
   }
+
+  /*
+  public Response doSomething(@Context HttpHeaders headers) {
+    String accept = headers.getMediaType()
+    List<MediaType> acceptableType = headers.getAcceptableMediaTypes();
+    MediaType.
+
+            image/gif, image/jpg, image/jpeg, image/png,
+  }
+  */
 }

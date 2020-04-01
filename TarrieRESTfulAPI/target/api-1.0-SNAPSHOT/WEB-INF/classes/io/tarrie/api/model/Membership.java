@@ -2,8 +2,11 @@ package io.tarrie.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.tarrie.api.model.constants.CharacterLimit;
+import io.tarrie.api.model.constants.MembershipType;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @ApiModel(description="Indicates the membership type a `user' has with a Group")
 public class Membership {
@@ -13,26 +16,22 @@ public class Membership {
 
     @ApiModelProperty(notes = "The name of the  user")
     @NotNull
-    public UserName userName;
+    @Size(min=1, max= CharacterLimit.SMALL)
+    public String userName;
 
     @ApiModelProperty(notes = "The profile img of the user")
     public ProfileImg userProfileImg;
 
-    @ApiModelProperty(notes = "Membership Type of User",allowableValues = "Owner, Admin, Club, Subscriber",example = "Subscriber",  required = true, position = 0)
-    public MemType memType;
+    @ApiModelProperty(notes = "Membership Type of User",allowableValues = "Owner, Admin, Member, Follower",example = "Subscriber",  required = true, position = 0)
+    public MembershipType memType;
 
-    @ApiModel
-    public enum MemType{
-        Owner, Admin, Club, Subscriber
-    }
+
 
     @ApiModelProperty(notes = "identifier the group that user is associated to",  required = true)
     public String groupId;
 
     @ApiModelProperty(notes = "The profile img of the group")
     public ProfileImg groupProfileImg;
-
-
 
 
 }

@@ -2,8 +2,10 @@ package io.tarrie.api.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.tarrie.api.model.constants.CharacterLimit;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,16 +17,25 @@ import java.util.Collection;
 public abstract class Entity {
 
     @ApiModelProperty(notes = "The unique identifier for the entity", example = "xr563",  required = true, position = 0)
+    @Size(min=1, max= CharacterLimit.SMALL)
     private String id;
+
+    @ApiModelProperty(notes = "The name of the entity", example = "Becky")
+    @NotNull
+    @Size(min=1, max= CharacterLimit.SMALL)
+    private String name;
 
     @ApiModelProperty(notes = "url on S3 that holds the entities profile picture")
     @NotNull
-    private ProfileImg profileImg;
+    private ProfileImg profileImgUrl;
 
     @ApiModelProperty(notes = "The events that the entity is hosting")
     @NotNull
-    private ArrayList<Event> hostedEvents = new ArrayList<>();
+    private Collection<Event> hostedEvents;
 
+    @ApiModelProperty(notes = "The contacts of the entity")
+    @NotNull
+    private Collection<Entity> contacts;
     // The constructor.
     public Entity(String id){
         this.id = id;
@@ -50,7 +61,7 @@ public abstract class Entity {
      * Gets the list of events for the entity.
      * @return
      */
-    public ArrayList<Event> getHostedEvents() {
+    public Collection<Event> getHostedEvents() {
         return hostedEvents;
     }
 
@@ -59,7 +70,7 @@ public abstract class Entity {
      * @param profileImgUrl
      */
     public void setProfileImgUrl(String profileImgUrl) throws MalformedURLException {
-        this.profileImg = new ProfileImg(profileImgUrl);
+        this.profileImgUrl = new ProfileImg(profileImgUrl);
     }
 
     /**
@@ -67,7 +78,7 @@ public abstract class Entity {
      * @return
      */
     public String getProfileImgUrl() {
-        return profileImg.toString();
+        return profileImgUrl.toString();
     }
 
     /**

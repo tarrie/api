@@ -6,22 +6,19 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
-@ApiModel(description = "NKD MVD")
+@ApiModel
 public class AddUserToGroup {
 
+    @ApiModelProperty(value = "The ID of the user who is initiating the `AddUserToGroup' request")
     @NotNull
-    @ApiModelProperty(value = "The ID of the user who is initiating the `AddUserToGroup' request", example = "1", required = true, position = 0)
-    public String userId;
+    public String adminUserId;
 
-    @ApiModelProperty(value = "The ID of the group that the new people will be in")
-    @NotNull
-    public String groupId;
 
-    @ApiModelProperty(value = "The IDs of the Users will be in")
+    @ApiModelProperty(value = "The IDs of the users to add")
     public Collection<String> newUserIds;
 
     @Override
     public String toString() {
-        return "AddUserToGroup [userId=" + userId + ", groupId=" + groupId + ", newUserIds="+ newUserIds.toString()+"]";
+        return "AddUserToGroup [adminUserId=" + adminUserId  + ", newUserIds="+ newUserIds.toString()+"]";
     }
 }

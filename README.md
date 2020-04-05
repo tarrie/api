@@ -10,7 +10,7 @@
 - https://www.mkyong.com/webservices/jax-rs/jersey-hello-world-example/
 - https://www.mkyong.com/webservices/jax-rs/json-example-with-jersey-jackson/
 - https://github.com/swagger-api/swagger-core/wiki/Swagger-Core-Jersey-1.X-Project-Setup-1.5#hooking-up-swagger-core-in-your-application
-
+- How to live stream: https://stackoverflow.com/questions/41138454/basic-concept-on-live-streaming-video
 ## Setting up DynamoDb
 - https://aws.amazon.com/intellij/
 

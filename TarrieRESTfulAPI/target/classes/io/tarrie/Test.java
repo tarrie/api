@@ -1,41 +1,98 @@
 package io.tarrie;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import io.tarrie.controller.Controller;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.database.contants.ImgTypes;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.database.exceptions.TarrieGroupException;
+import io.tarrie.model.EventPrivacy;
 import io.tarrie.model.Location;
 import io.tarrie.model.condensed.UserCondensed;
+import io.tarrie.model.constants.EventVisibilityType;
+import io.tarrie.model.constants.MembershipType;
+import io.tarrie.model.consumes.CreateEvent;
 import io.tarrie.model.consumes.CreateGroup;
 import io.tarrie.model.consumes.CreateUser;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import javax.mail.internet.AddressException;
 import java.io.*;
+import java.util.HashSet;
 
 public class Test {
   public static final String userName1 = "Jake Stricht";
-  public static final String userEmail1= "jake@gmail.com";
+  public static final String userEmail1 = "jake@gmail.com";
   public static final String unformattedUserId1 = "northwestern_6960";
   public static final String formattedUserId1 = "USR#northwestern_6960";
 
   public static final String userName2 = "Becky B";
-  public static final String userEmail2= "beck2020@u.northwestern.com";
+  public static final String userEmail2 = "beck2020@u.northwestern.com";
   public static final String unformattedUserId2 = "beckb_triDelt";
   public static final String formattedUserId2 = "USR#beckb_triDelt";
 
   public static final String groupId1 = "boogoParty33333";
   public static final String formattedGroupId1 = "GRP#boogoParty33333";
 
-  public static void main(String[] args) throws AddressException, IOException, MalformedInputException, TarrieGroupException {
-    //createDummyUsers();
-    //createDummyGroup();
-    //createDummyFollowers();
+  public static void main(String[] args)
+      throws AddressException, IOException, MalformedInputException, TarrieGroupException {
+    // createDummyUsers();
+    // createDummyGroup();
+    // createDummyFollowers();
     // createDummyContacts();
+
     // joinDummyGroup();
-    //uploadDummyImg();
-     //promoteToAdmin();
-    demoteFromAdmin();
+    // uploadDummyImg();
+    // promoteToAdmin();
+    // demoteFromAdmin();
+
+    createDummyEvent();
+
+  }
+
+  static void createDummyEvent() throws MalformedInputException {
+
+    HashSet<String> coordinators = new HashSet<>();
+    coordinators.add(formattedUserId2);
+
+    HashSet<String> invitedEntityIds = new HashSet<>();
+    invitedEntityIds.add(formattedGroupId1);
+
+    Location loc = new Location();
+    loc.setZipCode(60201);
+    loc.setCity("Evanston");
+    loc.setState("IL");
+    loc.setLocName("Northwestern University");
+    loc.setLine1("Kellogg Global Hub");
+
+    EventPrivacy eventPrivacy = new EventPrivacy();
+    eventPrivacy.setInvitable(true);
+    eventPrivacy.setVisibilityType(EventVisibilityType.Public.toString());
+
+    HashSet<String> hashTags = new HashSet<>();
+    hashTags.add("#yeet");
+    hashTags.add("#yeetcode");
+
+    //DateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute, int millisOfSecond)
+    String _startTime = new DateTime(2020, 12, 25, 12, 0, 0, 0).withZone(DateTimeZone.UTC).toDateTimeISO().toString();
+    String _endTime = new DateTime(2020, 12, 28, 12, 0, 0, 0).withZone(DateTimeZone.UTC).toDateTimeISO().toString();
+
+
+    CreateEvent createEvent = new CreateEvent();
+    createEvent.setName("**BoogoParty**");
+    createEvent.setCoordinators(coordinators);
+    createEvent.setCreatorId(formattedUserId2);
+    createEvent.setEventPrivacy(eventPrivacy);
+    createEvent.setLocation(loc);
+    createEvent.setLinkSharing(true);
+    createEvent.setInvitedEntityIds(invitedEntityIds);
+    createEvent.setBio("Libpusm labrum et al took tokk leetzial");
+    createEvent.setHashTags(hashTags);
+    createEvent.setStartTime(_startTime);
+    createEvent.setEndTime(_endTime);
+
+    Controller.createEvent(createEvent);
 
   }
 
@@ -60,9 +117,9 @@ public class Test {
     owner.setName(userName1);
 
     Location loc = new Location();
-    loc.city="Evanston";
-    loc.state="IL";
-    loc.locName="Northwestern University";
+    loc.city = "Evanston";
+    loc.state = "IL";
+    loc.locName = "Northwestern University";
 
     CreateGroup group = new CreateGroup();
     group.setGroupId(groupId1);
@@ -76,54 +133,58 @@ public class Test {
 
   static void createDummyFollowers() throws MalformedInputException {
     // group1 is following user2
-    Controller.followEntity(formattedGroupId1,formattedUserId2);
+    Controller.followEntity(formattedGroupId1, formattedUserId2);
 
     // user2 is following group1
-    Controller.followEntity(formattedUserId2,formattedGroupId1);
+    Controller.followEntity(formattedUserId2, formattedGroupId1);
 
     // user2 is following user1
-    Controller.followEntity(formattedUserId2,formattedUserId1);
-
+    Controller.followEntity(formattedUserId2, formattedUserId1);
   }
 
   static void createDummyContacts() throws MalformedInputException {
     // group1 is following user2
-    Controller.addContact(formattedGroupId1,formattedUserId2);
+    Controller.addContact(formattedGroupId1, formattedUserId2);
 
     // user2 is following group1
-    Controller.addContact(formattedUserId2,formattedGroupId1);
+    Controller.addContact(formattedUserId2, formattedGroupId1);
 
     // user2 is following user1
-    Controller.addContact(formattedUserId2,formattedUserId1);
+    Controller.addContact(formattedUserId2, formattedUserId1);
   }
 
   static void joinDummyGroup() throws MalformedInputException {
-    Controller.joinGroup(formattedUserId2,formattedGroupId1);
+    Controller.joinGroup(formattedUserId2, formattedGroupId1);
   }
 
   static void promoteToAdmin() throws MalformedInputException, TarrieGroupException {
     String owner = formattedUserId1;
     String user = formattedUserId2;
     String group = formattedGroupId1;
-    Controller.promoteUserToAdmin(owner, user,group );
+    Controller.promoteUserToAdmin(owner, user, group);
   }
 
-static void demoteFromAdmin() throws MalformedInputException, TarrieGroupException {
-  String owner = formattedUserId1;
-  String user = formattedUserId2;
-  String group = formattedGroupId1;
-  Controller.demoteGroupAdmin(owner, user,group );
-}
+  static void demoteFromAdmin() throws MalformedInputException, TarrieGroupException {
+    String owner = formattedUserId1;
+    String user = formattedUserId2;
+    String group = formattedGroupId1;
+    Controller.demoteUserFromAdmin(owner, user, group);
+  }
 
+  static void transferGroupOwnerShip()  throws MalformedInputException, TarrieGroupException{
+    String owner = formattedUserId1;
+    String user = formattedUserId2;
+    String group = formattedGroupId1;
+    Controller.transferGroupOwner(owner , user, group, MembershipType.NULL);
+  }
 
   static void uploadDummyImg() throws IOException, MalformedInputException {
     File dummyImg = new File("../pictures/coolpic.jpeg");
     InputStream is = new FileInputStream(dummyImg);
-    Controller.uploadProfileImg(is, ImgTypes.JPEG,formattedGroupId1);
+    Controller.uploadProfileImg(is, ImgTypes.JPEG, formattedGroupId1);
 
     dummyImg = new File("../pictures/dancing80s.gif");
     is = new FileInputStream(dummyImg);
-    Controller.uploadProfileImg(is, ImgTypes.GIF,formattedUserId1);
-
+    Controller.uploadProfileImg(is, ImgTypes.GIF, formattedUserId1);
   }
 }

@@ -1,9 +1,6 @@
 package io.tarrie.model.messages.invitesAndRequests;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.model.Entity;
@@ -22,6 +19,17 @@ public class From {
     private String hasSeenAndTimeStamp;
     private Group groupInfo;
 
+    @DynamoDBHashKey(attributeName = DbAttributes.HASH_KEY)
+    public String getReceiverId() {
+        return receiverId;
+    }
+
+    // String.format("%s#%s","FROM", timeStamp)
+    @DynamoDBRangeKey(attributeName=DbAttributes.SORT_KEY)
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
     @DynamoDBAttribute(attributeName = DbAttributes.TEXT_MSG)
     public TextMessage getTextMessage() { return textMessage; }
 
@@ -35,17 +43,6 @@ public class From {
 
     @DynamoDBAttribute(attributeName =DbAttributes.SENDER_INFO)
     public Entity getSenderInfo() { return senderInfo; }
-
-    @DynamoDBHashKey(attributeName = DbAttributes.HASH_KEY)
-    public String getReceiverId() {
-        return receiverId;
-    }
-
-    // String.format("%s#%s","FROM", timeStamp)
-    @DynamoDBRangeKey(attributeName=DbAttributes.SORT_KEY)
-    public String getTimeStamp() {
-        return timeStamp;
-    }
 
     //  String.format("%d#%s",hasSeen, timeStamp)
     @DynamoDBAttribute(attributeName=DbAttributes.DATA)

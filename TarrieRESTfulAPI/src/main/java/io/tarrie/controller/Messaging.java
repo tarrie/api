@@ -11,6 +11,7 @@ import io.tarrie.model.Group;
 import io.tarrie.model.Invite;
 import io.tarrie.model.TextMessage;
 import io.tarrie.model.events.Event;
+import io.tarrie.model.messages.EntityInvited;
 import io.tarrie.model.messages.invitesAndRequests.From;
 import io.tarrie.model.messages.invitesAndRequests.To;
 
@@ -54,6 +55,7 @@ import java.time.Instant;
      * @param textMessage
      */
      static void sendMessage(MessageType messageType, Entity sender, Entity receiver, Event eventInfo, Group groupInfo, TextMessage textMessage) throws MalformedInputException {
+
          DynamoDBTransactionWriteExpression conditionExpressionForConditionCheck = new DynamoDBTransactionWriteExpression()
                  .withConditionExpression(String.format("attribute_not_exists(%s) AND attribute_not_exists(%s)", DbAttributes.HASH_KEY,DbAttributes.SORT_KEY));
 
@@ -72,27 +74,42 @@ import java.time.Instant;
 
         if ((messageType == MessageType.groupInvite)){
             transactionWriteRequest.addPut(addInvite(groupInfo,receiver),conditionExpressionForConditionCheck);
+
         }
 
         // execute transactions.
         TarrieDynamoDb.executeTransactionWrite(transactionWriteRequest);
     }
 
+     /**
+      * THe Event keeps track of everyone invited
+      * @param event
+      * @param receiver
+      * @return
+      * @throws MalformedInputException
+      */
     private static Invite addInvite(Event event, Entity receiver) throws MalformedInputException {
         if (event==null || receiver==null){
-            throw new MalformedInputException("Missing required input");
+            throw new MalformedInputException("Missing required input. Cant invite to event if reciever or event is null");
         }
 
         Invite invite = new Invite();
         invite.setEntityId(event.getId());
-        invite.setInvitedId(receiver.getId());
+        invite.setInvitedId(String.format("INVITED#%s",receiver.getId()));
 
         return invite;
     }
 
+         /**
+      * THe Group keeps track of everyone invited
+      * @param group
+      * @param receiver
+      * @return
+      * @throws MalformedInputException
+      */
     private static Invite addInvite(Group group, Entity receiver) throws MalformedInputException {
         if (group==null || receiver==null){
-            throw new MalformedInputException("Missing required input");
+            throw new MalformedInputException("Missing required input. Cant invite to group if group or reciever is null");
         }
 
         Invite invite = new Invite();

@@ -53,12 +53,16 @@ public class Utility {
         throw new MalformedInputException("Hashtags must start with (#): "+ tag);
       }
 
-      if (!(tag.matches("[a-zA-Z0-9_]+"))){
+      if (!(tag.substring(1).matches("[a-zA-Z0-9_]+"))){
         throw new MalformedInputException("Hashtags can only contain letters, numbers, and underscores (_), no special characters.:"+ tag);
       }
 
       if (!(tag.length() < CharacterLimit.MEDIUM-10)){
-        throw new MalformedInputException("Hashtags are subject to the standard "+ (CharacterLimit.MEDIUM - 10) +" characters limit");
+        throw new MalformedInputException("Hashtags are subject to the standard "+ (CharacterLimit.MEDIUM - 10) +" characters limit: "+tag);
+      }
+
+      if ((tag.length() < 2)){
+        throw new MalformedInputException("Hashtags too small less than 2 chars :"+tag);
       }
     }
   }

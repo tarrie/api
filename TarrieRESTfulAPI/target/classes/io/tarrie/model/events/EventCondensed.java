@@ -13,6 +13,7 @@ import io.tarrie.model.events.Event;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @ApiModel
@@ -30,6 +31,7 @@ public class EventCondensed{
     private Entity hostInfo;
     private Set<String> hashTags;
     private int rsvpNum;
+    private Set<String> coordinators;
 
 
     /* ********* getters ***********/
@@ -49,6 +51,12 @@ public class EventCondensed{
     @ApiModelProperty(notes = "the num of rsvps to the event")
     public int getRsvpNum() {
         return rsvpNum;
+    }
+
+    @DynamoDBAttribute(attributeName = DbAttributes.RSVP_NUM)
+    @ApiModelProperty(notes = "the id's of the coordinators of the event")
+    public Set<String> getCoordinators() {
+        return coordinators;
     }
 
     @DynamoDBAttribute(attributeName = DbAttributes.LOC)
@@ -152,4 +160,5 @@ public class EventCondensed{
         this.privacy = privacy;
     }
 
+    public void setCoordinators(Set<String> coordinators) { this.coordinators = coordinators; }
 }

@@ -2,6 +2,7 @@ package io.tarrie.controller;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import io.tarrie.database.TarrieDynamoDb;
+import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.HashTag;
 
 import java.time.Instant;
@@ -14,8 +15,10 @@ import java.util.stream.Collectors;
 class HashTags {
 
 
-    static void inputHashTag(Set<String> hashTags, String eventId){
+
+    static void inputHashTag(Set<String> hashTags, String eventId) throws MalformedInputException{
         String datetime = Instant.now().toString();
+
 
         // convert hashtags to the HashTag objects
         Set<HashTag> hashTagSet= hashTags.stream()

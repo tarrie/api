@@ -1,18 +1,25 @@
 package io.tarrie;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import io.tarrie.controller.Controller;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.database.contants.ImgTypes;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.database.exceptions.TarrieGroupException;
+import io.tarrie.model.EventPrivacy;
 import io.tarrie.model.Location;
 import io.tarrie.model.condensed.UserCondensed;
+import io.tarrie.model.constants.EventVisibilityType;
 import io.tarrie.model.constants.MembershipType;
+import io.tarrie.model.consumes.CreateEvent;
 import io.tarrie.model.consumes.CreateGroup;
 import io.tarrie.model.consumes.CreateUser;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import javax.mail.internet.AddressException;
 import java.io.*;
+import java.util.HashSet;
 
 public class Test {
   public static final String userName1 = "Jake Stricht";
@@ -39,6 +46,53 @@ public class Test {
     // uploadDummyImg();
     // promoteToAdmin();
     // demoteFromAdmin();
+
+    createDummyEvent();
+
+  }
+
+  static void createDummyEvent() throws MalformedInputException {
+
+    HashSet<String> coordinators = new HashSet<>();
+    coordinators.add(formattedUserId2);
+
+    HashSet<String> invitedEntityIds = new HashSet<>();
+    invitedEntityIds.add(formattedGroupId1);
+
+    Location loc = new Location();
+    loc.setZipCode(60201);
+    loc.setCity("Evanston");
+    loc.setState("IL");
+    loc.setLocName("Northwestern University");
+    loc.setLine1("Kellogg Global Hub");
+
+    EventPrivacy eventPrivacy = new EventPrivacy();
+    eventPrivacy.setInvitable(true);
+    eventPrivacy.setVisibilityType(EventVisibilityType.Public.toString());
+
+    HashSet<String> hashTags = new HashSet<>();
+    hashTags.add("#yeet");
+    hashTags.add("#yeetcode");
+
+    //DateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute, int millisOfSecond)
+    String _startTime = new DateTime(2020, 12, 25, 12, 0, 0, 0).withZone(DateTimeZone.UTC).toDateTimeISO().toString();
+    String _endTime = new DateTime(2020, 12, 28, 12, 0, 0, 0).withZone(DateTimeZone.UTC).toDateTimeISO().toString();
+
+
+    CreateEvent createEvent = new CreateEvent();
+    createEvent.setName("**BoogoParty**");
+    createEvent.setCoordinators(coordinators);
+    createEvent.setCreatorId(formattedUserId2);
+    createEvent.setEventPrivacy(eventPrivacy);
+    createEvent.setLocation(loc);
+    createEvent.setLinkSharing(true);
+    createEvent.setInvitedEntityIds(invitedEntityIds);
+    createEvent.setBio("Libpusm labrum et al took tokk leetzial");
+    createEvent.setHashTags(hashTags);
+    createEvent.setStartTime(_startTime);
+    createEvent.setEndTime(_endTime);
+
+    Controller.createEvent(createEvent);
 
   }
 

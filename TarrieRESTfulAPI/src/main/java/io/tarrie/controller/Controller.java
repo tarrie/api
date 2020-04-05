@@ -22,6 +22,7 @@ import io.tarrie.database.TarrieS3;
 import io.tarrie.database.contants.*;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.events.Event;
+import io.tarrie.model.events.EventCondensed;
 import io.tarrie.model.events.HostEvent;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -118,6 +119,7 @@ public class Controller {
         "USR#becky_b1998",
         "what's good?");*/
   }
+
 
   /**
    * Checks if a tarrieId is unique
@@ -218,13 +220,24 @@ public class Controller {
     /**
      * Creates a tarrie event
      */
-    public void createEvent(CreateEvent createEvent) throws MalformedInputException{
+    public static Event createEvent(CreateEvent createEvent) throws MalformedInputException{
         String creatorType = Utility.getEntityType(createEvent.getCreatorId());
+
+        // Consistency checks
         if (creatorType.equals(EntityType.EVENT))
             throw new MalformedInputException("Illegal logic, a event can't create another event");
         if (createEvent.getHashTags().size()> DbConstants.HASH_TAG_PER_EVENT)
             throw new MalformedInputException("Only "+(DbConstants.HASH_TAG_PER_EVENT)+ "hashtags allowed in event");
-
+        if (!(TarrieDynamoDb.doesItemExist(createEvent.getCreatorId()))){
+          throw new MalformedInputException("event creator does not exist: "+ createEvent.getCreatorId());
+        }
+        if ((createEvent.getStartTime()!=null) &&(createEvent.getEndTime()!=null)){
+            DateTime _startTime = new DateTime( createEvent.getStartTime()) ;
+            DateTime _endTime = new DateTime( createEvent.getEndTime()) ;
+            if (!_startTime.isBefore(_endTime)){
+                throw new MalformedInputException("start time needs to be before endtime");
+            }
+        }
 
         // format the event id -- will be uploaded to DynamoDb
         String eventId = String.format("%s#%s",EntityType.EVENT, Utility.generateUniqueId());
@@ -233,6 +246,7 @@ public class Controller {
 
         // load the info of the creator of the event - queried from DynamoDb
         DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
+        //System.out.println(createEvent.getCreatorId());
         Entity creator  = mapper.load(Entity.class,createEvent.getCreatorId(),createEvent.getCreatorId());
 
         // reduced host info
@@ -256,13 +270,13 @@ public class Controller {
         hostEvent.setImgPath(createEvent.getImgPath());
         hostEvent.setLoc(createEvent.getLocation());
         hostEvent.setName(createEvent.getName());
-        hostEvent.setHostInfo(hostInfo);
         mapper.save(hostEvent);
 
         // create the actual event object -- will be uploaded to DynamoDb
         Event newEvent = new Event();
         newEvent.setId(eventId);
         newEvent.setIdCopy(eventId);
+        newEvent.setCoordinators(createEvent.getCoordinators());
         newEvent.setBio(createEvent.getBio());
         newEvent.setEndTime(createEvent.getEndTime());
         newEvent.setStartTime(createEvent.getStartTime());
@@ -276,6 +290,7 @@ public class Controller {
         newEvent.setRsvpNum(creatorType.equals(EntityType.USER)? 1 : 0);
         mapper.save(newEvent);
 
+        // this is what the server gives back to the client
         Event eventCondensed = new Event();
         eventCondensed.setId(eventId);
         eventCondensed.setEndTime(createEvent.getEndTime());
@@ -284,21 +299,18 @@ public class Controller {
         eventCondensed.setLoc(createEvent.getLocation());
         eventCondensed.setName(createEvent.getName());
 
-        // invite the entities in the list
+        // invite the entities in the list - ToDo: Make this a thread
         for (String id: createEvent.getInvitedEntityIds()){
-            Messaging.sendEventInvite(hostInfo, mapper.load(Entity.class,id,id),eventCondensed, null);
+            Entity invitedEntity = mapper.load(Entity.class,id,id);
+            Messaging.sendEventInvite(hostInfo, invitedEntity,eventCondensed, null);
         }
-
-
-
 
         // generate the hashtag entries.
         HashTags.inputHashTag(hashTagSet,eventId );
+
+        return eventCondensed;
     }
 
-    public void inviteEntitiesToEvent(String inviterId, List<String> invitees){
-
-    }
 
     /**
    * Uploads a profile image to S3 and the resultant path to DynamoDb

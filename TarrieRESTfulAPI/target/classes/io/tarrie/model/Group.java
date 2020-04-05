@@ -18,6 +18,7 @@ import java.util.Set;
 
 @DynamoDBTable(tableName = DbConstants.BASE_TABLE)
 @ApiModel(description="A Tarrie group organization")
+@DynamoDBDocument
 public class Group {
 
     private String idCopy;

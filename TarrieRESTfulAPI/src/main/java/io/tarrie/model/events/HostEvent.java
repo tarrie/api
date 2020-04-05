@@ -1,9 +1,6 @@
 package io.tarrie.model.events;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import io.swagger.annotations.ApiModel;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
@@ -15,7 +12,7 @@ import java.util.Set;
 
 @DynamoDBTable(tableName = DbConstants.BASE_TABLE)
 @ApiModel(description="This is what saved under the the creator of the event. ")
-public class HostEvent extends Event {
+public class HostEvent{
     private String hostId;
     private String eventId;
     private String startTime;
@@ -40,75 +37,76 @@ public class HostEvent extends Event {
         return eventId;
     }
 
-    @Override
+
     @DynamoDBAttribute(attributeName = DbAttributes.EVENT_COORDINATORS)
     public Set<String> getCoordinators() {
         return coordinators;
     }
 
-    @Override
+
     @DynamoDBAttribute(attributeName = DbAttributes.START_TIME)
     public String getStartTime() {
         return startTime;
     }
 
-    @Override
+
+    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
     @DynamoDBAttribute(attributeName = DbAttributes.HOST_INFO)
     public Entity getHostInfo() {
         return hostInfo;
     }
 
-    @Override
+
     @DynamoDBAttribute(attributeName = DbAttributes.END_TIME)
     public String getEndTime() {
         return endTime;
     }
 
-    @Override
+
     @DynamoDBAttribute(attributeName = DbAttributes.NAME)
     public String getName() {
         return name;
     }
 
-    @Override
+
     @DynamoDBAttribute(attributeName = DbAttributes.IMG_PATH)
     public String getImgPath() {
         return imgPath;
     }
 
-    @Override
+
     @DynamoDBAttribute(attributeName = DbAttributes.LOC)
     public Location getLoc() {
         return loc;
     }
 
     /* ********** Setters *************/
-    @Override
+
     public void setName(String name) {
         this.name = name;
     }
 
-    @Override
+
     public void setImgPath(String imgPath) {
         this.imgPath = imgPath;
     }
 
-    @Override
+
     public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 
-    @Override
+
     public void setHostInfo(Entity hostInfo) {
         this.hostInfo = hostInfo;
     }
 
-    @Override
+
     public void setLoc(Location loc) {
         this.loc = loc;
     }
 
-    @Override
+
     public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
@@ -121,7 +119,7 @@ public class HostEvent extends Event {
         this.hostId = hostId;
     }
 
-    @Override
+
     public void setCoordinators(Set<String> coordinators) {
         this.coordinators = coordinators;
     }

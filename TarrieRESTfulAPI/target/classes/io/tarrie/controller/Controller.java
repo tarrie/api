@@ -1,11 +1,14 @@
 package io.tarrie.controller;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.S3Link;
 import com.amazonaws.services.dynamodbv2.datamodeling.TransactionWriteRequest;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import io.tarrie.Utility;
 import io.tarrie.database.exceptions.TarrieGroupException;
@@ -214,8 +217,27 @@ public class Controller {
     }
 
 
+    /**
+     * List Events hosted by a entity
+     * @param entityId
+     * @return a list of events hosted by
+     */
+    public static List<HostEvent> getHostedEvents(String entityId) {
+        // load the info of the creator of the event - queried from DynamoDb
+        DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
 
+        Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+        expressionAttributeValues.put(":hashKey_value", new AttributeValue().withS(entityId));
+        expressionAttributeValues.put(":hosting_prefix", new AttributeValue().withS("HOST"));
 
+        // Based on https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.KeyConditions.html
+        DynamoDBQueryExpression<HostEvent> queryExpression = new DynamoDBQueryExpression<HostEvent>()
+                .withKeyConditionExpression(String.format("%s = :hashKey_value AND begins_with(%s, :hosting_prefix)", DbAttributes.HASH_KEY,DbAttributes.SORT_KEY))
+                .withExpressionAttributeValues(expressionAttributeValues);
+
+        return mapper.query(HostEvent.class,queryExpression);
+
+    }
 
     /**
      * Creates a tarrie event
@@ -483,6 +505,7 @@ public class Controller {
         // execute transaction
         TarrieDynamoDb.executeTransactionWrite(transactionWriteRequest);
     }
+
 
     /**
      * Follow a entity the connectionId must be of type user or event.

@@ -44,7 +44,7 @@ public class HostEvent{
     }
 
 
-    @DynamoDBAttribute(attributeName = DbAttributes.START_TIME)
+    @DynamoDBAttribute(attributeName = DbAttributes.DATA) //so we can sort on start time
     public String getStartTime() {
         return startTime;
     }
@@ -119,8 +119,8 @@ public class HostEvent{
         this.hostId = hostId;
     }
 
-
     public void setCoordinators(Set<String> coordinators) {
         this.coordinators = coordinators;
     }
+
 }

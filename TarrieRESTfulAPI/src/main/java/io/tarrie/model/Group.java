@@ -1,7 +1,6 @@
 package io.tarrie.model;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.sun.codemodel.internal.util.UnicodeEscapeWriter;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.tarrie.database.contants.DbAttributes;

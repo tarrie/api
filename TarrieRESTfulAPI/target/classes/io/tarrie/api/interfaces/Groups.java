@@ -63,6 +63,7 @@ public interface Groups {
      * @param userId id of user making request
      * @return subset of groupIds that exist in Tarrie
      */
+    /*
     @ApiOperation(value = "Check if a collection of groups exist. Returns the list of groupIds that exist from query")
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
@@ -77,12 +78,13 @@ public interface Groups {
     Response eventExists(@ApiParam(name = "groupId", value = "The groupId")
                          @QueryParam("groupId")
                                  Collection<String> groupIds, UserId userId);
-
+*/
     /**
      * Gets a group
      * @param userId userId of the requester
      * @return pojo that represents a group
      */
+    /*
     @ApiOperation(value = "Gets a group")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -96,7 +98,7 @@ public interface Groups {
     @GET
     Response getGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
                       @QueryParam("groupId") Collection<String> groupIds, UserId userId);
-
+*/
 
   /**
    * Edits a group. Note: Only a admin or a owner can edit a group
@@ -104,6 +106,7 @@ public interface Groups {
    * @param editGroup pojo of editable items
    * @return the group w/ new edits reflected
    */
+  /*
   @Path("{groupId}")
   @ApiOperation(value = "Edit group")
   @PUT
@@ -122,6 +125,7 @@ public interface Groups {
   Response editGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
                      @PathParam("groupId") String groupId,
                      EditGroup editGroup);
+*/
 
   /**
    * Adds user['s] to a group as group member. <br>
@@ -130,6 +134,7 @@ public interface Groups {
    * @param addUserToGroup  pojo that the caller has to fill out as payload
    * @return the list of users that have been successfully added
    */
+  /*
   @Path("{groupId}/members")
   @ApiOperation(value = "Adds a user to a group as a member.")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -146,7 +151,7 @@ public interface Groups {
   @PUT
   Response addUserToGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
                           @PathParam("groupId") String groupId, AddUserToGroup addUserToGroup);
-
+*/
 
   /**
    * Deletes a user from a group <br>
@@ -162,6 +167,7 @@ public interface Groups {
    * @param deletedUserId id of the user that's going to be deleted
    * @return http response
    */
+  /*
   @Path("{groupId}/{userId}")
   @ApiResponses(
       value = {
@@ -179,7 +185,7 @@ public interface Groups {
                                @ApiParam(name = "userId", value = "ID of user to be deleted from group", required = true)
                                @PathParam("userId") String deletedUserId,
                                UserId adminUserId);
-
+*/
   /**
    * Create a Tarrie group. <br>
    * Note: Only a user can create a group
@@ -187,6 +193,7 @@ public interface Groups {
    * @param createGroup pojo input payload
    * @return response
    */
+  /*
   @ApiOperation(value = "Creates a group")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
@@ -199,6 +206,7 @@ public interface Groups {
       })
   @POST
   Response createGroup(CreateGroup createGroup);
+    */
 
   /**
    * Change membership type of existing group member
@@ -206,6 +214,7 @@ public interface Groups {
    * @param changeMembershipGroup
    * @return
    */
+  /*
   @ApiOperation(value = "Change membership of a group member")
   @Path("{groupId}/members/{userId}")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -223,7 +232,7 @@ public interface Groups {
                             @ApiParam(name = "userId", value = "ID of user having membership adjusted", required = true)
                             @PathParam("userId") String changedUserId,
                             ChangeMembershipGroup changeMembershipGroup);
-
+*/
 
   /**
    * Delete a group. Note: Only the owner of the group can delete the group
@@ -232,6 +241,7 @@ public interface Groups {
    * @param groupId id of group to be deleted
    * @return
    */
+  /*
   @ApiOperation(value = "Deletes a group")
   @Path("{groupId}")
   @DELETE
@@ -246,6 +256,7 @@ public interface Groups {
       })
   Response deleteGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
                        @PathParam("groupId") String groupId, UserId ownerUserId);
+    */
 
   /* ******************* Events *************/
 
@@ -257,6 +268,7 @@ public interface Groups {
    * @param userId userId userId of the requester
    * @return pojo that represents a event
    */
+  /*
   @ApiOperation(value = "Get a event a group is hosting")
   @Path("{groupId}/events/{eventId}")
   @GET
@@ -270,6 +282,8 @@ public interface Groups {
         @ApiResponse(code = 500, message = "Internal server error")
       })
   Response getEvent(UserId userId);
+   */
+
 
     /**
      * List events thrown by group

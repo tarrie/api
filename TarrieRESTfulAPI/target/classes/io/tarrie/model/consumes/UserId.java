@@ -8,7 +8,16 @@ import javax.validation.constraints.NotNull;
 @ApiModel
 public class UserId {
 
+
+    private String userId;
+
     @ApiModelProperty(value = "The id of the user")
     @NotNull
-    public String userId;
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

@@ -47,7 +47,8 @@ public class Test {
     // promoteToAdmin();
     // demoteFromAdmin();
 
-    createDummyEvent();
+    //createDummyEvent();
+    listEventsForEntity();
 
   }
 
@@ -57,7 +58,7 @@ public class Test {
     coordinators.add(formattedUserId2);
 
     HashSet<String> invitedEntityIds = new HashSet<>();
-    invitedEntityIds.add(formattedGroupId1);
+    invitedEntityIds.add(formattedUserId1);
 
     Location loc = new Location();
     loc.setZipCode(60201);
@@ -80,9 +81,9 @@ public class Test {
 
 
     CreateEvent createEvent = new CreateEvent();
-    createEvent.setName("**BoogoParty**");
+    createEvent.setName("**BoogoParty**2");
     createEvent.setCoordinators(coordinators);
-    createEvent.setCreatorId(formattedUserId2);
+    createEvent.setCreatorId(formattedGroupId1);
     createEvent.setEventPrivacy(eventPrivacy);
     createEvent.setLocation(loc);
     createEvent.setLinkSharing(true);
@@ -186,5 +187,9 @@ public class Test {
     dummyImg = new File("../pictures/dancing80s.gif");
     is = new FileInputStream(dummyImg);
     Controller.uploadProfileImg(is, ImgTypes.GIF, formattedUserId1);
+  }
+
+  static void listEventsForEntity(){
+    Controller.getHostedEvents(formattedGroupId1);
   }
 }

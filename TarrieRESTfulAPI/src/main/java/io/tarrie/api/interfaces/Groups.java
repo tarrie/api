@@ -1,5 +1,7 @@
 package io.tarrie.api.interfaces;
 
+import com.sun.jersey.multipart.FormDataBodyPart;
+import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.annotations.*;
 import io.tarrie.model.events.Event;
 import io.tarrie.model.consumes.UserId;
@@ -13,6 +15,8 @@ import javax.ws.rs.core.Response;
 import java.util.Collection;
 
 /**
+ *
+ *
  * <ul>
  *   <li>[] create group
  *   <li>[{groupId}] get a group by group id
@@ -57,105 +61,109 @@ import java.util.Collection;
 @Path("/groups")
 public interface Groups {
 
-    /**
-     * Check if a collection of groups actually exist in tarrie
-     * @param groupIds collection of groupIds to check
-     * @param userId id of user making request
-     * @return subset of groupIds that exist in Tarrie
-     */
-    /*
-    @ApiOperation(value = "Check if a collection of groups exist. Returns the list of groupIds that exist from query")
-    @GET
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/exists")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 201, message = "OK",responseContainer = "List",response = GroupId.class),
-                    @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
-                    @ApiResponse(code = 500, message = "Internal server error")
-            })
-    Response eventExists(@ApiParam(name = "groupId", value = "The groupId")
-                         @QueryParam("groupId")
-                                 Collection<String> groupIds, UserId userId);
-*/
-    /**
-     * Gets a group
-     * @param userId userId of the requester
-     * @return pojo that represents a group
-     */
-    /*
-    @ApiOperation(value = "Gets a group")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiResponses(
-            value = {
-                    @ApiResponse(code = 200, message = "OK", response = Groups.class),
-                    @ApiResponse(code = 404, message = "Group does not exist"),
-                    @ApiResponse(code = 401, message = "Not authorized"),
-                    @ApiResponse(code = 500, message = "Internal server error")
-            })
-    @GET
-    Response getGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
-                      @QueryParam("groupId") Collection<String> groupIds, UserId userId);
-*/
+  /**
+   * Check if a collection of groups actually exist in tarrie
+   *
+   * @param groupIds collection of groupIds to check
+   * @param userId id of user making request
+   * @return subset of groupIds that exist in Tarrie
+   */
+  /*
+      @ApiOperation(value = "Check if a collection of groups exist. Returns the list of groupIds that exist from query")
+      @GET
+      @Consumes(MediaType.APPLICATION_JSON)
+      @Produces(MediaType.APPLICATION_JSON)
+      @Path("/exists")
+      @ApiResponses(
+              value = {
+                      @ApiResponse(code = 201, message = "OK",responseContainer = "List",response = GroupId.class),
+                      @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+                      @ApiResponse(code = 500, message = "Internal server error")
+              })
+      Response eventExists(@ApiParam(name = "groupId", value = "The groupId")
+                           @QueryParam("groupId")
+                                   Collection<String> groupIds, UserId userId);
+  */
+  /**
+   * Gets a group
+   *
+   * @param userId userId of the requester
+   * @return pojo that represents a group
+   */
+  /*
+      @ApiOperation(value = "Gets a group")
+      @Consumes(MediaType.APPLICATION_JSON)
+      @Produces(MediaType.APPLICATION_JSON)
+      @ApiResponses(
+              value = {
+                      @ApiResponse(code = 200, message = "OK", response = Groups.class),
+                      @ApiResponse(code = 404, message = "Group does not exist"),
+                      @ApiResponse(code = 401, message = "Not authorized"),
+                      @ApiResponse(code = 500, message = "Internal server error")
+              })
+      @GET
+      Response getGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
+                        @QueryParam("groupId") Collection<String> groupIds, UserId userId);
+  */
 
   /**
    * Edits a group. Note: Only a admin or a owner can edit a group
+   *
    * @param groupId id of group to edit
    * @param editGroup pojo of editable items
    * @return the group w/ new edits reflected
    */
   /*
-  @Path("{groupId}")
-  @ApiOperation(value = "Edit group")
-  @PUT
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @ApiResponses(
-          value = {
-                  @ApiResponse(
-                          code = 200,
-                          message = "OK",
-                          response = GroupCondensed.class),
-                  @ApiResponse(code = 404, message = "Group does not exist"),
-                  @ApiResponse(code = 401, message = "User unauthorized to edit group"),
-                  @ApiResponse(code = 500, message = "Internal server error")
-          })
-  Response editGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
-                     @PathParam("groupId") String groupId,
-                     EditGroup editGroup);
-*/
+    @Path("{groupId}")
+    @ApiOperation(value = "Edit group")
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            code = 200,
+                            message = "OK",
+                            response = GroupCondensed.class),
+                    @ApiResponse(code = 404, message = "Group does not exist"),
+                    @ApiResponse(code = 401, message = "User unauthorized to edit group"),
+                    @ApiResponse(code = 500, message = "Internal server error")
+            })
+    Response editGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
+                       @PathParam("groupId") String groupId,
+                       EditGroup editGroup);
+  */
 
   /**
    * Adds user['s] to a group as group member. <br>
    * Invariant: Only Admin's or the owner can add user's to group
    *
-   * @param addUserToGroup  pojo that the caller has to fill out as payload
+   * @param addUserToGroup pojo that the caller has to fill out as payload
    * @return the list of users that have been successfully added
    */
   /*
-  @Path("{groupId}/members")
-  @ApiOperation(value = "Adds a user to a group as a member.")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @ApiResponses(
-      value = {
-              @ApiResponse(
-                      code = 200,
-                      message = "OK"),
-        @ApiResponse(code = 404, message = "User does not exist"),
-        @ApiResponse(code = 401, message = "User unauthorized to add member"),
-        @ApiResponse(code = 500, message = "Internal server error")
-      })
-  @PUT
-  Response addUserToGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
-                          @PathParam("groupId") String groupId, AddUserToGroup addUserToGroup);
-*/
+    @Path("{groupId}/members")
+    @ApiOperation(value = "Adds a user to a group as a member.")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiResponses(
+        value = {
+                @ApiResponse(
+                        code = 200,
+                        message = "OK"),
+          @ApiResponse(code = 404, message = "User does not exist"),
+          @ApiResponse(code = 401, message = "User unauthorized to add member"),
+          @ApiResponse(code = 500, message = "Internal server error")
+        })
+    @PUT
+    Response addUserToGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
+                            @PathParam("groupId") String groupId, AddUserToGroup addUserToGroup);
+  */
 
   /**
    * Deletes a user from a group <br>
    * Invariants:
+   *
    * <ul>
    *   <li>Owner can delete anyone.
    *   <li>Admin's can delete followers and members but not other Admin's or the Owner
@@ -168,24 +176,24 @@ public interface Groups {
    * @return http response
    */
   /*
-  @Path("{groupId}/{userId}")
-  @ApiResponses(
-      value = {
-        @ApiResponse(code = 200, message = "OK"),
-        @ApiResponse(code = 404, message = "User does not exist"),
-        @ApiResponse(code = 401, message = "Not authorized"),
-        @ApiResponse(code = 500, message = "Internal server error")
-      })
-  @DELETE
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.TEXT_PLAIN)
-  @ApiOperation(value = "Deletes a user from a group")
-  Response deleteUserFromGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
-                               @PathParam("groupId") String groupId,
-                               @ApiParam(name = "userId", value = "ID of user to be deleted from group", required = true)
-                               @PathParam("userId") String deletedUserId,
-                               UserId adminUserId);
-*/
+    @Path("{groupId}/{userId}")
+    @ApiResponses(
+        value = {
+          @ApiResponse(code = 200, message = "OK"),
+          @ApiResponse(code = 404, message = "User does not exist"),
+          @ApiResponse(code = 401, message = "Not authorized"),
+          @ApiResponse(code = 500, message = "Internal server error")
+        })
+    @DELETE
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    @ApiOperation(value = "Deletes a user from a group")
+    Response deleteUserFromGroup(@ApiParam(name = "groupId", value = "ID of group", required = true)
+                                 @PathParam("groupId") String groupId,
+                                 @ApiParam(name = "userId", value = "ID of user to be deleted from group", required = true)
+                                 @PathParam("userId") String deletedUserId,
+                                 UserId adminUserId);
+  */
   /**
    * Create a Tarrie group. <br>
    * Note: Only a user can create a group
@@ -215,24 +223,24 @@ public interface Groups {
    * @return
    */
   /*
-  @ApiOperation(value = "Change membership of a group member")
-  @Path("{groupId}/members/{userId}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.TEXT_PLAIN)
-  @PUT
-  @ApiResponses(
-      value = {
-        @ApiResponse(code = 200, message = "Successful change of membership"),
-        @ApiResponse(code = 404, message = "User is not in group or does not exist"),
-        @ApiResponse(code = 401, message = "User unauthorized to change membership"),
-        @ApiResponse(code = 500, message = "Internal server error")
-      })
-  Response changeMembership(@ApiParam(name = "groupId", value = "ID of group", required = true)
-                            @PathParam("groupId") String groupId,
-                            @ApiParam(name = "userId", value = "ID of user having membership adjusted", required = true)
-                            @PathParam("userId") String changedUserId,
-                            ChangeMembershipGroup changeMembershipGroup);
-*/
+    @ApiOperation(value = "Change membership of a group member")
+    @Path("{groupId}/members/{userId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    @PUT
+    @ApiResponses(
+        value = {
+          @ApiResponse(code = 200, message = "Successful change of membership"),
+          @ApiResponse(code = 404, message = "User is not in group or does not exist"),
+          @ApiResponse(code = 401, message = "User unauthorized to change membership"),
+          @ApiResponse(code = 500, message = "Internal server error")
+        })
+    Response changeMembership(@ApiParam(name = "groupId", value = "ID of group", required = true)
+                              @PathParam("groupId") String groupId,
+                              @ApiParam(name = "userId", value = "ID of user having membership adjusted", required = true)
+                              @PathParam("userId") String changedUserId,
+                              ChangeMembershipGroup changeMembershipGroup);
+  */
 
   /**
    * Delete a group. Note: Only the owner of the group can delete the group
@@ -260,8 +268,6 @@ public interface Groups {
 
   /* ******************* Events *************/
 
-
-
   /**
    * Get a event that group is hosting
    *
@@ -284,40 +290,43 @@ public interface Groups {
   Response getEvent(UserId userId);
    */
 
+  /**
+   * List events thrown by group
+   *
+   * @param groupId id of group
+   * @param startDateTimeString (optional) query filter parameter of start time (ISO 8601 format)
+   * @param endDateTimeString (optional) query filter parameter of end time (ISO 8601 format)
+   * @param requesterUserId id of user requesting the information
+   * @return response
+   */
+  @ApiOperation(value = "List Events thrown by a group")
+  @Path("{groupId}/events")
+  @GET
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            code = 200,
+            message = "OK",
+            responseContainer = "List",
+            response = EventCondensed.class),
+        @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+        @ApiResponse(code = 401, message = "Not authorized"),
+        @ApiResponse(code = 500, message = "Internal server error")
+      })
+  Response listGroupEvents(
+      @ApiParam(name = "groupId", value = "ID of group", required = true) @PathParam("groupId")
+          String groupId,
+      @DefaultValue("-1")
+          @ApiParam(name = "startTime", value = "start time in (ISO 8601 format)")
+          @QueryParam("startTime")
+          String startDateTimeString,
+      @DefaultValue("-1")
+          @ApiParam(name = "endTime", value = "end time in (ISO 8601 format)")
+          @QueryParam("endTime")
+          String endDateTimeString,
+      UserId requesterUserId);
 
-    /**
-     * List events thrown by group
-     *
-     * @param groupId id of group
-     * @param startDateTimeString (optional) query filter parameter of start time (ISO 8601 format)
-     * @param endDateTimeString (optional) query filter parameter of end time (ISO 8601 format)
-     * @param requesterUserId id of user requesting the information
-     * @return response
-     */
-    @ApiOperation(value = "List Events thrown by a group")
-    @Path("{groupId}/events")
-    @GET
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            code = 200,
-                            message = "OK",
-                            responseContainer = "List",
-                            response = EventCondensed.class),
-                    @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
-                    @ApiResponse(code = 401, message = "Not authorized"),
-                    @ApiResponse(code = 500, message = "Internal server error")
-            })
-    Response listGroupEvents(
-            @ApiParam(name = "groupId", value = "ID of group", required = true) @PathParam("groupId")
-                    String groupId,
-            @DefaultValue("-1") @ApiParam(name = "startTime", value = "start time in (ISO 8601 format)")
-            @QueryParam("startTime")
-                    String startDateTimeString,
-            @DefaultValue("-1") @ApiParam(name = "endTime", value = "end time in (ISO 8601 format)") @QueryParam("endTime")
-                    String endDateTimeString,
-            UserId requesterUserId);
 
 }

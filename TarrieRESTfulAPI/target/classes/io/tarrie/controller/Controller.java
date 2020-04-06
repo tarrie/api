@@ -334,6 +334,7 @@ public class Controller {
     }
 
 
+    // ToDo: Make sure update all required components of w/ the new imgPath or remove the dependence
     /**
    * Uploads a profile image to S3 and the resultant path to DynamoDb
    *
@@ -343,15 +344,19 @@ public class Controller {
    * @throws IOException
    * @throws MalformedInputException
    */
-  public static void uploadProfileImg(InputStream is, String mimeType, String entityId)
+  public static String uploadProfileImg(InputStream is, String mimeType, String entityId)
       throws IOException, MalformedInputException {
 
+      String s3Url;
+
       if (TarrieDynamoDb.doesItemExist(entityId)){
-          String s3Url = TarrieS3.uploadProfileImg(is, mimeType, entityId);
+          s3Url = TarrieS3.uploadProfileImg(is, mimeType, entityId);
           TarrieDynamoDb.updateAttribute(entityId, DbAttributes.IMG_PATH, s3Url);
       }else{
           throw new MalformedInputException("entity does not exist: "+ entityId);
       }
+
+      return s3Url;
 
   }
 

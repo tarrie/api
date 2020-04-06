@@ -15,6 +15,10 @@ Reference was -https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing
 
 ***Viewing generated swagger file when server is running*** : `http://localhost:8080/swagger.json`
 
+# Configs
+- API SERVER (Alias): 'http://api.tarrie.io/'
+
+
 # References for set up
 - https://www.mkyong.com/webservices/jax-rs/jersey-hello-world-example/
 - https://www.mkyong.com/webservices/jax-rs/json-example-with-jersey-jackson/

@@ -11,6 +11,8 @@
 # Linking ElasticBeanStalk to ROUTE 53
 Follow this link after u create beanstalk instance: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-beanstalk-environment.html#routing-to-beanstalk-environment-create-alias-procedure
 
+Reference was -https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-to-beanstalk-environment.html#routing-to-beanstalk-environment-create-resource-record-set
+
 ***Viewing generated swagger file when server is running*** : `http://localhost:8080/swagger.json`
 
 # References for set up

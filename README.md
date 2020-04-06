@@ -1,7 +1,7 @@
 # Configuration
 
 # To Run 
-
+jar -cvf tarriApi.war .
 `mvn clean package tomcat7:run`
 
 ***Viewing generated swagger file when server is running*** : `http://localhost:8080/swagger.json`

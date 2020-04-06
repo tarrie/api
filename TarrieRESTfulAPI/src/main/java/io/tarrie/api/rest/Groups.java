@@ -53,8 +53,10 @@ public class Groups implements io.tarrie.api.interfaces.Groups {
       } catch (JsonProcessingException e) {
           return Response.status(500).entity("Internal Server error; could not convert pojo to json").build();
       }
-      return Response.status(200).entity(payload).build();
-
+      return Response.status(200)
+              .entity(payload)
+              .type(MediaType.APPLICATION_JSON_TYPE)
+              .build();
   }
 
   /*

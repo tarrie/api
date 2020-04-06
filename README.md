@@ -1,10 +1,16 @@
 # Configuration
 
-# To Run 
+# To Run on Local
 jar -cvf tarriApi.war .
  mvn clean compile war:war
 
 `mvn clean package tomcat7:run`
+
+# To Host on ElasticBeanStalk - Remote
+1. Set Env: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY on EB
+2. `mvn clean compile war:war`
+3. Get the war file upload to EB
+
 
 ***Viewing generated swagger file when server is running*** : `http://localhost:8080/swagger.json`
 

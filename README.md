@@ -1,9 +1,6 @@
 # Configuration
 
 # To Run on Local
-jar -cvf tarriApi.war .
- mvn clean compile war:war
-
 `mvn clean package tomcat7:run`
 
 # To Host on ElasticBeanStalk - Remote

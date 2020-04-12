@@ -80,12 +80,18 @@ public class TarrieS3 {
    * @param entityId the id of the entity for example: EVT#123xyz
    * @return IOException if can't convert inputstream to a byte array
    * @throws MalformedInputException invalid mimeType or invalid entityId
+   * @throws AmazonServiceException The call was transmitted successfully, but Amazon S3 couldn't process it, so it returned an error response
+   * @throws SdkClientException Amazon S3 couldn't be contacted for a response, or the client couldn't parse the response from Amazon S3
    */
-  public static String  uploadProfileImg(InputStream is,String mimeType, String entityId) throws MalformedInputException, IOException {
+  public static String  uploadProfileImg(InputStream is,String mimeType, String entityId) throws MalformedInputException, IOException,AmazonServiceException,SdkClientException {
     String info = String.format("{entityId:%s, mimeType:%s}",entityId, mimeType );
 
     // check if mimeType is in required types
     if (!(ImgTypes.ACCEPTABLE_MIME_IMAGES.contains(mimeType))){
+      throw new MalformedInputException("Invalid img MIME type:"+info );
+    }
+
+    if (!(Utility.isIdValid(entityId))){
       throw new MalformedInputException("Invalid img MIME type:"+info );
     }
 
@@ -122,25 +128,18 @@ public class TarrieS3 {
 
     // post to s3
     String s3url = null;
-    try{
-      String fileName = folderName+SUFFIX+"profile."+fileSuffix;
+      String fileName = folderName+SUFFIX+"profile";
       PutObjectResult putObjectResult=s3client.putObject(new PutObjectRequest(
               DbConstants.IMG_S3_BUCKET, fileName, stream, metadata));
 
-      // formulate s3url of newly created image
-      String region = DbConstants.S3_REGION.toString().toLowerCase().replace("_","-");
-      s3url =  String.format("https://s3.%s.amazonaws.com/%s/%s", region, DbConstants.IMG_S3_BUCKET, fileName);
+      System.out.println(s3client.getUrl(DbConstants.IMG_S3_BUCKET, fileName));
 
-    }catch (AmazonServiceException e){
-      LOG.error(
-          "The call was transmitted successfully, but Amazon S3 couldn't process \n"
-              + "it, so it returned an error response: "+info);
-      // ToDo: Error retry
-    }catch (SdkClientException e){
-      LOG.error("Amazon S3 couldn't be contacted for a response, or the client couldn't parse the response from Amazon S3:"+ info);
-      // ToDo: Error retry
-    }
-    return s3url;
+      // formulate s3url of newly created image
+      //String region = DbConstants.S3_REGION.toString().toLowerCase().replace("_","-");
+      //s3url =  String.format("https://s3.%s.amazonaws.com/%s/%s", region, DbConstants.IMG_S3_BUCKET, fileName);
+
+
+    return s3client.getUrl(DbConstants.IMG_S3_BUCKET, fileName).toString();
   }
 
 

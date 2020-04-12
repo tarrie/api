@@ -4,6 +4,7 @@ io/tarrie/model/consumes/GroupId.class
 io/tarrie/model/consumes/AddUserToGroup.class
 io/tarrie/model/consumes/EditGroup.class
 io/tarrie/database/contants/DbConstants.class
+io/tarrie/api/rest/Pictures.class
 io/tarrie/model/User.class
 io/tarrie/controller/HashTags.class
 io/tarrie/model/Entity$EntityDBMapped.class

@@ -60,6 +60,7 @@
 /Users/jideofor/Desktop/io.tarrie/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/connections/AwsSignedRestRequest.java
 /Users/jideofor/Desktop/io.tarrie/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/model/User.java
 /Users/jideofor/Desktop/io.tarrie/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/model/consumes/ChangeMembershipGroup.java
+/Users/jideofor/Desktop/io.tarrie/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/api/rest/Pictures.java
 /Users/jideofor/Desktop/io.tarrie/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/model/consumes/CreateGroup.java
 /Users/jideofor/Desktop/io.tarrie/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/model/constants/ExploreType.java
 /Users/jideofor/Desktop/io.tarrie/io.tarrie.api/TarrieRESTfulAPI/src/main/java/io/tarrie/model/consumes/EditGroup.java

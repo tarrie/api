@@ -37,7 +37,7 @@ import java.util.List;
 public class Groups implements io.tarrie.api.interfaces.Groups {
 
   @Path("{groupId}/events")
-  @GET
+  @POST
   public Response listGroupEvents(
       @ApiParam(name = "groupId", value = "ID of group", required = true) @PathParam("groupId")
           String groupId,
@@ -71,59 +71,4 @@ public class Groups implements io.tarrie.api.interfaces.Groups {
     return Response.status(200).entity(payload).type(MediaType.APPLICATION_JSON_TYPE).build();
   }
 
-  @Path("{groupId}/images/profile")
-  @POST
-  @Consumes(MediaType.MULTIPART_FORM_DATA)
-  public Response uploadProfilePic(
-      @ApiParam(name = "groupId", value = "ID of group", required = true) @PathParam("groupId")
-          String groupId,
-      @FormDataParam("file") FormDataBodyPart fileBody,
-      @FormDataParam("userId") FormDataBodyPart userIdBody) {
-
-    String mimeType = fileBody.getMediaType().toString();
-    String userId = userIdBody.getValue();
-    InputStream is = fileBody.getValueAs(InputStream.class);
-
-    if (!(ImgTypes.ACCEPTABLE_MIME_IMAGES.contains(mimeType))) {
-      String errorMsg =
-          String.format(
-              "Invalid MimeType must be one of: %s", ImgTypes.ACCEPTABLE_MIME_IMAGES.toString());
-      return Response.status(400).entity(errorMsg).type(MediaType.TEXT_PLAIN_TYPE).build();
-    }
-
-    if ((!(Utility.isIdValid(groupId))) || (!(Utility.isIdValid(userId)))) {
-      return Response.status(400)
-          .type(MediaType.TEXT_PLAIN_TYPE)
-          .entity("Bad input; groupid or userid is not valid")
-          .build();
-    }
-
-    String imgPath;
-
-    try {
-      imgPath=Controller.uploadProfileImg(is, mimeType, groupId);
-
-      if (imgPath ==null){
-          return Response.status(500)
-                  .type(MediaType.TEXT_PLAIN_TYPE)
-                  .entity("Internal Server error: upload failed")
-                  .build();
-      }
-    } catch (Exception e) {
-      return Response.status(400)
-              .type(MediaType.TEXT_PLAIN_TYPE)
-              .entity(e.getMessage()).build();
-    }
-
-      JSONObject obj = new JSONObject();
-      obj.put("imgPath",imgPath);
-      obj.put("id",groupId);
-
-
-    // image/gif, image/jpg, image/jpeg, image/png,
-    return Response.status(200)
-            .entity(obj.toString())
-            .type(MediaType.APPLICATION_JSON_TYPE)
-            .build();
-  }
 }

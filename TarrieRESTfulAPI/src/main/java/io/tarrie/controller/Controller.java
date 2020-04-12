@@ -1,5 +1,7 @@
 package io.tarrie.controller;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.S3Link;
@@ -343,18 +345,16 @@ public class Controller {
    * @param entityId the entityId for example: USR#becky123
    * @throws IOException
    * @throws MalformedInputException
+     * @throws AmazonServiceException The call was transmitted successfully, but Amazon S3 couldn't process it, so it returned an error response
+   * @throws SdkClientException Amazon S3 couldn't be contacted for a response, or the client couldn't parse the response from Amazon S3
    */
   public static String uploadProfileImg(InputStream is, String mimeType, String entityId)
-      throws IOException, MalformedInputException {
+      throws IOException, MalformedInputException, AmazonServiceException, SdkClientException {
 
       String s3Url;
 
-      if (TarrieDynamoDb.doesItemExist(entityId)){
-          s3Url = TarrieS3.uploadProfileImg(is, mimeType, entityId);
-          TarrieDynamoDb.updateAttribute(entityId, DbAttributes.IMG_PATH, s3Url);
-      }else{
-          throw new MalformedInputException("entity does not exist: "+ entityId);
-      }
+      s3Url = TarrieS3.uploadProfileImg(is, mimeType, entityId);
+
 
       return s3Url;
 

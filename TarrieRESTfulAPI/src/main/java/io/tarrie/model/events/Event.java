@@ -11,10 +11,7 @@ import io.tarrie.model.constants.EventLimits;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /** ToDo: Add support for polls, documents associated with event */
 @DynamoDBTable(tableName = DbConstants.BASE_TABLE)
@@ -26,7 +23,7 @@ public class Event {
   private EventPrivacy privacy;
   private String name;
   private String imgPath;
-  private Location loc;
+  private Map<String,String> loc;
   private String startTime;
   private String endTime;
   private Date createdTime;
@@ -62,10 +59,6 @@ public class Event {
     return createdTime;
   }
 
-  public void setCreatedDate(Date createdTime) {
-    this.createdTime = createdTime;
-  }
-
   @DynamoDBAttribute(attributeName = DbAttributes.RSVP_NUM)
   @ApiModelProperty(notes = "the num of rsvps to the event")
   public int getRsvpNum() {
@@ -81,7 +74,7 @@ public class Event {
   @DynamoDBAttribute(attributeName = DbAttributes.LOC)
   @ApiModelProperty(notes = "the location of event")
   @NotNull
-  public Location getLoc() {
+  public Map<String,String> getLoc() {
     return loc;
   }
 
@@ -168,6 +161,9 @@ public class Event {
   }
 
   /* ********* setters ***********/
+  public void setCreatedDate(Date createdTime) {
+    this.createdTime = createdTime;
+  }
   public void setPrivacy(EventPrivacy privacy) {
     this.privacy = privacy;
   }
@@ -180,7 +176,7 @@ public class Event {
     this.rsvpNum = rsvpNum;
   }
 
-  public void setLoc(Location loc) {
+  public void setLoc(Map<String,String> loc) {
     this.loc = loc;
   }
 

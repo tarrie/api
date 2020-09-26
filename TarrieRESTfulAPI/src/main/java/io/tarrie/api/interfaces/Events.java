@@ -43,6 +43,7 @@ public interface Events {
    * @param userId id of user making request
    * @return subset of eventIds that exist in Tarrie
    */
+  /*
   @ApiOperation(value = "Check if a collection of events exist. Returns the list of eventIds that exist from query")
   @GET
   @Consumes(MediaType.APPLICATION_JSON)
@@ -57,13 +58,14 @@ public interface Events {
   Response eventExists(@ApiParam(name = "eventId", value = "The eventId")
                       @QueryParam("eventId")
                               Collection<String> eventIds, UserId userId);
-
+  */
   /**
    * Get event by event id
    *
    * @param userId userId userId of the requester
    * @return pojo that represents a event
    */
+  /*
   @ApiOperation(value = "Get a event")
   @GET
   @Consumes(MediaType.APPLICATION_JSON)
@@ -80,6 +82,7 @@ public interface Events {
           @QueryParam("eventId")
           Collection<String> eventIds,
       UserId userId);
+  */
 
   /**
    * Create event
@@ -109,6 +112,7 @@ public interface Events {
    * @param userId id of user issuing delete event request
    * @return response
    */
+  /*
   @ApiOperation(value = "Delete a event")
   @Path("{eventId}")
   @DELETE
@@ -126,7 +130,7 @@ public interface Events {
       @ApiParam(name = "eventId", value = "ID of event", required = true) @PathParam("eventId")
           String eventId,
       UserId userId);
-
+  */
   /**
    * Edit a existing event
    *
@@ -134,6 +138,7 @@ public interface Events {
    * @param editEvent pojo of editable attributes of the event
    * @return response
    */
+  /*
   @ApiOperation(value = "Edit a event")
   @Path("{eventId}")
   @PUT
@@ -151,4 +156,6 @@ public interface Events {
       @ApiParam(name = "eventId", value = "ID of event", required = true) @PathParam("eventId")
           String eventId,
       EditEvent editEvent);
+
+   */
 }

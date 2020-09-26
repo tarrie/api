@@ -8,6 +8,7 @@ import io.tarrie.model.Entity;
 import io.tarrie.model.EventPrivacy;
 import io.tarrie.model.Location;
 
+import java.util.Map;
 import java.util.Set;
 
 @DynamoDBTable(tableName = DbConstants.BASE_TABLE)
@@ -20,7 +21,7 @@ public class HostEvent{
     private String endTime;
     private String name;
     private String imgPath;
-    private Location loc;
+    private Map<String,String> loc;
     private Set<String> coordinators;
 
 
@@ -76,7 +77,7 @@ public class HostEvent{
 
 
     @DynamoDBAttribute(attributeName = DbAttributes.LOC)
-    public Location getLoc() {
+    public Map<String,String> getLoc() {
         return loc;
     }
 
@@ -102,7 +103,7 @@ public class HostEvent{
     }
 
 
-    public void setLoc(Location loc) {
+    public void setLoc(Map<String,String> loc) {
         this.loc = loc;
     }
 

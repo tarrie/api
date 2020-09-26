@@ -39,4 +39,19 @@ with open(testGIF_path, 'rb') as f:
 		print(response.status_code,response.content )
 
 
+# test images work
+
+
+import requests 
+import os.path
+
+testGIF_path = "../pictures/dancing80s.gif"
+with open(testGIF_path, 'rb') as f:
+		url = 'http://localhost:8080/pictures/profile/GRP%23boogoParty33333'
+		files={'file': (testGIF_path,f,'image/gif'),'userId': 'USR#becky395'}
+		response = requests.put(url, files=files)
+		print(response.status_code,response.content )
+
+
+
 

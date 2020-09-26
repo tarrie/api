@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @DynamoDBTable(tableName = DbConstants.BASE_TABLE)
@@ -24,9 +25,10 @@ public class CreateEvent {
 
     private Set<String> coordinators;
     private String creatorId;
+    private String userId;
     private String name;
     private EventPrivacy eventPrivacy;
-    private Location location;
+    private Map<String,String> location;
     // default img path
     private static final String imgPath = DbConstants.DEFAULT_EVENT_IMG;
     // default link sharing is turned off
@@ -140,10 +142,10 @@ public class CreateEvent {
 
     @DynamoDBAttribute(attributeName = DbAttributes.LOC)
     @ApiModelProperty(value = "The event location (if left empty the event is virtual", name =DbAttributes.LOC )
-    public Location getLocation() {
+    public Map<String, String> getLocation() {
         return location;
     }
-    public void setLocation(Location location) {
+    public void setLocation(Map<String,String> location) {
         this.location = location;
     }
 
@@ -172,7 +174,14 @@ public class CreateEvent {
 
 
 
-
+    @DynamoDBIgnore
+    @ApiModelProperty(value = "The user that created the event", name = DbAttributes.USER_ID)
+    public String getUserId() {
+        return userId;
+    }
+    public void setUserId(String userId1) {
+        this.userId = userId1;
+    }
 
     // relationship -> ignore we treat this specially
     @DynamoDBIgnore

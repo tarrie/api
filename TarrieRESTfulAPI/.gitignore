@@ -13,6 +13,8 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+*/idea/*
+*/idea/**
 # Generated files
 .idea/**/contentModel.xml
 
@@ -127,6 +129,8 @@ hs_err_pid*
 ### Java-Web ###
 ## ignoring target file
 target/
+*/target/*
+*/targets/**
 
 ### macOS ###
 # General

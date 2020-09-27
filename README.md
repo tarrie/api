@@ -4,7 +4,7 @@
 `mvn clean package tomcat7:run`
 
 # To Host on ElasticBeanStalk - Remote
-(signin link)
+(signin link https://069445345183.signin.aws.amazon.com/console )
 1. Set Env: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY on EB
 2. `mvn clean compile war:war`
 3. Get the war file upload to EB

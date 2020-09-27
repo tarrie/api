@@ -14,7 +14,8 @@ import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.*;
-import io.tarrie.Utility;
+import com.google.common.annotations.VisibleForTesting;
+import io.tarrie.utilities.Utility;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.database.exceptions.MalformedInputException;
@@ -34,15 +35,30 @@ public class TarrieDynamoDb {
 
   private static final AWSCredentials credentials =
       new BasicAWSCredentials(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY);
-  public static final AmazonDynamoDB awsDynamoDb =
+
+  public static AmazonDynamoDB awsDynamoDb =
       AmazonDynamoDBClientBuilder.standard()
           .withRegion(DbConstants.DYNAMO_DB_REGION)
           .withCredentials(new AWSStaticCredentialsProvider(credentials))
           .build();
   public static DynamoDB dynamoDB = new DynamoDB(awsDynamoDb);
-  // private static final DynamoDB dynamoDB = new DynamoDB(awsDynamoDb);
 
   public static final int MAX_WAIT_INTERVAL = 10;
+
+  /**
+   * Sets the dynamodb instance to point somewhere else for testing (Usually Local DynamoDb
+   * instance)
+   *
+   * @param _awsDynamoDb
+   */
+  @VisibleForTesting
+  static void setDbForTesting(AmazonDynamoDB _awsDynamoDb, DynamoDB _dynamoDB) {
+    dynamoDB.shutdown();
+    awsDynamoDb.shutdown();
+
+    awsDynamoDb = _awsDynamoDb;
+    dynamoDB = _dynamoDB;
+  }
 
   public static void main(String[] args)
       throws MalformedURLException, AddressException, MalformedInputException {
@@ -239,6 +255,7 @@ public class TarrieDynamoDb {
 
   /**
    * Retries failed batch writes
+   *
    * @param outcome failed batches
    */
   private static void checkForUnprocessedKeys(List<DynamoDBMapper.FailedBatch> outcome) {
@@ -254,6 +271,7 @@ public class TarrieDynamoDb {
 
   /**
    * Performs batch writes using DynamoDb mapper
+   *
    * @see <a href="http://tutorials.jenkov.com/java-generics/methods.html">Java Generics</a>
    * @param objectsToSave the set of pojo's to save
    */

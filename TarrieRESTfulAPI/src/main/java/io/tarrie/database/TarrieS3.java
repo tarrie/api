@@ -8,12 +8,13 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.*;
+import com.google.common.annotations.VisibleForTesting;
 import io.tarrie.database.contants.EntityType;
 import io.tarrie.database.contants.ImgTypes;
 import io.tarrie.database.exceptions.MalformedInputException;
 import org.apache.commons.codec.EncoderException;
 import org.apache.commons.io.IOUtils;
-import io.tarrie.Utility;
+import io.tarrie.utilities.Utility;
 import io.tarrie.database.contants.DbConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +38,16 @@ public class TarrieS3 {
           .withCredentials(new AWSStaticCredentialsProvider(credentials))
           .withRegion(DbConstants.S3_REGION)
           .build();
+
+    /**
+   * Sets the s3 instance to point somewhere else for testing (Usually Local s3 mocked instance)
+   * @param _s3client
+   */
+  @VisibleForTesting
+   static void setDbForTesting(AmazonS3 _s3client ){
+    s3client.shutdown();
+    s3client = _s3client;
+  }
 
   public static void main(String[] args) throws URISyntaxException, EncoderException, IOException, MalformedInputException {
     TarrieS3 test = new TarrieS3();

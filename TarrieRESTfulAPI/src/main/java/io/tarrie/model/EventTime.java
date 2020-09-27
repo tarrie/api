@@ -3,11 +3,10 @@ package io.tarrie.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.tarrie.Utility;
+import io.tarrie.utilities.Utility;
 import io.tarrie.database.exceptions.MalformedInputException;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @DynamoDBDocument
 @ApiModel(description="The time of a Tarrie Event")

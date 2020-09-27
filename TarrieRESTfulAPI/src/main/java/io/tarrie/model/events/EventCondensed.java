@@ -14,6 +14,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @ApiModel
@@ -25,7 +26,7 @@ public class EventCondensed{
     private EventPrivacy privacy;
     private String name;
     private String imgPath;
-    private Location loc;
+    private Map loc;
     private String startTime;
     private String endTime;
     private Entity hostInfo;
@@ -62,7 +63,7 @@ public class EventCondensed{
     @DynamoDBAttribute(attributeName = DbAttributes.LOC)
     @ApiModelProperty(notes = "the location of event")
     @NotNull
-    public Location getLoc() {
+    public Map getLoc() {
         return loc;
     }
 
@@ -144,7 +145,7 @@ public class EventCondensed{
         this.hostInfo = hostInfo;
     }
 
-    public void setLoc(Location loc) {
+    public void setLoc(Map loc) {
         this.loc = loc;
     }
 

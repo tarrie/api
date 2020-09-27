@@ -1,27 +1,16 @@
 package io.tarrie.api.rest;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.annotations.*;
-import io.tarrie.Utility;
+import io.tarrie.utilities.Utility;
 import io.tarrie.controller.Controller;
-import io.tarrie.database.contants.ImgTypes;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.consumes.CreateEvent;
 import io.tarrie.model.events.Event;
-import io.tarrie.model.events.EventCondensed;
-import org.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
 
 public class Events implements io.tarrie.api.interfaces.Events {
 

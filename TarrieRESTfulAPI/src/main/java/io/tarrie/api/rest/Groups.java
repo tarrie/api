@@ -1,28 +1,15 @@
 package io.tarrie.api.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.sun.jersey.core.header.FormDataContentDisposition;
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
 import io.swagger.annotations.*;
 // import io.swagger.v3.oas.annotations.Parameter;
 import io.tarrie.controller.Controller;
-import io.tarrie.database.contants.ImgTypes;
-import io.tarrie.database.exceptions.MalformedInputException;
-import io.tarrie.model.Entity;
-import io.tarrie.model.consumes.AddUserToGroup;
-import io.tarrie.Utility;
+import io.tarrie.utilities.Utility;
 import io.tarrie.model.consumes.UserId;
-import org.json.JSONObject;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 
 // https://www.mkyong.com/tutorials/jax-rs-tutorials/
 // http://localhost:8080/api/groups/members

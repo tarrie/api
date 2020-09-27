@@ -1,7 +1,7 @@
 package io.tarrie.connections;
 import org.apache.commons.io.IOUtils;
 
-import io.tarrie.Utility;
+import io.tarrie.utilities.Utility;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

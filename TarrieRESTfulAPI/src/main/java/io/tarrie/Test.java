@@ -1,10 +1,9 @@
 package io.tarrie;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import io.tarrie.controller.Controller;
-import io.tarrie.database.contants.DbConstants;
 import io.tarrie.database.contants.ImgTypes;
 import io.tarrie.database.exceptions.MalformedInputException;
+import io.tarrie.database.exceptions.TarrieExistenceError;
 import io.tarrie.database.exceptions.TarrieGroupException;
 import io.tarrie.model.EventPrivacy;
 import io.tarrie.model.Location;
@@ -14,11 +13,13 @@ import io.tarrie.model.constants.MembershipType;
 import io.tarrie.model.consumes.CreateEvent;
 import io.tarrie.model.consumes.CreateGroup;
 import io.tarrie.model.consumes.CreateUser;
+import io.tarrie.utilities.Utility;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import javax.mail.internet.AddressException;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 
 public class Test {
@@ -52,7 +53,7 @@ public class Test {
 
   }
 
-  static void createDummyEvent() throws MalformedInputException {
+  static void createDummyEvent() throws MalformedInputException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
     HashSet<String> coordinators = new HashSet<>();
     coordinators.add(formattedUserId2);
@@ -85,7 +86,7 @@ public class Test {
     createEvent.setCoordinators(coordinators);
     createEvent.setCreatorId(formattedGroupId1);
     createEvent.setEventPrivacy(eventPrivacy);
-    createEvent.setLocation(loc);
+    createEvent.setLocation(Utility.pojoToMap(loc));
     createEvent.setLinkSharing(true);
     createEvent.setInvitedEntityIds(invitedEntityIds);
     createEvent.setBio("Libpusm labrum et al took tokk leetzial");
@@ -112,22 +113,22 @@ public class Test {
     Controller.createUser(newUser2);
   }
 
-  static void createDummyGroup() throws MalformedInputException {
+  static void createDummyGroup() throws MalformedInputException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, TarrieExistenceError {
     UserCondensed owner = new UserCondensed();
     owner.setId(formattedUserId1);
     owner.setName(userName1);
 
     Location loc = new Location();
-    loc.city = "Evanston";
-    loc.state = "IL";
-    loc.locName = "Northwestern University";
+    loc.setCity("Evanston");
+    loc.setState("IL");
+    loc.setLocName("Northwestern University");
 
     CreateGroup group = new CreateGroup();
     group.setGroupId(groupId1);
     group.setOwner(owner);
     group.setName("Boogo Party");
     group.setBio("Dude's who like to party");
-    group.setLocation(loc);
+    group.setLocation(Utility.pojoToMap(loc));
 
     Controller.createGroup(group);
   }

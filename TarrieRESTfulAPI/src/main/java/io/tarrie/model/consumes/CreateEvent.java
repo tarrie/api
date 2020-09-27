@@ -3,19 +3,15 @@ package io.tarrie.model.consumes;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.tarrie.Utility;
+import io.tarrie.utilities.Utility;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.EventPrivacy;
-import io.tarrie.model.HashTag;
-import io.tarrie.model.Location;
 import io.tarrie.model.constants.CharacterLimit;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +24,7 @@ public class CreateEvent {
     private String userId;
     private String name;
     private EventPrivacy eventPrivacy;
-    private Map<String,String> location;
+    private Map location;
     // default img path
     private static final String imgPath = DbConstants.DEFAULT_EVENT_IMG;
     // default link sharing is turned off
@@ -145,7 +141,7 @@ public class CreateEvent {
     public Map<String, String> getLocation() {
         return location;
     }
-    public void setLocation(Map<String,String> location) {
+    public void setLocation(Map location) {
         this.location = location;
     }
 

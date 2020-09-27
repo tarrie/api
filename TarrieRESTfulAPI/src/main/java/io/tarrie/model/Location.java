@@ -10,17 +10,20 @@ import io.tarrie.model.constants.CharacterLimit;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+
+
+
 @DynamoDBDocument
 @ApiModel(description="The location of a Tarrie entity. Its OK if this object is empty because the event could be virtual")
-public class Location {
-    public String state;
-    public String city;
-    public int zipCode;
-    public String line1;
-    public String line2;
-    public String locName;
-    public float latitude;
-    public float longitude;
+public class Location implements java.io.Serializable {
+    private String state;
+    private String city;
+    private int zipCode;
+    private String line1;
+    private String line2;
+    private String locName;
+    private float latitude;
+    private float longitude;
 
     @ApiModelProperty(notes="The latitude of the location", example="34.055560")
     @DynamoDBAttribute

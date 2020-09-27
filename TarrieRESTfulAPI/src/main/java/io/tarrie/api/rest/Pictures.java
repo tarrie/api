@@ -8,7 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
-import io.tarrie.Utility;
+import io.tarrie.utilities.Utility;
 import io.tarrie.controller.Controller;
 import io.tarrie.database.contants.ImgTypes;
 import org.json.JSONObject;

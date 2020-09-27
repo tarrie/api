@@ -3,22 +3,19 @@ package io.tarrie.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.tarrie.Utility;
+import io.tarrie.utilities.Utility;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.model.condensed.EntityCondensed;
 import io.tarrie.model.condensed.GroupCondensed;
 import io.tarrie.model.events.EventCondensed;
 import io.tarrie.model.constants.CharacterLimit;
-import io.tarrie.model.events.Event;
 import io.tarrie.model.messages.invitesAndRequests.From;
 import io.tarrie.model.messages.invitesAndRequests.To;
 
 import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 

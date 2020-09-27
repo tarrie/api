@@ -1,31 +1,25 @@
-package io.tarrie;
+package io.tarrie.utilities;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import io.tarrie.database.contants.DbConstants;
 import io.tarrie.database.contants.EntityType;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.constants.CharacterLimit;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.DateTime;
 
-import javax.imageio.ImageIO;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.MalformedURLException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -205,4 +199,9 @@ public class Utility {
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
     return mapper.writeValueAsString(pojo);
   }
+
+  public static Map pojoToMap(Object pojo) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    return PropertyUtils.describe(pojo);
+  }
+
 }

@@ -23,7 +23,7 @@ public class Event {
   private EventPrivacy privacy;
   private String name;
   private String imgPath;
-  private Map<String,String> loc;
+  private Map loc;
   private String startTime;
   private String endTime;
   private Date createdTime;
@@ -74,7 +74,7 @@ public class Event {
   @DynamoDBAttribute(attributeName = DbAttributes.LOC)
   @ApiModelProperty(notes = "the location of event")
   @NotNull
-  public Map<String,String> getLoc() {
+  public Map getLoc() {
     return loc;
   }
 
@@ -176,7 +176,7 @@ public class Event {
     this.rsvpNum = rsvpNum;
   }
 
-  public void setLoc(Map<String,String> loc) {
+  public void setLoc(Map loc) {
     this.loc = loc;
   }
 

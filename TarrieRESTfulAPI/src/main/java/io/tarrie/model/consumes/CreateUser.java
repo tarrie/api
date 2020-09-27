@@ -3,7 +3,7 @@ package io.tarrie.model.consumes;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.tarrie.Utility;
+import io.tarrie.utilities.Utility;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.model.constants.CharacterLimit;

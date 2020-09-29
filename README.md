@@ -24,6 +24,7 @@ Here are the steps used to set up Dynamodb local
 - API SERVER (Alias): http://api.tarrie.io/
 
 
+
 # References for set up
 - https://www.mkyong.com/webservices/jax-rs/jersey-hello-world-example/
 - https://www.mkyong.com/webservices/jax-rs/json-example-with-jersey-jackson/
@@ -31,7 +32,13 @@ Here are the steps used to set up Dynamodb local
 - How to live stream: https://stackoverflow.com/questions/41138454/basic-concept-on-live-streaming-video
 ## Setting up DynamoDb
 - https://aws.amazon.com/intellij/
+## Setting up AppSync
+AWS AppSync uses Mapping Templates for resolvers as described in Resolver Mapping Template Reference which are written in VTL. You can find a programming guide under Resolver Mapping Template Programming Guide.
+- https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference.html#aws-appsync-resolver-mapping-template-reference
+- https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference-programming-guide.html#aws-appsync-resolver-mapping-template-reference-programming-guide
 
+Overview on resolvers
+- https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-dynamodb-resolvers.html
 ## Business Value
 
 **Usage** 

@@ -209,7 +209,7 @@ public class Controller {
 
     if (!TarrieDynamoDb.doesItemExist(ownerId)) {
       throw new MalformedInputException(
-          String.format("ownerId does not exist: [ownerId=%s]",  ownerId));
+          String.format("ownerId does not exist: [ownerId=%s]", ownerId));
     }
 
     if (!TarrieDynamoDb.doesItemExist(ownerId)) {
@@ -271,7 +271,8 @@ public class Controller {
     // Consistency checks
     if (creatorType.equals(EntityType.EVENT))
       throw new MalformedInputException("Illegal logic, a event can't create another event");
-    if (createEvent.getHashTags().size() > DbConstants.HASH_TAG_PER_EVENT)
+    if (createEvent.getHashTags() != null
+        && createEvent.getHashTags().size() > DbConstants.HASH_TAG_PER_EVENT)
       throw new MalformedInputException(
           "Only " + (DbConstants.HASH_TAG_PER_EVENT) + "hashtags allowed in event");
     if (!(TarrieDynamoDb.doesItemExist(createEvent.getCreatorId()))) {
@@ -304,11 +305,14 @@ public class Controller {
     hostInfo.setId(creator.getId());
 
     // format hashtags
-    Set<String> hashTagSet =
-        createEvent.getHashTags().stream()
-            .map(String::valueOf)
-            .map(s -> String.format("%s%s", DbConstants.HASH_TAG, s))
-            .collect(Collectors.toSet());
+    Set<String> hashTagSet = null;
+    if (createEvent.getHashTags() != null) {
+      hashTagSet =
+          createEvent.getHashTags().stream()
+              .map(String::valueOf)
+              .map(s -> String.format("%s%s", DbConstants.HASH_TAG, s))
+              .collect(Collectors.toSet());
+    }
 
     // creating the HostEvent object for the creator of the event-- will be uploaded to DynamoDb
     HostEvent hostEvent = new HostEvent();
@@ -317,7 +321,7 @@ public class Controller {
     hostEvent.setEndTime(createEvent.getEndTime());
     hostEvent.setStartTime(createEvent.getStartTime());
     hostEvent.setImgPath(createEvent.getImgPath());
-    hostEvent.setLoc(createEvent.getLocation());
+    hostEvent.setLocation(createEvent.getLocation());
     hostEvent.setName(createEvent.getName());
     mapper.save(hostEvent);
 
@@ -325,16 +329,17 @@ public class Controller {
     Event newEvent = new Event();
     newEvent.setId(eventId);
     newEvent.setIdCopy(eventId);
+    newEvent.setText(createEvent.getText());
     newEvent.setCoordinators(createEvent.getCoordinators());
     newEvent.setBio(createEvent.getBio());
     newEvent.setEndTime(createEvent.getEndTime());
     newEvent.setStartTime(createEvent.getStartTime());
     newEvent.setImgPath(createEvent.getImgPath());
-    newEvent.setLoc(createEvent.getLocation());
+    newEvent.setLocation(createEvent.getLocation());
     newEvent.setName(createEvent.getName());
     newEvent.setHostInfo(hostInfo);
     newEvent.setHashTags(hashTagSet);
-    newEvent.setLinkSharing(false);
+    newEvent.setLinkSharing(createEvent.isLinkSharing());
     newEvent.setPrivacy(createEvent.getEventPrivacy());
     newEvent.setRsvpNum(creatorType.equals(EntityType.USER) ? 1 : 0);
     mapper.save(newEvent);
@@ -345,17 +350,21 @@ public class Controller {
     eventCondensed.setEndTime(createEvent.getEndTime());
     eventCondensed.setStartTime(createEvent.getStartTime());
     eventCondensed.setImgPath(createEvent.getImgPath());
-    eventCondensed.setLoc(createEvent.getLocation());
+    eventCondensed.setLocation(createEvent.getLocation());
     eventCondensed.setName(createEvent.getName());
 
     // invite the entities in the list - ToDo: Make this a thread
-    for (String id : createEvent.getInvitedEntityIds()) {
-      Entity invitedEntity = mapper.load(Entity.class, id, id);
-      Messaging.sendEventInvite(hostInfo, invitedEntity, eventCondensed, null);
+    if (createEvent.getInvitedEntityIds() != null) {
+      for (String id : createEvent.getInvitedEntityIds()) {
+        Entity invitedEntity = mapper.load(Entity.class, id, id);
+        Messaging.sendEventInvite(hostInfo, invitedEntity, eventCondensed, null);
+      }
     }
 
     // generate the hashtag entries.
-    HashTags.inputHashTag(hashTagSet, eventId);
+    if (hashTagSet != null) {
+      HashTags.inputHashTag(hashTagSet, eventId);
+    }
 
     return eventCondensed;
   }

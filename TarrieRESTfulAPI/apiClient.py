@@ -26,9 +26,9 @@ x=requests.get(url+'api/groups')
 
 #https://franklingu.github.io/programming/2017/10/30/post-multipart-form-data-using-requests/
 
-#test images work. 
+#test images work.
 
-import requests 
+import requests
 import os.path
 
 testGIF_path = "../pictures/dancing80s.gif"
@@ -42,7 +42,7 @@ with open(testGIF_path, 'rb') as f:
 # test images work
 
 
-import requests 
+import requests
 import os.path
 
 testGIF_path = "../pictures/dancing80s.gif"
@@ -53,5 +53,21 @@ with open(testGIF_path, 'rb') as f:
 		print(response.status_code,response.content )
 
 
+# Testing Create Event!
+url = 'http://localhost:8080/'
+owner = "USR#northwestern_69"
+group = "GRP#boogoParty"
+events={
+"userId":owner,
+"creatorId": group,
+"startTime": "2020-09-29T03:34:45Z",
+"endTime": "2020-09-29T04:34:45Z",
+"name": "Get Fucked",
+"text": "Hey meet at the loop on the loc",
+"location":{"main_text" : "Cafe Madra","secondary_text" : "Bhaudaji Road, Matunga, Mumbai, Maharashtra, India"}
+}
 
+		response=requests.post(url+'events', json=events)
 
+		print(response.status_code,response.content )
+		print(response.json)

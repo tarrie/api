@@ -78,7 +78,7 @@ public class ControllerTest {
   public void createDummyGroupNoUser()
       throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
     UserCondensed owner = new UserCondensed();
-            System.out.println("Error Group");
+    System.out.println("Error Group");
 
     owner.setId(formattedUserId1);
     owner.setName(userName1);
@@ -124,9 +124,9 @@ public class ControllerTest {
   @DisplayName("Create Dummy Group: valid User")
   @Order(3)
   public void createDummyGroup()
-          throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
+      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
           MalformedInputException, TarrieExistenceError {
-        System.out.println("Creating Group");
+    System.out.println("Creating Group");
 
     UserCondensed owner = new UserCondensed();
     owner.setId(formattedUserId1);
@@ -148,65 +148,63 @@ public class ControllerTest {
     assertTrue(TarrieDynamoDb.doesItemExist(group.getGroupId()));
   }
 
-    @Test
+  @Test
   @Order(4)
   public void uploadDummyImg()
-            throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
-            MalformedInputException, IOException {
-            System.out.println("Upload Img");
+      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
+          MalformedInputException, IOException {
+    System.out.println("Upload Img");
 
-        File dummyImg = new File("../pictures/coolpic.jpeg");
+    File dummyImg = new File("../pictures/coolpic.jpeg");
     InputStream is = new FileInputStream(dummyImg);
     Controller.uploadProfileImg(is, ImgTypes.JPEG, formattedGroupId1);
 
     dummyImg = new File("../pictures/dancing80s.gif");
     is = new FileInputStream(dummyImg);
     Controller.uploadProfileImg(is, ImgTypes.GIF, formattedUserId1);
-
   }
-
 
   /*
 
-  @Test
-  @DisplayName("Create Dummy Followers")
-  @Order(3)
-  public void createDummyFollowers()
-      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
-          MalformedInputException {
-    // group1 is following user2
-    Controller.followEntity(formattedGroupId1, formattedUserId2);
+    @Test
+    @DisplayName("Create Dummy Followers")
+    @Order(3)
+    public void createDummyFollowers()
+        throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
+            MalformedInputException {
+      // group1 is following user2
+      Controller.followEntity(formattedGroupId1, formattedUserId2);
 
-    // user2 is following group1
-    Controller.followEntity(formattedUserId2, formattedGroupId1);
+      // user2 is following group1
+      Controller.followEntity(formattedUserId2, formattedGroupId1);
 
-    // user2 is following user1
-    Controller.followEntity(formattedUserId2, formattedUserId1);
-  }
+      // user2 is following user1
+      Controller.followEntity(formattedUserId2, formattedUserId1);
+    }
 
-  @Test
-  @Order(4)
-  public void createDummyContacts()
-      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
-          MalformedInputException {
-    // group1 is following user2
-    Controller.addContact(formattedGroupId1, formattedUserId2);
+    @Test
+    @Order(4)
+    public void createDummyContacts()
+        throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
+            MalformedInputException {
+      // group1 is following user2
+      Controller.addContact(formattedGroupId1, formattedUserId2);
 
-    // user2 is following group1
-    Controller.addContact(formattedUserId2, formattedGroupId1);
+      // user2 is following group1
+      Controller.addContact(formattedUserId2, formattedGroupId1);
 
-    // user2 is following user1
-    Controller.addContact(formattedUserId2, formattedUserId1);
-  }
+      // user2 is following user1
+      Controller.addContact(formattedUserId2, formattedUserId1);
+    }
 
-  @Test
-  @Order(5)
-  public void joinDummyGroup()
-      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
-          MalformedInputException {
-    Controller.joinGroup(formattedUserId2, formattedGroupId1);
+    @Test
+    @Order(5)
+    public void joinDummyGroup()
+        throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
+            MalformedInputException {
+      Controller.joinGroup(formattedUserId2, formattedGroupId1);
 
-  }
-*/
+    }
+  */
 
 }

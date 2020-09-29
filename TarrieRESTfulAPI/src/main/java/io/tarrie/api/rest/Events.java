@@ -12,6 +12,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+//http://localhost:8080/api/events
+@Api(tags = "Events endpoints")
+@SwaggerDefinition(
+    tags = {
+      @Tag(name = "Events endpoints", description = "Used to create, modify, and get events")
+    })
+@Path("/events")
 public class Events implements io.tarrie.api.interfaces.Events {
 
     // https://crunchify.com/create-very-simple-jersey-rest-service-and-send-json-data-from-java-client/

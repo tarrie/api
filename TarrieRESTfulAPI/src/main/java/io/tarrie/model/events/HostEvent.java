@@ -7,6 +7,7 @@ import io.tarrie.database.contants.DbConstants;
 import io.tarrie.model.Entity;
 import io.tarrie.model.EventPrivacy;
 import io.tarrie.model.Location;
+import io.tarrie.utilities.MapTypeConverted;
 
 import java.util.Map;
 import java.util.Set;
@@ -21,7 +22,7 @@ public class HostEvent{
     private String endTime;
     private String name;
     private String imgPath;
-    private Map<String,String> loc;
+    private Map location;
     private Set<String> coordinators;
 
 
@@ -75,10 +76,10 @@ public class HostEvent{
         return imgPath;
     }
 
-
+    @DynamoDBTypeConverted(converter = MapTypeConverted.class)
     @DynamoDBAttribute(attributeName = DbAttributes.LOC)
-    public Map<String,String> getLoc() {
-        return loc;
+    public Map getLocation() {
+        return location;
     }
 
     /* ********** Setters *************/
@@ -103,8 +104,8 @@ public class HostEvent{
     }
 
 
-    public void setLoc(Map<String,String> loc) {
-        this.loc = loc;
+    public void setLocation(Map location) {
+        this.location = location;
     }
 
 

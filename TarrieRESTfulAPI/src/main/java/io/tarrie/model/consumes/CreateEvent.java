@@ -3,6 +3,7 @@ package io.tarrie.model.consumes;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.tarrie.utilities.MapTypeConverted;
 import io.tarrie.utilities.Utility;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
@@ -37,6 +38,7 @@ public class CreateEvent {
     private String startTime = null;
     private String endTime = null;
     private String createdTime;
+    private String text;
 
     // partition key
     @DynamoDBHashKey(attributeName = DbAttributes.HASH_KEY)
@@ -136,9 +138,10 @@ public class CreateEvent {
         this.eventPrivacy = eventPrivacy;
     }
 
+    @DynamoDBTypeConverted(converter = MapTypeConverted.class)
     @DynamoDBAttribute(attributeName = DbAttributes.LOC)
     @ApiModelProperty(value = "The event location (if left empty the event is virtual", name =DbAttributes.LOC )
-    public Map<String, String> getLocation() {
+    public Map getLocation() {
         return location;
     }
     public void setLocation(Map location) {
@@ -168,7 +171,14 @@ public class CreateEvent {
     }
 
 
-
+    @DynamoDBAttribute(attributeName = DbAttributes.TEXT)
+    @ApiModelProperty(value = "Additional Info attached to event",name = DbAttributes.TEXT)
+    public void setText(String text) {
+        this.text = text;
+    }
+    public String getText() {
+        return text;
+    }
 
     @DynamoDBIgnore
     @ApiModelProperty(value = "The user that created the event", name = DbAttributes.USER_ID)

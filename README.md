@@ -39,6 +39,8 @@ AWS AppSync uses Mapping Templates for resolvers as described in Resolver Mappin
 
 Overview on resolvers
 - https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-dynamodb-resolvers.html
+Subscriptions
+- https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html
 ## Business Value
 
 **Usage** 

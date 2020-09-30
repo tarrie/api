@@ -42,6 +42,8 @@ Overview on resolvers
 Subscriptions
 - https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html
 - https://docs.aws.amazon.com/appsync/latest/devguide/designing-your-schema.html
+Writing Queries
+- https://medium.com/atheros/graphql-quick-tip-how-to-pass-variables-into-a-mutation-in-graphiql-23ecff4add57
 ## Business Value
 
 **Usage** 

@@ -41,6 +41,7 @@ Overview on resolvers
 - https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-dynamodb-resolvers.html
 Subscriptions
 - https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html
+- https://docs.aws.amazon.com/appsync/latest/devguide/designing-your-schema.html
 ## Business Value
 
 **Usage** 

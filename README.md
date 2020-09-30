@@ -39,11 +39,15 @@ AWS AppSync uses Mapping Templates for resolvers as described in Resolver Mappin
 
 Overview on resolvers
 - https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-dynamodb-resolvers.html
+- If Commands
+    - https://docs.aws.amazon.com/appsync/latest/devguide/tutorial-dynamodb-resolvers.html
+    - https://stackoverflow.com/questions/52230525/appsync-resolver-updateitem-ignore-null-args
 Subscriptions
 - https://docs.aws.amazon.com/appsync/latest/devguide/real-time-data.html
 - https://docs.aws.amazon.com/appsync/latest/devguide/designing-your-schema.html
 Writing Queries
 - https://medium.com/atheros/graphql-quick-tip-how-to-pass-variables-into-a-mutation-in-graphiql-23ecff4add57
+
 ## Business Value
 
 **Usage** 

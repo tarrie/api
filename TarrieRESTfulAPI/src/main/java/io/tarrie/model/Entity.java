@@ -52,37 +52,5 @@ public class Entity {
         this.name = name;
     }
 
-    @DynamoDBDocument
-    public static class EntityDBMapped {
-        private String id;
-        private String name;
-        private String imgPath;
 
-        @DynamoDBAttribute(attributeName = DbAttributes.HASH_KEY)
-        @Size(min=1, max= CharacterLimit.SMALL)
-        public String getId() {
-            return id;
-        }
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        @DynamoDBAttribute(attributeName = DbAttributes.IMG_PATH)
-        public String getImgPath() {
-            return imgPath;
-        }
-        public void setImgPath(String imgPath) {
-            this.imgPath = imgPath;
-        }
-
-        @DynamoDBAttribute(attributeName = DbAttributes.NAME)
-        @Size(min=1, max= CharacterLimit.SMALL)
-        public String getName() {
-            return name;
-        }
-        public void setName(String name) {
-            this.name = name;
-        }
-
-    }
 }

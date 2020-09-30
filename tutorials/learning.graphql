@@ -1,0 +1,34 @@
+# Click the orange "Play" button and select the createTarrie
+# mutation to create an object in DynamoDB.
+# If you see an error that starts with "Unable to assume role",
+# wait a moment and try again.
+# Click the orange "Play" button and select the createTarrie
+# mutation to create an object in DynamoDB.
+# If you see an error that starts with "Unable to assume role",
+# wait a moment and try again.
+mutation createEvent($main_pk: ID!,$input: CreateEventInput!) {
+  createEvent(main_pk: $main_pk, input: $input) {
+    main_pk
+    main_sk
+  }
+}
+
+subscription myplaces {
+    onCreateEvent(main_pk:"EVT#123456"){
+        main_pk
+        main_sk
+        coordinators
+    }
+}
+
+
+####### QUERYT VARIABLES
+
+{
+  "main_pk": "EVT#123456",
+  "createeventinput": {
+    "main_pk": "EVT#123456",
+    "main_sk": "EVT#123456",
+    "coordinators": ["USR#Beck123"]
+  }
+}

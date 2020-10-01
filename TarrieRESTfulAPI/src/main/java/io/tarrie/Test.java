@@ -1,10 +1,9 @@
 package io.tarrie;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.tarrie.controller.Controller;
 import io.tarrie.database.contants.ImgTypes;
-import io.tarrie.database.exceptions.MalformedInputException;
-import io.tarrie.database.exceptions.TarrieExistenceError;
-import io.tarrie.database.exceptions.TarrieGroupException;
+import io.tarrie.database.exceptions.*;
 import io.tarrie.model.EventPrivacy;
 import io.tarrie.model.Location;
 import io.tarrie.model.condensed.UserCondensed;
@@ -53,7 +52,7 @@ public class Test {
 
   }
 
-  static void createDummyEvent() throws MalformedInputException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+  static void createDummyEvent() throws MalformedInputException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IOException, HttpErrorCodeException, HttpCloseException, HttpResponseException {
 
     HashSet<String> coordinators = new HashSet<>();
     coordinators.add(formattedUserId2);

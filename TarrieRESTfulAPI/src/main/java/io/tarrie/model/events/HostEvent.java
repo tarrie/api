@@ -18,7 +18,6 @@ public class HostEvent{
     private String hostId;
     private String eventId;
     private String startTime;
-    private Entity hostInfo;
     private String endTime;
     private String name;
     private String imgPath;
@@ -51,12 +50,6 @@ public class HostEvent{
         return startTime;
     }
 
-
-    @DynamoDBTyped(DynamoDBMapperFieldModel.DynamoDBAttributeType.M)
-    @DynamoDBAttribute(attributeName = DbAttributes.HOST_INFO)
-    public Entity getHostInfo() {
-        return hostInfo;
-    }
 
 
     @DynamoDBAttribute(attributeName = DbAttributes.END_TIME)
@@ -96,11 +89,6 @@ public class HostEvent{
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
-    }
-
-
-    public void setHostInfo(Entity hostInfo) {
-        this.hostInfo = hostInfo;
     }
 
 

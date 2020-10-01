@@ -1,5 +1,7 @@
 package io.tarrie.utilities;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -10,6 +12,9 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 
 import javax.mail.internet.AddressException;
@@ -20,6 +25,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,9 +109,9 @@ public class Utility {
     }
   }
 
-
   /**
    * Checks if a Tarrie Id is valid
+   *
    * @param id
    */
   public static boolean isIdValid(String id) {
@@ -200,8 +206,57 @@ public class Utility {
     return mapper.writeValueAsString(pojo);
   }
 
-  public static Map pojoToMap(Object pojo) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+  public static String pojoToJsonUnquotedFields(Object pojo) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+    mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    return mapper.writeValueAsString(pojo);
+  }
+
+  public static Map pojoToMap(Object pojo)
+      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
     return PropertyUtils.describe(pojo);
   }
 
+  /**
+   * Loads a property file, To get a property: properties.getProperty("user")
+   *
+   * @param pathToFileFromRoot: Path the file from root, eg /src/main/resources/graphql.properties
+   * @return
+   * @throws IOException
+   */
+  public static Properties loadPropertyValues(String pathToFileFromRoot) {
+    InputStream input = null;
+    try {
+      input = new FileInputStream(pathToFileFromRoot);
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    }
+    Properties prop = new Properties();
+    try {
+      prop.load(input);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return prop;
+  }
+
+  public static String mapToString(Map map) throws JsonProcessingException {
+
+    return new ObjectMapper().writeValueAsString(map);
+  }
+
+  /**
+   * Get's the response body from a CloseableHttpResponse http response
+   *
+   * @param response: http response
+   * @return the response body
+   * @throws IOException if can't convert response body to string
+   */
+  public static String responseBodyToString(CloseableHttpResponse response) throws IOException {
+    HttpEntity httpEntity = response.getEntity();
+    return EntityUtils.toString(httpEntity, "UTF-8");
+  }
 }

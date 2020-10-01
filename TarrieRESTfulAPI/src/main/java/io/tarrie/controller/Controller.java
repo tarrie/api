@@ -9,10 +9,11 @@ import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
+import io.tarrie.database.TarrieAppSync;
+import io.tarrie.database.exceptions.*;
 import io.tarrie.utilities.Utility;
-import io.tarrie.database.exceptions.TarrieExistenceError;
-import io.tarrie.database.exceptions.TarrieGroupException;
 import io.tarrie.model.*;
 import io.tarrie.model.condensed.UserCondensed;
 import io.tarrie.model.constants.EventRelationship;
@@ -24,7 +25,6 @@ import io.tarrie.model.condensed.EntityCondensed;
 import io.tarrie.database.TarrieDynamoDb;
 import io.tarrie.database.TarrieS3;
 import io.tarrie.database.contants.*;
-import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.events.Event;
 import io.tarrie.model.events.HostEvent;
 import org.apache.logging.log4j.Logger;
@@ -264,8 +264,20 @@ public class Controller {
     return mapper.query(HostEvent.class, queryExpression);
   }
 
-  /** Creates a tarrie event */
-  public static Event createEvent(CreateEvent createEvent) throws MalformedInputException {
+  /**
+   * Creates a tarrie event
+   *
+   * @param createEvent
+   * @return
+   * @throws MalformedInputException
+   * @throws IOException
+   * @throws HttpCloseException
+   * @throws HttpResponseException
+   * @throws HttpErrorCodeException
+   */
+  public static Event createEvent(CreateEvent createEvent)
+      throws MalformedInputException, IOException, HttpCloseException, HttpResponseException,
+          HttpErrorCodeException {
     String creatorType = Utility.getEntityType(createEvent.getCreatorId());
 
     // Consistency checks
@@ -323,7 +335,8 @@ public class Controller {
     hostEvent.setImgPath(createEvent.getImgPath());
     hostEvent.setLocation(createEvent.getLocation());
     hostEvent.setName(createEvent.getName());
-    mapper.save(hostEvent);
+    // mapper.save(hostEvent);
+    TarrieAppSync.setHostingEvent(hostEvent);
 
     // create the actual event object -- will be uploaded to DynamoDb
     Event newEvent = new Event();
@@ -341,8 +354,9 @@ public class Controller {
     newEvent.setHashTags(hashTagSet);
     newEvent.setLinkSharing(createEvent.isLinkSharing());
     newEvent.setPrivacy(createEvent.getEventPrivacy());
-    newEvent.setRsvpNum(creatorType.equals(EntityType.USER) ? 1 : 0);
-    mapper.save(newEvent);
+    // newEvent.setRsvpNum(creatorType.equals(EntityType.USER) ? 1 : 0);
+    // mapper.save(newEvent);
+    TarrieAppSync.createEvent(newEvent);
 
     // this is what the server gives back to the client
     Event eventCondensed = new Event();
@@ -352,7 +366,7 @@ public class Controller {
     eventCondensed.setImgPath(createEvent.getImgPath());
     eventCondensed.setLocation(createEvent.getLocation());
     eventCondensed.setName(createEvent.getName());
-
+    /*
     // invite the entities in the list - ToDo: Make this a thread
     if (createEvent.getInvitedEntityIds() != null) {
       for (String id : createEvent.getInvitedEntityIds()) {
@@ -364,7 +378,7 @@ public class Controller {
     // generate the hashtag entries.
     if (hashTagSet != null) {
       HashTags.inputHashTag(hashTagSet, eventId);
-    }
+    }*/
 
     return eventCondensed;
   }

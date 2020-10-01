@@ -16,12 +16,13 @@ import java.util.Map;
 public class MapTypeConverted implements DynamoDBTypeConverter<String, Map> {
     @Override
     public String convert(Map s) {
+        String aStr = null;
         try {
-            return new ObjectMapper().writeValueAsString(s);
+            aStr = Utility.mapToString(s);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            return null;
         }
+        return aStr;
     }
 
     @Override

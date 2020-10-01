@@ -1,6 +1,9 @@
 package io.tarrie.controller;
 
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.tarrie.model.consumes.CreateEvent;
+import io.tarrie.model.events.Event;
 import io.tarrie.utilities.Utility;
 import io.tarrie.database.TarrieDynamoDb;
 import io.tarrie.database.TestDbHelper;
@@ -11,6 +14,8 @@ import io.tarrie.model.Location;
 import io.tarrie.model.condensed.UserCondensed;
 import io.tarrie.model.consumes.CreateGroup;
 import io.tarrie.model.consumes.CreateUser;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -78,7 +83,6 @@ public class ControllerTest {
   public void createDummyGroupNoUser()
       throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
     UserCondensed owner = new UserCondensed();
-    System.out.println("Error Group");
 
     owner.setId(formattedUserId1);
     owner.setName(userName1);
@@ -102,7 +106,6 @@ public class ControllerTest {
   @DisplayName("Create Dummy Users")
   @Order(2)
   public void createDummyUsers() throws MalformedInputException, AddressException, IOException {
-    System.out.println("Creating User");
     CreateUser newUser1 = new CreateUser();
     newUser1.setId(formattedUserId1);
     newUser1.setName(userName1);
@@ -122,11 +125,34 @@ public class ControllerTest {
 
   @Test
   @DisplayName("Create Dummy Group: valid User")
+  public void convertDynamoDbPojoToMap()
+      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    UserCondensed owner = new UserCondensed();
+
+    owner.setId(formattedUserId1);
+    owner.setName(userName1);
+
+    Location loc = new Location();
+    loc.setCity("Evanston");
+    loc.setState("IL");
+    loc.setLocName("Northwestern University");
+
+    CreateGroup group = new CreateGroup();
+    group.setGroupId(groupId1);
+    group.setOwner(owner);
+    group.setName("Boogo Party");
+    group.setBio("Dude's who like to party");
+    group.setLocation(Utility.pojoToMap(loc));
+
+
+  }
+
+  @Test
+  @DisplayName("Create Dummy Group: valid User")
   @Order(3)
   public void createDummyGroup()
       throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
           MalformedInputException, TarrieExistenceError {
-    System.out.println("Creating Group");
 
     UserCondensed owner = new UserCondensed();
     owner.setId(formattedUserId1);
@@ -153,7 +179,6 @@ public class ControllerTest {
   public void uploadDummyImg()
       throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
           MalformedInputException, IOException {
-    System.out.println("Upload Img");
 
     File dummyImg = new File("../pictures/coolpic.jpeg");
     InputStream is = new FileInputStream(dummyImg);
@@ -164,6 +189,33 @@ public class ControllerTest {
     Controller.uploadProfileImg(is, ImgTypes.GIF, formattedUserId1);
   }
 
+  @Test
+  public void createEvent() throws MalformedInputException, JsonProcessingException {
+
+    Location loc = new Location();
+    //loc.setZipCode(60201);
+    loc.setCity("Evanston");
+    loc.setState("IL");
+    loc.setLocName("Northwestern University");
+    loc.setLine1("Kellogg Global Hub");
+
+
+    //DateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute, int millisOfSecond)
+    String _startTime = new DateTime(2020, 12, 25, 12, 0, 0, 0).withZone(DateTimeZone.UTC).toDateTimeISO().toString();
+    String _endTime = new DateTime(2020, 12, 28, 12, 0, 0, 0).withZone(DateTimeZone.UTC).toDateTimeISO().toString();
+
+
+    Event createEvent = new Event();
+    createEvent.setName("**BoogoParty**2");
+    createEvent.setLocation(Utility.pojoToMap(loc));
+    createEvent.setLinkSharing(true);
+    createEvent.setBio("Libpusm labrum et al took tokk leetzial");
+    createEvent.setStartTime(_startTime);
+    createEvent.setEndTime(_endTime);
+
+    System.out.println(Utility.pojoToJsonUnquotedFields(createEvent));
+
+  }
   /*
 
     @Test

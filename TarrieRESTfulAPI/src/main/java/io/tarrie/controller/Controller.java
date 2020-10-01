@@ -34,6 +34,8 @@ import org.joda.time.DateTimeZone;
 
 import javax.mail.internet.AddressException;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -276,8 +278,8 @@ public class Controller {
    * @throws HttpErrorCodeException
    */
   public static Event createEvent(CreateEvent createEvent)
-      throws MalformedInputException, IOException, HttpCloseException, HttpResponseException,
-          HttpErrorCodeException {
+          throws MalformedInputException, IOException, HttpCloseException, HttpResponseException,
+          HttpErrorCodeException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, URISyntaxException {
     String creatorType = Utility.getEntityType(createEvent.getCreatorId());
 
     // Consistency checks
@@ -304,6 +306,7 @@ public class Controller {
     createEvent.setEventId(eventId);
     createEvent.setEventIdCopy(eventId);
 
+    System.out.println(String.format("Creating event %s, by entity %s, and user requesting is %s",eventId,createEvent.getCreatorId(),createEvent.getUserId()));
     // load the info of the creator of the event - queried from DynamoDb
     DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
     // System.out.println(createEvent.getCreatorId());

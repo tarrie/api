@@ -15,6 +15,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 // http://localhost:8080/api/events
@@ -73,7 +75,7 @@ public class Events implements io.tarrie.api.interfaces.Events {
       Event eventCondensed;
       try {
         eventCondensed = Controller.createEvent(createEvent);
-      } catch (HttpCloseException | HttpResponseException e) {
+      } catch (HttpCloseException | HttpResponseException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | URISyntaxException e) {
         return Response.status(500).type(MediaType.TEXT_PLAIN_TYPE).entity(e.getMessage()).build();
       } catch (HttpErrorCodeException e) {
         Map<String, String> errorMap = HttpErrorCodeException.ErrorMsgToMap(e);

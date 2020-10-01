@@ -9,6 +9,7 @@ import io.tarrie.model.events.Event;
 import io.tarrie.model.events.HostEvent;
 import io.tarrie.utilities.Utility;
 import org.apache.commons.lang3.CharSet;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -17,7 +18,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
@@ -26,13 +29,16 @@ import software.amazon.awssdk.utils.Pair;
 
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 // Based on: https://www.baeldung.com/aws-appsync-spring
 // https://www.baeldung.com/httpclient-post-http-request
-
+// https://github.com/tinnou/appsync-java-sample/blob/master/src/main/java/tinnou/Main.java
 public class TarrieAppSync {
   private static final String graphqlPropFileName = "src/main/resources/graphql.properties";
   private static final Properties properties = Utility.loadPropertyValues(graphqlPropFileName);
@@ -45,15 +51,22 @@ public class TarrieAppSync {
   /**
    * Gets context for http post request
    */
-  private static Pair<CloseableHttpClient, HttpPost> _getHttpClient() {
+  private static Pair<CloseableHttpClient, HttpPost> _getHttpClient() throws URISyntaxException {
+    final URI uri;
+    uri = new URI(properties.getProperty("ApiUrl"));
 
-    CloseableHttpClient client = HttpClients.createDefault();
-    HttpPost httpPost = new HttpPost(properties.getProperty("ApiUrl"));
-    httpPost.setHeader("x-api-key", properties.getProperty("ApiKey"));
-    httpPost.setHeader(
-        "Accept", String.format("%s, %s", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
-    httpPost.setHeader("Accept-Charset", "utf-8");
-    httpPost.setHeader("Content-type", "application/json");
+    Collection<Header> headers = new ArrayList<>();
+    headers.add(new BasicHeader("x-api-key", properties.getProperty("ApiKey")));
+    CloseableHttpClient client = HttpClientBuilder.create().setDefaultHeaders(headers).build();
+
+
+    HttpPost httpPost = new HttpPost(uri);
+    //httpPost.addHeader("x-api-key", properties.getProperty("ApiKey"));
+    //httpPost.addHeader(
+     //   "Accept", String.format("%s, %s, %s, %s, %s", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.WILDCARD));
+    //httpPost.addHeader("Accept-Charset", "utf-8");
+   // httpPost.addHeader("Content-type", "application/json");
+
 
     return Pair.of(client, httpPost);
   }
@@ -73,8 +86,8 @@ public class TarrieAppSync {
    */
   private static void _getHttpResponse(
       CloseableHttpClient client, HttpPost httpPost, Map payloadMap, String errorPrefix)
-      throws HttpResponseException, HttpCloseException, HttpErrorCodeException,
-          JsonProcessingException, UnsupportedEncodingException {
+          throws HttpResponseException, HttpCloseException, HttpErrorCodeException,
+          IOException {
     // Add payload to request
     StringEntity entity = new StringEntity(Utility.mapToString(payloadMap));
     httpPost.setEntity(entity);
@@ -101,6 +114,17 @@ public class TarrieAppSync {
                   "message",
                   String.format("[%s] %s", errorPrefix, response.getStatusLine().getReasonPhrase()))
               .toString();
+
+
+
+      System.out.println("THE PAYLOAD");
+      System.out.println(payloadMap);
+      System.out.println("THE ERROR");
+      System.out.println(response.getEntity().toString());
+      //InputStream content = response.getEntity().getContent();
+            System.out.println(response.getStatusLine().getReasonPhrase());
+
+      System.out.println(Utility.responseBodyToString(response));
       throw new HttpErrorCodeException(jsonString);
     }
   }
@@ -117,8 +141,8 @@ public class TarrieAppSync {
    *     !=200
    */
   public static void createEvent(Event createEvent)
-      throws JsonProcessingException, UnsupportedEncodingException, HttpCloseException,
-          HttpResponseException, HttpErrorCodeException {
+          throws IOException, HttpCloseException,
+          HttpResponseException, HttpErrorCodeException, URISyntaxException {
 
     // Get the Http Client
     Pair<CloseableHttpClient, HttpPost> httpContext = _getHttpClient();
@@ -129,7 +153,7 @@ public class TarrieAppSync {
     String json = Utility.pojoToJsonUnquotedFields(createEvent);
     Map<String, Object> requestBody = new HashMap<>();
     requestBody.put(
-        "mutation",
+        "query",
         String.format(
             "mutation CreateEvent {"
                 + " createEvent(main_pk: \"%s\", input: %s) {"
@@ -144,10 +168,11 @@ public class TarrieAppSync {
                 + "     data"
                 + "     endTime"
                 + "     createdTime"
-                + "     hostInfo"
+                + "     hostInfo {main_pk main_sk imgPath name}"
                 + "   }"
                 + "}",
             createEvent.getId(), json));
+
 
     // Get the Http Response
     _getHttpResponse(client, httpPost, requestBody, "TarrieAppSync::createEvent()");
@@ -155,8 +180,8 @@ public class TarrieAppSync {
 
   // setHostingEvent
   public static void setHostingEvent(HostEvent hostEvent)
-      throws JsonProcessingException, UnsupportedEncodingException, HttpCloseException,
-          HttpResponseException, HttpErrorCodeException {
+          throws IOException, HttpCloseException,
+          HttpResponseException, HttpErrorCodeException, URISyntaxException {
 
     // Get the Http Client
     Pair<CloseableHttpClient, HttpPost> httpContext = _getHttpClient();
@@ -167,7 +192,7 @@ public class TarrieAppSync {
     String json = Utility.pojoToJsonUnquotedFields(hostEvent);
     Map<String, Object> requestBody = new HashMap<>();
     requestBody.put(
-        "mutation",
+        "query",
         String.format(
             "mutation SetHostingEvent {"
                 + " setHostingEvent(main_pk: \"%s\", main_sk: \"%s\", input: %s) {"

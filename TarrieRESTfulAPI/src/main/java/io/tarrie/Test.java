@@ -19,6 +19,7 @@ import org.joda.time.DateTimeZone;
 import javax.mail.internet.AddressException;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 
 public class Test {
@@ -52,7 +53,7 @@ public class Test {
 
   }
 
-  static void createDummyEvent() throws MalformedInputException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IOException, HttpErrorCodeException, HttpCloseException, HttpResponseException {
+  static void createDummyEvent() throws MalformedInputException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IOException, HttpErrorCodeException, HttpCloseException, HttpResponseException, URISyntaxException {
 
     HashSet<String> coordinators = new HashSet<>();
     coordinators.add(formattedUserId2);

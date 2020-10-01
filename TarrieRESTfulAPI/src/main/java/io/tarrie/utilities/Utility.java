@@ -1,8 +1,11 @@
 package io.tarrie.utilities;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.tarrie.database.contants.EntityType;
@@ -24,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -202,21 +206,37 @@ public class Utility {
    */
   public static String pojoToJson(Object pojo) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
     return mapper.writeValueAsString(pojo);
   }
 
+
   public static String pojoToJsonUnquotedFields(Object pojo) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
     mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
     return mapper.writeValueAsString(pojo);
   }
 
+  @JsonProperty()
+  public static String mapToJsonUnquotedFields(Map map) throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
+    mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    return mapper.writeValueAsString(map);
+  }
+
   public static Map pojoToMap(Object pojo)
-      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-    return PropertyUtils.describe(pojo);
+       {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    return mapper.convertValue(pojo, Map.class);
   }
 
   /**

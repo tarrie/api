@@ -193,24 +193,10 @@ public class Event {
 
   @DynamoDBAttribute(attributeName = DbAttributes.LINK_SHARING)
   @ApiModelProperty(value = "Boolean saying if link sharing is on or not(default is off)")
-  public boolean isLinkSharing() {
+    public boolean isLinkSharing() {
     return linkSharing;
   }
 
-  public String convertToJson()
-      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
-          JsonProcessingException {
-    Map mapPayload = Utility.pojoToMap(this);
-    mapPayload.put("main_pk", this.getId());
-    mapPayload.put("main_sk", this.getIdCopy());
-    mapPayload.put("data", this.getCreatedTime());
-
-    mapPayload.remove("id");
-    mapPayload.remove("idCopy");
-    mapPayload.remove("startTime");
-
-    return Utility.mapToJsonUnquotedFields(mapPayload);
-  }
   /* ********* setters ***********/
   public void setCreatedTime(Date createdTime) {
     this.createdTime = createdTime;

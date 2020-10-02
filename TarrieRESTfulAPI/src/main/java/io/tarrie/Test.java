@@ -21,6 +21,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.HashSet;
+import java.util.Optional;
 
 public class Test {
   public static final String userName1 = "Jake Stricht";
@@ -94,7 +95,7 @@ public class Test {
     createEvent.setStartTime(_startTime);
     createEvent.setEndTime(_endTime);
 
-    Controller.createEvent(createEvent);
+    Controller.createEvent(createEvent, Optional.of(true));
 
   }
 

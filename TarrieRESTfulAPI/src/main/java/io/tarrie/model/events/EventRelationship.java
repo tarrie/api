@@ -1,4 +1,4 @@
-package io.tarrie.model.constants;
+package io.tarrie.model.events;
 
 /**
  * The relationship a entity has to an event.

@@ -1,15 +1,15 @@
 package io.tarrie.controller;
 
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import io.tarrie.database.exceptions.*;
+import io.tarrie.model.events.EventRelationship;
 import io.tarrie.model.consumes.CreateEvent;
 import io.tarrie.model.events.Event;
+import io.tarrie.model.events.HostEvent;
 import io.tarrie.utilities.Utility;
 import io.tarrie.database.TarrieDynamoDb;
 import io.tarrie.database.TestDbHelper;
 import io.tarrie.database.contants.ImgTypes;
-import io.tarrie.database.exceptions.MalformedInputException;
-import io.tarrie.database.exceptions.TarrieExistenceError;
 import io.tarrie.model.Location;
 import io.tarrie.model.condensed.UserCondensed;
 import io.tarrie.model.consumes.CreateGroup;
@@ -31,6 +31,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,6 +58,7 @@ public class ControllerTest {
   public static final String groupId1 = "boogoParty33333";
   public static final String formattedGroupId1 = "GRP#boogoParty33333";
 
+  public static Event createdEvent;
   // Variables to set up DynamoDb Local
   private static final TestDbHelper testDbHelper = new TestDbHelper();
 
@@ -143,8 +148,6 @@ public class ControllerTest {
     group.setName("Boogo Party");
     group.setBio("Dude's who like to party");
     group.setLocation(Utility.pojoToMap(loc));
-
-
   }
 
   @Test
@@ -190,32 +193,80 @@ public class ControllerTest {
   }
 
   @Test
-  public void createEvent() throws MalformedInputException, JsonProcessingException {
+  @Order(5)
+  public void createEvent()
+      throws MalformedInputException, IOException, HttpCloseException, IllegalAccessException,
+          HttpErrorCodeException, URISyntaxException, InvocationTargetException,
+          HttpResponseException, NoSuchMethodException {
+
+    HashSet<String> coordinators = new HashSet<>();
+    coordinators.add(formattedUserId2);
+
+    // HashSet<String> invitedEntityIds = new HashSet<>();
+    // invitedEntityIds.add(formattedUserId1);
 
     Location loc = new Location();
-    //loc.setZipCode(60201);
+    loc.setZipCode(60201);
     loc.setCity("Evanston");
     loc.setState("IL");
     loc.setLocName("Northwestern University");
     loc.setLine1("Kellogg Global Hub");
 
+    // EventPrivacy eventPrivacy = new EventPrivacy();
+    // eventPrivacy.setInvitable(true);
+    // eventPrivacy.setVisibilityType(EventVisibilityType.Public.toString());
 
-    //DateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute, int millisOfSecond)
-    String _startTime = new DateTime(2020, 12, 25, 12, 0, 0, 0).withZone(DateTimeZone.UTC).toDateTimeISO().toString();
-    String _endTime = new DateTime(2020, 12, 28, 12, 0, 0, 0).withZone(DateTimeZone.UTC).toDateTimeISO().toString();
+    // HashSet<String> hashTags = new HashSet<>();
+    // hashTags.add("#yeet");
+    // hashTags.add("#yeetcode");
 
+    // DateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int
+    // secondOfMinute, int millisOfSecond)
+    String _startTime =
+        new DateTime(2020, 12, 25, 12, 0, 0, 0)
+            .withZone(DateTimeZone.UTC)
+            .toDateTimeISO()
+            .toString();
+    String _endTime =
+        new DateTime(2020, 12, 28, 12, 0, 0, 0)
+            .withZone(DateTimeZone.UTC)
+            .toDateTimeISO()
+            .toString();
 
-    Event createEvent = new Event();
+    CreateEvent createEvent = new CreateEvent();
     createEvent.setName("**BoogoParty**2");
+    createEvent.setCoordinators(coordinators);
+    createEvent.setCreatorId(formattedGroupId1);
+    // createEvent.setEventPrivacy(eventPrivacy);
     createEvent.setLocation(Utility.pojoToMap(loc));
     createEvent.setLinkSharing(true);
+    // createEvent.setInvitedEntityIds(invitedEntityIds);
     createEvent.setBio("Libpusm labrum et al took tokk leetzial");
+    // createEvent.setHashTags(hashTags);
     createEvent.setStartTime(_startTime);
     createEvent.setEndTime(_endTime);
 
-    System.out.println(Utility.pojoToJsonUnquotedFields(createEvent));
+    // passes if no exceptions
+    Optional<Boolean> useDynamo = Optional.of(true);
+    createdEvent = Controller.createEvent(createEvent,useDynamo);
+    // Check event created
+    System.out.println(createdEvent.getId());
+    assertTrue(TarrieDynamoDb.doesItemExist(createdEvent.getId()));
+
+    // check event created under the host
+    String host_pk = formattedGroupId1;
+    String host_sk = String.format("%s#%s", EventRelationship.HOST, createdEvent.getId());
+    assertTrue(TarrieDynamoDb.doesItemExist(host_pk,host_sk));
 
   }
+
+  @Test
+  @Order(6)
+  public void listEvents() {
+    List<HostEvent> hostedEvents = Controller.getHostedEvents(formattedGroupId1);
+    assertEquals(createdEvent.getId(),Utility.getEntityIdFromEventRelationshipPrefix(hostedEvents.get(0).getEventId()));
+  }
+
   /*
 
     @Test

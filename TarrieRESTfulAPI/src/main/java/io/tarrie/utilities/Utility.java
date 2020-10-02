@@ -5,14 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.tarrie.database.contants.EntityType;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.constants.CharacterLimit;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.PropertyUtils;
+import io.tarrie.model.events.EventRelationship;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.HttpEntity;
@@ -23,11 +21,9 @@ import org.joda.time.DateTime;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -144,6 +140,20 @@ public class Utility {
     } else {
       throw new MalformedInputException("Invalid Tarrie id: " + rawId);
     }
+  }
+
+  public static String eventIdToEventRelationship(String eventId, EventRelationship relationship){
+    return String.format("%s#%s", relationship, eventId);
+  }
+  /**
+   * Returns the entity if prefixed by  a EventRelationship
+   * @param id
+   * @return HOST#EVT#-1742985703BLbsdU -> EVT#-1742985703BLbsdU
+   *
+   */
+  public static String getEntityIdFromEventRelationshipPrefix(String id){
+
+    return id.replaceAll(String.format("%s#|%s#|%s#", EventRelationship.HOST, EventRelationship.RSVP, EventRelationship.SAVED), "");
   }
 
   /**

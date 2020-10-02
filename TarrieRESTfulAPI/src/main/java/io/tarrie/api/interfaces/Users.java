@@ -58,6 +58,7 @@ public interface Users {
    * @param userId id of user making request
    * @return subset of userIds that exist in Tarrie
    */
+  /*
   @ApiOperation(value = "Check if a collection of users exist. Returns the list of userIds that exist from query")
   @GET
   @Consumes(MediaType.APPLICATION_JSON)
@@ -72,8 +73,10 @@ public interface Users {
   Response userExists(@ApiParam(name = "userId", value = "The userId")
                       @QueryParam("userId")
                               Collection<String> userIds, UserId userId);
+*/
 
   /** Create a Tarrie user. */
+  /*
   @ApiOperation(value = "Creates a user")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
@@ -86,8 +89,10 @@ public interface Users {
       })
   @POST
   Response userCreate(CreateUser createUser);
+  */
 
   /** Deletes a user */
+  /*
   @Path("{userId}")
   @ApiOperation(value = "Deletes a user")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -105,8 +110,10 @@ public interface Users {
       @ApiParam(name = "userId", value = "ID of user", required = true) @PathParam("userId")
           String userId,
       UserId requesterUserId);
+*/
 
   /** Gets a user */
+  /*
   @Path("{userId}")
   @ApiOperation(value = "Gets a user")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -124,8 +131,10 @@ public interface Users {
       @ApiParam(name = "userId", value = "ID of user", required = true) @PathParam("userId")
           String userId,
       UserId requesterUserId);
+*/
 
   /** Edits a user. */
+  /*
   @Path("{userId}")
   @ApiOperation(value = "Edit user")
   @PUT
@@ -144,7 +153,7 @@ public interface Users {
           @PathParam("userId")
           String userId,
       EditGroup editUser);
-
+   */
   /* ************** Events *********************/
 
   /** @return the events the user is hosting, rsvp'd , or saved. */

@@ -9,14 +9,13 @@ import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import io.tarrie.database.TarrieAppSync;
 import io.tarrie.database.exceptions.*;
 import io.tarrie.utilities.Utility;
 import io.tarrie.model.*;
 import io.tarrie.model.condensed.UserCondensed;
-import io.tarrie.model.constants.EventRelationship;
+import io.tarrie.model.events.EventRelationship;
 import io.tarrie.model.constants.MembershipType;
 import io.tarrie.model.consumes.CreateEvent;
 import io.tarrie.model.consumes.CreateGroup;
@@ -277,7 +276,7 @@ public class Controller {
    * @throws HttpResponseException
    * @throws HttpErrorCodeException
    */
-  public static Event createEvent(CreateEvent createEvent)
+  public static Event createEvent(CreateEvent createEvent, Optional<Boolean> useDynamo)
           throws MalformedInputException, IOException, HttpCloseException, HttpResponseException,
           HttpErrorCodeException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, URISyntaxException {
     String creatorType = Utility.getEntityType(createEvent.getCreatorId());
@@ -331,15 +330,17 @@ public class Controller {
 
     // creating the HostEvent object for the creator of the event-- will be uploaded to DynamoDb
     HostEvent hostEvent = new HostEvent();
-    hostEvent.setHostId(creator.getId());
-    hostEvent.setEventId(String.format("%s#%s", EventRelationship.HOST, eventId));
-    hostEvent.setEndTime(createEvent.getEndTime());
-    hostEvent.setStartTime(createEvent.getStartTime());
-    hostEvent.setImgPath(createEvent.getImgPath());
-    hostEvent.setLocation(createEvent.getLocation());
-    hostEvent.setName(createEvent.getName());
-    // mapper.save(hostEvent);
-    TarrieAppSync.setHostingEvent(hostEvent);
+    hostEvent.setId(creator.getId());
+    hostEvent.setEventId(Utility.eventIdToEventRelationship(eventId,EventRelationship.HOST));
+    hostEvent.setLastChangedCounter(0);
+
+
+    if (useDynamo.isPresent()){
+      mapper.save(hostEvent);
+    }else{
+      TarrieAppSync.setHostingEvent(hostEvent);
+    }
+
 
     // create the actual event object -- will be uploaded to DynamoDb
     Event newEvent = new Event();
@@ -358,8 +359,13 @@ public class Controller {
     newEvent.setLinkSharing(createEvent.isLinkSharing());
     newEvent.setPrivacy(createEvent.getEventPrivacy());
     // newEvent.setRsvpNum(creatorType.equals(EntityType.USER) ? 1 : 0);
-    // mapper.save(newEvent);
+
     TarrieAppSync.createEvent(newEvent);
+    if (useDynamo.isPresent()){
+      mapper.save(newEvent);
+    }else{
+      TarrieAppSync.createEvent(newEvent);
+    }
 
     // this is what the server gives back to the client
     Event eventCondensed = new Event();

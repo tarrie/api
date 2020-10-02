@@ -47,32 +47,22 @@ public class TarrieAppSync {
     return properties;
   }
 
-
-  /**
-   * Gets context for http post request
-   */
+  /** Gets context for http post request */
   private static Pair<CloseableHttpClient, HttpPost> _getHttpClient() throws URISyntaxException {
     final URI uri;
-    uri = new URI(properties.getProperty("ApiUrl"));
 
+    uri = new URI(properties.getProperty("ApiUrl"));
     Collection<Header> headers = new ArrayList<>();
     headers.add(new BasicHeader("x-api-key", properties.getProperty("ApiKey")));
     CloseableHttpClient client = HttpClientBuilder.create().setDefaultHeaders(headers).build();
-
-
     HttpPost httpPost = new HttpPost(uri);
-    //httpPost.addHeader("x-api-key", properties.getProperty("ApiKey"));
-    //httpPost.addHeader(
-     //   "Accept", String.format("%s, %s, %s, %s, %s", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML, MediaType.WILDCARD));
-    //httpPost.addHeader("Accept-Charset", "utf-8");
-   // httpPost.addHeader("Content-type", "application/json");
-
 
     return Pair.of(client, httpPost);
   }
 
   /**
    * Sets up payload, sends request, throws a error if not 200 code
+   *
    * @param client: (CloseableHttpClient)
    * @param httpPost: (HttpPost)
    * @param payloadMap: (Map) contains the graphQl payload
@@ -81,13 +71,14 @@ public class TarrieAppSync {
    * @throws JsonProcessingException: If can't convert Pojo to Json
    * @throws HttpCloseException: If can't close http client
    * @throws HttpResponseException: If can't get a http response
-   * @throws HttpErrorCodeException: Contains the message and error code if http returns status code
-   *     !=200
+   * @throws HttpErrorCodeException: Contains the message and error code if http returns status code !=200
+   * @throws IOException: If can't do some serialization/deserilization transformation
+   *
+   *
    */
   private static void _getHttpResponse(
       CloseableHttpClient client, HttpPost httpPost, Map payloadMap, String errorPrefix)
-          throws HttpResponseException, HttpCloseException, HttpErrorCodeException,
-          IOException {
+      throws HttpResponseException, HttpCloseException, HttpErrorCodeException, IOException {
     // Add payload to request
     StringEntity entity = new StringEntity(Utility.mapToString(payloadMap));
     httpPost.setEntity(entity);
@@ -96,11 +87,13 @@ public class TarrieAppSync {
     CloseableHttpResponse response;
     try {
       response = client.execute(httpPost);
+
     } catch (IOException e) {
       throw new HttpResponseException(String.format("[%s] Error sending http post", errorPrefix));
     }
 
     try {
+
       client.close();
     } catch (IOException e) {
       throw new HttpCloseException(String.format("[%s] Error closing  http client", errorPrefix));
@@ -112,19 +105,9 @@ public class TarrieAppSync {
               .put("code", Integer.toString(response.getStatusLine().getStatusCode()))
               .put(
                   "message",
-                  String.format("[%s] %s", errorPrefix, response.getStatusLine().getReasonPhrase()))
+                  String.format("[%s,  %s]\n %s", errorPrefix, response.getStatusLine().getReasonPhrase(),Utility.responseBodyToString(response)))
               .toString();
 
-
-
-      System.out.println("THE PAYLOAD");
-      System.out.println(payloadMap);
-      System.out.println("THE ERROR");
-      System.out.println(response.getEntity().toString());
-      //InputStream content = response.getEntity().getContent();
-            System.out.println(response.getStatusLine().getReasonPhrase());
-
-      System.out.println(Utility.responseBodyToString(response));
       throw new HttpErrorCodeException(jsonString);
     }
   }
@@ -141,8 +124,8 @@ public class TarrieAppSync {
    *     !=200
    */
   public static void createEvent(Event createEvent)
-          throws IOException, HttpCloseException,
-          HttpResponseException, HttpErrorCodeException, URISyntaxException {
+      throws IOException, HttpCloseException, HttpResponseException, HttpErrorCodeException,
+          URISyntaxException {
 
     // Get the Http Client
     Pair<CloseableHttpClient, HttpPost> httpContext = _getHttpClient();
@@ -173,15 +156,24 @@ public class TarrieAppSync {
                 + "}",
             createEvent.getId(), json));
 
-
     // Get the Http Response
     _getHttpResponse(client, httpPost, requestBody, "TarrieAppSync::createEvent()");
   }
 
-  // setHostingEvent
-  public static void setHostingEvent(HostEvent hostEvent)
-          throws IOException, HttpCloseException,
-          HttpResponseException, HttpErrorCodeException, URISyntaxException {
+    /**
+   * Creates a event using the AWS AppSync Api
+   *
+   * @param createEvent pojo that specifies format of create event payload
+   * @throws UnsupportedEncodingException : If can't convert Map to string
+   * @throws JsonProcessingException: If can't convert Pojo to Json
+   * @throws HttpCloseException: If can't close http client
+   * @throws HttpResponseException: If can't get a http response
+   * @throws HttpErrorCodeException: Contains the message and error code if http returns status code
+   *     !=200
+   */
+  public static void editEvent(Event edit)
+      throws IOException, HttpCloseException, HttpResponseException, HttpErrorCodeException,
+          URISyntaxException {
 
     // Get the Http Client
     Pair<CloseableHttpClient, HttpPost> httpContext = _getHttpClient();
@@ -189,26 +181,101 @@ public class TarrieAppSync {
     HttpPost httpPost = httpContext.right();
 
     // Setting up our query involves adding it to a query element in the message body:
-    String json = Utility.pojoToJsonUnquotedFields(hostEvent);
+    String json = Utility.pojoToJsonUnquotedFields(edit);
     Map<String, Object> requestBody = new HashMap<>();
     requestBody.put(
         "query",
         String.format(
-            "mutation SetHostingEvent {"
-                + " setHostingEvent(main_pk: \"%s\", main_sk: \"%s\", input: %s) {"
+            "mutation EditEvent {"
+                + " editEvent(main_pk: \"%s\", input: %s) {"
                 + "     main_pk"
                 + "     main_sk"
                 + "     coordinators"
                 + "     name"
                 + "     location"
                 + "     imgPath"
+                + "     linkSharing"
+                + "     text"
                 + "     data"
                 + "     endTime"
+                + "     createdTime"
+                + "     hostInfo {main_pk main_sk imgPath name}"
                 + "   }"
                 + "}",
-            hostEvent.getHostId(), hostEvent.getEventId(), json));
+            edit.getId(), json));
+
+    // Get the Http Response
+    _getHttpResponse(client, httpPost, requestBody, "TarrieAppSync::createEvent()");
+  }
+
+  /**
+   * Query that sets up Hosting For event. Basically puts the event under the primary key of the owner for quick queries.
+   * @param hostEvent
+   * @throws IOException
+   * @throws HttpCloseException
+   * @throws HttpResponseException
+   * @throws HttpErrorCodeException
+   * @throws URISyntaxException
+   */
+  public static void setHostingEvent(HostEvent hostEvent)
+      throws IOException, HttpCloseException, HttpResponseException, HttpErrorCodeException,
+          URISyntaxException {
+
+    // Get the Http Client
+    Pair<CloseableHttpClient, HttpPost> httpContext = _getHttpClient();
+    CloseableHttpClient client = httpContext.left();
+    HttpPost httpPost = httpContext.right();
+
+    // Setting up our query involves adding it to a query element in the message body:
+    Map<String, Object> requestBody = new HashMap<>();
+    requestBody.put(
+        "query",
+        String.format(
+            "mutation CreateHostedEvent {"
+                + " createHostedEvent(main_pk: \"%s\", main_sk: \"%s\", lastChangedCounter: %d) {"
+                + "     main_pk"
+                + "     main_sk"
+                + "     lastChangedCounter"
+                + "   }"
+                + "}",
+            hostEvent.getId(), hostEvent.getEventId(), hostEvent.getLastChangedCounter()));
 
     // Get the Http Response
     _getHttpResponse(client, httpPost, requestBody, "TarrieAppSync::setHostingEvent()");
   }
+
+
+
+  public static void editHostedEvent(HostEvent hostEvent) throws URISyntaxException, HttpCloseException, IOException, HttpResponseException, HttpErrorCodeException {
+
+    // Get the Http Client
+    Pair<CloseableHttpClient, HttpPost> httpContext = _getHttpClient();
+    CloseableHttpClient client = httpContext.left();
+    HttpPost httpPost = httpContext.right();
+
+    // Setting up our query involves adding it to a query element in the message body:
+    Map<String, Object> requestBody = new HashMap<>();
+    requestBody.put(
+        "query",
+        String.format(
+            "mutation EditHostedEvent {"
+                + " editHostedEvent(main_pk: \"%s\", main_sk: \"%s\", lastChangedCounter: %d) {"
+                + "     main_pk"
+                + "     main_sk"
+                + "     lastChangedCounter"
+                + "   }"
+                + "}",
+            hostEvent.getId(), hostEvent.getEventId(), hostEvent.getLastChangedCounter()));
+
+    // Get the Http Response
+    _getHttpResponse(client, httpPost, requestBody, "TarrieAppSync::setHostingEvent()");
+  }
+
+
+
+
+
+
+
+
 }

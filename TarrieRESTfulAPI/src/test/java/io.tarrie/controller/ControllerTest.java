@@ -180,8 +180,7 @@ public class ControllerTest {
   @Test
   @Order(4)
   public void uploadDummyImg()
-      throws IllegalAccessException, NoSuchMethodException, InvocationTargetException,
-          MalformedInputException, IOException {
+          throws MalformedInputException, IOException, ProcessingException {
 
     File dummyImg = new File("../pictures/coolpic.jpeg");
     InputStream is = new FileInputStream(dummyImg);
@@ -195,9 +194,9 @@ public class ControllerTest {
   @Test
   @Order(5)
   public void createEvent()
-      throws MalformedInputException, IOException, HttpCloseException, IllegalAccessException,
+          throws MalformedInputException, IOException, HttpCloseException, IllegalAccessException,
           HttpErrorCodeException, URISyntaxException, InvocationTargetException,
-          HttpResponseException, NoSuchMethodException {
+          HttpResponseException, NoSuchMethodException, ProcessingException {
 
     HashSet<String> coordinators = new HashSet<>();
     coordinators.add(formattedUserId2);

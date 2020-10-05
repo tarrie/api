@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
+import io.tarrie.database.contants.EntityTypeEnum;
+import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.*;
 import io.tarrie.model.constants.CharacterLimit;
 import io.tarrie.model.constants.EventLimits;
@@ -47,7 +49,7 @@ public class Event {
   private Set<String> hashTags;
   private List<String> invitedEntityIds; // has to be queried
   private List<SharableLink> sharableLinks; // has to be queried
-  //private int rsvpNum; // atomic counter
+  // private int rsvpNum; // atomic counter
 
   private String text;
 
@@ -193,7 +195,7 @@ public class Event {
 
   @DynamoDBAttribute(attributeName = DbAttributes.LINK_SHARING)
   @ApiModelProperty(value = "Boolean saying if link sharing is on or not(default is off)")
-    public boolean isLinkSharing() {
+  public boolean isLinkSharing() {
     return linkSharing;
   }
 
@@ -206,13 +208,14 @@ public class Event {
     this.privacy = privacy;
   }
 
-  public void setStartTime(String startTime) {
+  public void setStartTime(String startTime) throws MalformedInputException {
+    Utility.isDateTimeValid(startTime);
     this.startTime = startTime;
   }
 
- // public void setRsvpNum(int rsvpNum) {
- //   this.rsvpNum = rsvpNum;
- // }
+  // public void setRsvpNum(int rsvpNum) {
+  //   this.rsvpNum = rsvpNum;
+  // }
 
   public void setLocation(Map location) {
     this.location = location;
@@ -226,11 +229,16 @@ public class Event {
     this.bio = bio;
   }
 
-  public void setEndTime(String endTime) {
+  public void setEndTime(String endTime) throws MalformedInputException {
+    Utility.isDateTimeValid(endTime);
     this.endTime = endTime;
   }
 
-  public void setImgPath(String imgPath) {
+  public void setImgPath(String imgPath) throws MalformedInputException {
+    if (!Utility.isUrlvalid(imgPath)) {
+      throw new MalformedInputException(
+          String.format("[Event::setImgPath] invalid imgPath: %s", imgPath));
+    }
     this.imgPath = imgPath;
   }
 
@@ -238,15 +246,22 @@ public class Event {
     this.name = name;
   }
 
-  public void setId(String id) {
+  public void setId(String id) throws MalformedInputException {
+    if (!(Utility.isIdValid(id, EntityTypeEnum.EVT))) {
+      throw new MalformedInputException(String.format("[Event::setId] malformed id: %s", id));
+    }
     this.id = id;
+    this.idCopy = id;
+
   }
 
-  public void setHashTags(Set<String> hashTags) {
+  public void setHashTags(Set<String> hashTags) throws MalformedInputException {
+    Utility.verifyHashTags(hashTags);
     this.hashTags = hashTags;
   }
 
-  public void setInvitedEntityIds(List<String> invitedEntityIds) {
+  public void setInvitedEntityIds(List<String> invitedEntityIds) throws MalformedInputException {
+    Utility.isValidEntitySet(coordinators, "Event::setInvitedEntityIds");
     this.invitedEntityIds = invitedEntityIds;
   }
 
@@ -262,11 +277,16 @@ public class Event {
     this.sharableLinks = sharableLinks;
   }
 
-  public void setCoordinators(Set<String> coordinators) {
+  public void setCoordinators(Set<String> coordinators) throws MalformedInputException {
+    Utility.isValidEntitySet(coordinators, "Event::setCoordinators");
     this.coordinators = coordinators;
   }
 
-  public void setIdCopy(String idCopy) {
+  public void setIdCopy(String idCopy) throws MalformedInputException {
+    if (!(Utility.isIdValid(idCopy, EntityTypeEnum.EVT))) {
+      throw new MalformedInputException(
+          String.format("[Event::setIdCopy] malformed id: %s", idCopy));
+    }
     this.idCopy = idCopy;
   }
 

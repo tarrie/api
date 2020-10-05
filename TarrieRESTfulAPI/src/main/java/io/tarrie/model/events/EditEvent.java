@@ -1,4 +1,4 @@
-package io.tarrie.model.consumes;
+package io.tarrie.model.events;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

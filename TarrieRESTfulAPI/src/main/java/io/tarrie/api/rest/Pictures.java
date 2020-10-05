@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
+import io.tarrie.database.exceptions.ProcessingException;
 import io.tarrie.utilities.Utility;
 import io.tarrie.controller.Controller;
 import io.tarrie.database.contants.ImgTypes;
@@ -50,6 +51,7 @@ public class Pictures {
     String userId = userIdBody.getValue();
     InputStream is = fileBody.getValueAs(InputStream.class);
 
+
     if (!(ImgTypes.ACCEPTABLE_MIME_IMAGES.contains(mimeType))) {
       String errorMsg =
           String.format(
@@ -88,7 +90,7 @@ public class Pictures {
           .type(MediaType.TEXT_PLAIN_TYPE)
           .entity(String.format("%s: %s ", errorMsg, e.getMessage()))
           .build();
-    } catch (IOException e) {
+    } catch (ProcessingException e) {
       String errorMsg = "Couldn't convert input stream to a byte array";
       return Response.status(500)
           .type(MediaType.TEXT_PLAIN_TYPE)

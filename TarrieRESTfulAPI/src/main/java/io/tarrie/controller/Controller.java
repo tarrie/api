@@ -10,12 +10,13 @@ import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.google.common.collect.Lists;
+import io.tarrie.controller.utils.ControllerUtils;
 import io.tarrie.database.TarrieAppSync;
 import io.tarrie.database.exceptions.*;
+import io.tarrie.model.events.*;
 import io.tarrie.utilities.Utility;
 import io.tarrie.model.*;
 import io.tarrie.model.condensed.UserCondensed;
-import io.tarrie.model.events.EventRelationship;
 import io.tarrie.model.constants.MembershipType;
 import io.tarrie.model.consumes.CreateEvent;
 import io.tarrie.model.consumes.CreateGroup;
@@ -24,8 +25,6 @@ import io.tarrie.model.condensed.EntityCondensed;
 import io.tarrie.database.TarrieDynamoDb;
 import io.tarrie.database.TarrieS3;
 import io.tarrie.database.contants.*;
-import io.tarrie.model.events.Event;
-import io.tarrie.model.events.HostEvent;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
@@ -33,7 +32,6 @@ import org.joda.time.DateTimeZone;
 
 import javax.mail.internet.AddressException;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -239,33 +237,6 @@ public class Controller {
   }
 
   /**
-   * List Events hosted by a entity
-   *
-   * @param entityId
-   * @return a list of events hosted by
-   */
-  public static List<HostEvent> getHostedEvents(String entityId) {
-    // load the info of the creator of the event - queried from DynamoDb
-    DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
-
-    Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
-    expressionAttributeValues.put(":hashKey_value", new AttributeValue().withS(entityId));
-    expressionAttributeValues.put(":hosting_prefix", new AttributeValue().withS("HOST"));
-
-    // Based on
-    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.KeyConditions.html
-    DynamoDBQueryExpression<HostEvent> queryExpression =
-        new DynamoDBQueryExpression<HostEvent>()
-            .withKeyConditionExpression(
-                String.format(
-                    "%s = :hashKey_value AND begins_with(%s, :hosting_prefix)",
-                    DbAttributes.HASH_KEY, DbAttributes.SORT_KEY))
-            .withExpressionAttributeValues(expressionAttributeValues);
-
-    return mapper.query(HostEvent.class, queryExpression);
-  }
-
-  /**
    * Creates a tarrie event
    *
    * @param createEvent
@@ -277,8 +248,8 @@ public class Controller {
    * @throws HttpErrorCodeException
    */
   public static Event createEvent(CreateEvent createEvent, Optional<Boolean> useDynamo)
-          throws MalformedInputException, IOException, HttpCloseException, HttpResponseException,
-          HttpErrorCodeException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, URISyntaxException {
+      throws MalformedInputException, HttpCloseException, HttpResponseException,
+          HttpErrorCodeException, URISyntaxException, ProcessingException {
     String creatorType = Utility.getEntityType(createEvent.getCreatorId());
 
     // Consistency checks
@@ -305,7 +276,10 @@ public class Controller {
     createEvent.setEventId(eventId);
     createEvent.setEventIdCopy(eventId);
 
-    System.out.println(String.format("Creating event %s, by entity %s, and user requesting is %s",eventId,createEvent.getCreatorId(),createEvent.getUserId()));
+    System.out.println(
+        String.format(
+            "Creating event %s, by entity %s, and user requesting is %s",
+            eventId, createEvent.getCreatorId(), createEvent.getUserId()));
     // load the info of the creator of the event - queried from DynamoDb
     DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
     // System.out.println(createEvent.getCreatorId());
@@ -331,16 +305,14 @@ public class Controller {
     // creating the HostEvent object for the creator of the event-- will be uploaded to DynamoDb
     HostEvent hostEvent = new HostEvent();
     hostEvent.setId(creator.getId());
-    hostEvent.setEventId(Utility.eventIdToEventRelationship(eventId,EventRelationship.HOST));
-    hostEvent.setLastChangedCounter(0);
+    hostEvent.setEventId(Utility.eventIdToEventRelationship(eventId, EventRelationship.HOST));
+    hostEvent.setData(createEvent.getStartTime());
 
-
-    if (useDynamo.isPresent()){
+    if (useDynamo.isPresent()) {
       mapper.save(hostEvent);
-    }else{
-      TarrieAppSync.setHostingEvent(hostEvent);
+    } else {
+      TarrieAppSync.setEventRelationship(hostEvent);
     }
-
 
     // create the actual event object -- will be uploaded to DynamoDb
     Event newEvent = new Event();
@@ -361,9 +333,9 @@ public class Controller {
     // newEvent.setRsvpNum(creatorType.equals(EntityType.USER) ? 1 : 0);
 
     TarrieAppSync.createEvent(newEvent);
-    if (useDynamo.isPresent()){
+    if (useDynamo.isPresent()) {
       mapper.save(newEvent);
-    }else{
+    } else {
       TarrieAppSync.createEvent(newEvent);
     }
 
@@ -392,6 +364,69 @@ public class Controller {
     return eventCondensed;
   }
 
+  /**
+   * List Events hosted by a entity
+   *
+   * @param entityId
+   * @return a list of events hosted by
+   */
+  public static List<HostEvent> getHostedEvents(String entityId) {
+    // load the info of the creator of the event - queried from DynamoDb
+    DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
+
+    Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+    expressionAttributeValues.put(":hashKey_value", new AttributeValue().withS(entityId));
+    expressionAttributeValues.put(":hosting_prefix", new AttributeValue().withS("HOST"));
+
+    // Based on
+    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.KeyConditions.html
+    DynamoDBQueryExpression<HostEvent> queryExpression =
+        new DynamoDBQueryExpression<HostEvent>()
+            .withKeyConditionExpression(
+                String.format(
+                    "%s = :hashKey_value AND begins_with(%s, :hosting_prefix)",
+                    DbAttributes.HASH_KEY, DbAttributes.SORT_KEY))
+            .withExpressionAttributeValues(expressionAttributeValues);
+
+    return mapper.query(HostEvent.class, queryExpression);
+  }
+
+  /**
+   * Edits a event and send all the user/groups associated with event update that event has changed
+   *
+   * @param eventId: Id of event in question
+   * @param event: Payload that contains the update
+   * @throws URISyntaxException
+   * @throws HttpCloseException
+   * @throws ProcessingException
+   * @throws HttpResponseException
+   * @throws HttpErrorCodeException
+   * @throws MalformedInputException
+   */
+  public static void editEvent(String eventId, Event event)
+      throws URISyntaxException, HttpCloseException, ProcessingException, HttpResponseException,
+          HttpErrorCodeException, MalformedInputException {
+
+    // Make sure the id isn't null
+    if (event.getId() == null) {
+      event.setId(eventId);
+      event.setIdCopy(eventId);
+    }
+
+    // Edit the event by making call to db
+    TarrieAppSync.editEvent(event);
+
+    // Loop through all entities that have a relationship with event and notify them that shit has changed
+    Collection<HostEvent> listOfRelationships;
+    for (EventRelationship relationship : EventRelationship.values()) {
+      // get all the users/groups that are related to the event
+      listOfRelationships = ControllerUtils.getAllEventRelationshipForEvent(eventId, relationship);
+
+      // send all the user/groups associated with event update that event has changed
+      ControllerUtils.sendEventRelationshipUpdate(listOfRelationships, event);
+    }
+  }
+
   // ToDo: Make sure update all required components of w/ the new imgPath or remove the dependence
   /**
    * Uploads a profile image to S3 and the resultant path to DynamoDb
@@ -407,13 +442,33 @@ public class Controller {
    *     couldn't parse the response from Amazon S3
    */
   public static String uploadProfileImg(InputStream is, String mimeType, String entityId)
-      throws IOException, MalformedInputException, AmazonServiceException, SdkClientException {
+          throws  MalformedInputException, AmazonServiceException, SdkClientException, ProcessingException {
 
     String s3Url;
 
     s3Url = TarrieS3.uploadProfileImg(is, mimeType, entityId);
 
     return s3Url;
+  }
+
+  public static String uploadEventProfileImg(InputStream is, String mimeType, String eventId)
+          throws MalformedInputException, HttpCloseException, ProcessingException,
+          HttpErrorCodeException, HttpResponseException, URISyntaxException {
+
+    // Upload to S3 and get back the url
+    String imgPath = uploadProfileImg(is, mimeType, eventId);
+
+    System.out.println(imgPath);
+
+    // create event with updated info
+    Event event = new Event();
+    event.setImgPath(imgPath);
+    event.setId(eventId);
+
+    // update the event
+    Controller.editEvent(eventId, event);
+
+    return imgPath;
   }
 
   /**

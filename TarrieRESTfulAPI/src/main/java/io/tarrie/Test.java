@@ -54,7 +54,7 @@ public class Test {
 
   }
 
-  static void createDummyEvent() throws MalformedInputException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IOException, HttpErrorCodeException, HttpCloseException, HttpResponseException, URISyntaxException {
+  static void createDummyEvent() throws MalformedInputException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, IOException, HttpErrorCodeException, HttpCloseException, HttpResponseException, URISyntaxException, ProcessingException {
 
     HashSet<String> coordinators = new HashSet<>();
     coordinators.add(formattedUserId2);
@@ -181,7 +181,7 @@ public class Test {
     Controller.transferGroupOwner(owner , user, group, MembershipType.NULL);
   }
 
-  static void uploadDummyImg() throws IOException, MalformedInputException {
+  static void uploadDummyImg() throws IOException, MalformedInputException, ProcessingException {
     File dummyImg = new File("../pictures/coolpic.jpeg");
     InputStream is = new FileInputStream(dummyImg);
     Controller.uploadProfileImg(is, ImgTypes.JPEG, formattedGroupId1);
@@ -195,3 +195,5 @@ public class Test {
     Controller.getHostedEvents(formattedGroupId1);
   }
 }
+
+

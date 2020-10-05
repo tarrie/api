@@ -8,6 +8,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.tarrie.database.contants.EntityType;
+import io.tarrie.database.contants.EntityTypeEnum;
+import io.tarrie.database.exceptions.HttpErrorCodeException;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.constants.CharacterLimit;
 import io.tarrie.model.events.EventRelationship;
@@ -15,15 +17,20 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -47,6 +54,10 @@ public class Utility {
    * @throws MalformedInputException if invalid hashtag
    */
   public static void verifyHashTags(Set<String> hashTags) throws MalformedInputException {
+    if (hashTags == null){
+      return;
+    }
+
     for (String tag : hashTags) {
       if (tag.charAt(0) != '#') {
         throw new MalformedInputException("Hashtags must start with (#): " + tag);
@@ -102,6 +113,9 @@ public class Utility {
    * @param strDateTime datetime formatted string to check
    */
   public static void isDateTimeValid(String strDateTime) throws MalformedInputException {
+    if (isStringNull(strDateTime)){
+      return;
+    }
     try {
       DateTime.parse(strDateTime);
     } catch (IllegalArgumentException e) {
@@ -119,6 +133,18 @@ public class Utility {
         Pattern.compile(
             String.format(
                 "(?<entityType>%s|%s|%s)#", EntityType.GROUP, EntityType.EVENT, EntityType.USER));
+    Matcher matcher = pattern.matcher(id);
+    return matcher.find();
+  }
+
+  /**
+   * Checks if id is valid of type entitiy type
+   */
+  public static boolean isIdValid(String id, EntityTypeEnum entityTypeEnum){
+        Pattern pattern =
+        Pattern.compile(
+            String.format(
+                "(?<entityType>%s)#", entityTypeEnum));
     Matcher matcher = pattern.matcher(id);
     return matcher.find();
   }
@@ -142,18 +168,21 @@ public class Utility {
     }
   }
 
-  public static String eventIdToEventRelationship(String eventId, EventRelationship relationship){
+  public static String eventIdToEventRelationship(String eventId, EventRelationship relationship) {
     return String.format("%s#%s", relationship, eventId);
   }
   /**
-   * Returns the entity if prefixed by  a EventRelationship
+   * Returns the entity if prefixed by a EventRelationship
+   *
    * @param id
    * @return HOST#EVT#-1742985703BLbsdU -> EVT#-1742985703BLbsdU
-   *
    */
-  public static String getEntityIdFromEventRelationshipPrefix(String id){
+  public static String getEntityIdFromEventRelationshipPrefix(String id) {
 
-    return id.replaceAll(String.format("%s#|%s#|%s#", EventRelationship.HOST, EventRelationship.RSVP, EventRelationship.SAVED), "");
+    return id.replaceAll(
+        String.format(
+            "%s#|%s#|%s#", EventRelationship.HOST, EventRelationship.RSVP, EventRelationship.SAVED),
+        "");
   }
 
   /**
@@ -207,6 +236,10 @@ public class Utility {
     return str == null || str.isEmpty();
   }
 
+  public static boolean isStringNull(String str){
+    return str == null;
+  }
+
   /**
    * Converts a plain old java object (pojo) to json string
    *
@@ -221,7 +254,6 @@ public class Utility {
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
     return mapper.writeValueAsString(pojo);
   }
-
 
   public static String pojoToJsonUnquotedFields(Object pojo) throws JsonProcessingException {
     ObjectMapper mapper = new ObjectMapper();
@@ -242,8 +274,7 @@ public class Utility {
     return mapper.writeValueAsString(map);
   }
 
-  public static Map pojoToMap(Object pojo)
-       {
+  public static Map pojoToMap(Object pojo) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     return mapper.convertValue(pojo, Map.class);
@@ -278,6 +309,15 @@ public class Utility {
     return new ObjectMapper().writeValueAsString(map);
   }
 
+  public static void isValidEntitySet(Collection<String> entitySet, String errorPrefix)
+      throws MalformedInputException {
+
+    for (String entityId : entitySet) {
+      if (!(Utility.isIdValid(entityId))) {
+        throw new MalformedInputException(String.format("[%s] malformed id: %s", errorPrefix, entityId));
+      }
+    }
+  }
   /**
    * Get's the response body from a CloseableHttpResponse http response
    *
@@ -285,8 +325,33 @@ public class Utility {
    * @return the response body
    * @throws IOException if can't convert response body to string
    */
-  public static String responseBodyToString(CloseableHttpResponse response) throws IOException {
+  public static String responseBodyToString(CloseableHttpResponse response) {
+
     HttpEntity httpEntity = response.getEntity();
-    return EntityUtils.toString(httpEntity, "UTF-8");
+
+    try {
+      return EntityUtils.toString(httpEntity, StandardCharsets.UTF_8);
+    } catch (IOException e) {
+      return response.toString();
+    }
   }
+
+    public static Response processHttpErrorCodeException(HttpErrorCodeException e){
+              Map<String, String> errorMap;
+          try {
+            errorMap = HttpErrorCodeException.ErrorMsgToMap(e);
+          } catch (IOException ex) {
+            return Response.status(500)
+                .type(MediaType.TEXT_PLAIN_TYPE)
+                .entity(
+                    String.format(
+                        " Something terribly wrong, could not run HttpErrorCodeException.ErrorMsgToMap(e) ; %s",
+                        e.getMessage()))
+                .build();
+          }
+          return Response.status(Integer.parseInt(errorMap.get("code")))
+              .type(MediaType.TEXT_PLAIN_TYPE)
+              .entity(errorMap.get("message"))
+              .build();
+    }
 }

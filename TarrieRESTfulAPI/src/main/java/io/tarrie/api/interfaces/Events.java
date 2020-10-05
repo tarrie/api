@@ -2,15 +2,12 @@ package io.tarrie.api.interfaces;
 
 import io.swagger.annotations.*;
 import io.tarrie.model.consumes.CreateEvent;
-import io.tarrie.model.consumes.EditEvent;
-import io.tarrie.model.consumes.EventId;
-import io.tarrie.model.consumes.UserId;
+import io.tarrie.model.events.EditEvent;
 import io.tarrie.model.events.Event;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Collection;
 
 /**
  *
@@ -138,12 +135,10 @@ public interface Events {
    * @param editEvent pojo of editable attributes of the event
    * @return response
    */
-  /*
-  @ApiOperation(value = "Edit a event")
-  @Path("{eventId}")
+
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.TEXT_PLAIN)
+  @Produces(MediaType.APPLICATION_JSON)
   @ApiResponses(
       value = {
         @ApiResponse(code = 200, message = "OK"),
@@ -153,9 +148,9 @@ public interface Events {
         @ApiResponse(code = 500, message = "Internal server error")
       })
   Response editEvent(
-      @ApiParam(name = "eventId", value = "ID of event", required = true) @PathParam("eventId")
-          String eventId,
-      EditEvent editEvent);
+          @ApiParam(name = "eventId", value = "ID of event", required = true) @PathParam("eventId")
+                  String eventId,
+          Event editEvent);
 
-   */
+
 }

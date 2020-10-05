@@ -23,4 +23,6 @@ public class DbConstants {
   public static final int SHARABLE_LINK_LENGTH = 6;
   public static final String HASH_TAG = "TAG";
   public static final int HASH_TAG_PER_EVENT = 30;
+
+  public static final String GSI_1 = "main_sk-main_pk-index-copy";
 }

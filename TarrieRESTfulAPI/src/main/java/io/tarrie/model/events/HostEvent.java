@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
+import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.utilities.MapGraphQLSerializer;
 import io.tarrie.utilities.MapTypeConverted;
 import io.tarrie.utilities.Utility;
@@ -24,7 +25,7 @@ public class HostEvent {
   String id;
   String eventId;
   Integer lastChangedCounter;
-
+  String data;
 
 
   /* ********** Getters *************/
@@ -32,6 +33,7 @@ public class HostEvent {
   @ApiModelProperty(value = "id of the user/group")
   @JsonProperty(DbAttributes.HASH_KEY)
   @DynamoDBHashKey(attributeName = DbAttributes.HASH_KEY)
+  @DynamoDBIndexRangeKey(globalSecondaryIndexName = DbConstants.GSI_1)
   public String getId() {
     return id;
   }
@@ -40,9 +42,11 @@ public class HostEvent {
   @ApiModelProperty(value = "Tells is hosting, rsvp, or save event and gives the eventId")
   @JsonProperty(DbAttributes.SORT_KEY)
   @DynamoDBRangeKey(attributeName = DbAttributes.SORT_KEY)
+  @DynamoDBIndexHashKey(globalSecondaryIndexName = DbConstants.GSI_1)
   public String getEventId() {
     return eventId;
   }
+
   @ApiModelProperty(value = "Keeps track of the last changed")
   @JsonProperty(DbAttributes.LAST_CHANGED_COUNTER)
   @DynamoDBAttribute(attributeName = DbAttributes.LAST_CHANGED_COUNTER)
@@ -50,9 +54,29 @@ public class HostEvent {
     return lastChangedCounter;
   }
 
+  @ApiModelProperty(value = "StartTime of the event (LSK)")
+  @JsonProperty(DbAttributes.DATA)
+  @DynamoDBAttribute(attributeName = DbAttributes.DATA)
+  public String getData() {
+    return data;
+  }
 
+  @Override
+  public String toString() {
+    return String.format("HostEvent(main_pk=%s, main_sk=%s, data=%s)",id,eventId,data);
+  }
 
   /* ********** Setters *************/
+
+  public void setData(String data) throws MalformedInputException {
+    try {
+      Utility.isDateTimeValid(data);
+      this.data = data;
+    } catch (MalformedInputException e) {
+      throw new MalformedInputException(String.format("[HostEvent] data not valid datetime format: %s",data));
+    }
+  }
+
   public void setId(String id) {
     this.id =id;
   }

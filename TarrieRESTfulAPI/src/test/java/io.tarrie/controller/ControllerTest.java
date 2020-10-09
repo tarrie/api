@@ -3,7 +3,7 @@ package io.tarrie.controller;
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 import io.tarrie.database.exceptions.*;
 import io.tarrie.model.events.EventRelationship;
-import io.tarrie.model.consumes.CreateEvent;
+import io.tarrie.model.events.CreateEvent;
 import io.tarrie.model.events.Event;
 import io.tarrie.model.events.HostEvent;
 import io.tarrie.utilities.Utility;

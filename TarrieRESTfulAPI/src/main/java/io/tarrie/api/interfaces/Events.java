@@ -1,8 +1,7 @@
 package io.tarrie.api.interfaces;
 
 import io.swagger.annotations.*;
-import io.tarrie.model.consumes.CreateEvent;
-import io.tarrie.model.events.EditEvent;
+import io.tarrie.model.events.CreateEvent;
 import io.tarrie.model.events.Event;
 
 import javax.ws.rs.*;

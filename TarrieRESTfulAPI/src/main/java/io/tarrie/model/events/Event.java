@@ -1,10 +1,8 @@
 package io.tarrie.model.events;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,15 +12,12 @@ import io.tarrie.database.contants.EntityTypeEnum;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.*;
 import io.tarrie.model.constants.CharacterLimit;
-import io.tarrie.model.constants.EventLimits;
-import io.tarrie.model.consumes.CreateEvent;
 import io.tarrie.utilities.MapGraphQLSerializer;
 import io.tarrie.utilities.MapTypeConverted;
 import io.tarrie.utilities.Utility;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /** ToDo: Add support for polls, documents associated with event */

@@ -1,5 +1,7 @@
 package io.tarrie.database;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -11,10 +13,13 @@ import com.amazonaws.services.dynamodbv2.datamodeling.TransactionWriteRequest;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.BatchGetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
+import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
 import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.*;
 import com.google.common.annotations.VisibleForTesting;
+import io.tarrie.database.exceptions.HttpErrorCodeException;
+import io.tarrie.database.exceptions.ProcessingException;
 import io.tarrie.utilities.Utility;
 import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
@@ -327,5 +332,50 @@ public class TarrieDynamoDb {
       outcome = TarrieDynamoDb.dynamoDB.batchWriteItem(tableWriteItems);
       checkForUnprocessedKeys(outcome);
     }
+  }
+
+  private static String _getErrorMsgFromAmazonServiceException(
+      AmazonServiceException ase, String key) {
+    return String.format(
+        "{errMsg: %s, awsErrCode: %s, errType: %s, requestId: %s, dbKeys: %s}",
+        ase.getMessage(), ase.getErrorCode(), ase.getErrorType(), ase.getRequestId(), key);
+  }
+
+  public static Iterator<Item> queryDynamo(String main_pk, Optional<String> main_sk)
+      throws ProcessingException,
+          HttpErrorCodeException { // load the info of the creator of the event - queried from
+                                   // DynamoDb
+    // set up query
+    String keys = String.format("(main_pk=%s", main_pk);
+    ValueMap valueMap = new ValueMap().withString(":hashKey_value", main_pk);
+    String keyConditionExpression = String.format("%s = :hashKey_value", DbAttributes.HASH_KEY);
+
+    if (main_sk.isPresent()) {
+      valueMap.withString(":sortKey_value", main_sk.get());
+      keyConditionExpression += String.format("AND %s = :sortKey_value)", DbAttributes.SORT_KEY);
+      keys += String.format(", main_sk=%s", main_sk.get());
+    }
+    keys += ")";
+    QuerySpec spec =
+        new QuerySpec().withKeyConditionExpression(keyConditionExpression).withValueMap(valueMap);
+
+
+    // send query
+    ItemCollection<QueryOutcome> items;
+    try {
+      items = dynamoDB.getTable(DbConstants.BASE_TABLE).query(spec);
+
+    } catch (AmazonServiceException ase) {
+
+      throw new HttpErrorCodeException(
+          ase.getStatusCode(), _getErrorMsgFromAmazonServiceException(ase, keys));
+    } catch (AmazonClientException ace) {
+
+      throw new ProcessingException(
+          String.format(
+              "Internal error communicating with Dynamo for %s: %s", keys, ace.getMessage()));
+    }
+
+    return items.iterator();
   }
 }

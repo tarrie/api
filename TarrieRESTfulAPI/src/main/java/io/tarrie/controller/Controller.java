@@ -8,17 +8,19 @@ import com.amazonaws.services.dynamodbv2.datamodeling.TransactionWriteRequest;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
+import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.google.common.collect.Lists;
 import io.tarrie.controller.utils.ControllerUtils;
 import io.tarrie.database.TarrieAppSync;
 import io.tarrie.database.exceptions.*;
+import io.tarrie.model.consumes.EntityId;
 import io.tarrie.model.events.*;
 import io.tarrie.utilities.Utility;
 import io.tarrie.model.*;
 import io.tarrie.model.condensed.UserCondensed;
 import io.tarrie.model.constants.MembershipType;
-import io.tarrie.model.consumes.CreateEvent;
+import io.tarrie.model.events.CreateEvent;
 import io.tarrie.model.consumes.CreateGroup;
 import io.tarrie.model.consumes.CreateUser;
 import io.tarrie.model.condensed.EntityCondensed;
@@ -29,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.json.JSONArray;
 
 import javax.mail.internet.AddressException;
 import java.io.*;
@@ -392,6 +395,51 @@ public class Controller {
   }
 
   /**
+   * Gets a event and all its associated attributes.
+   *
+   * @param eventIds: list of eventIds to query
+   * @param entity: The entity making the query
+   * @throws HttpErrorCodeException: DynamoDb produced a non 200 error http code
+   * @throws ProcessingException: Internally Tarrie having trouble talking to DynamoDb server
+   * @throws MalformedInputException is userId invalid or one of the eventId's are invalid
+   * @return a JSONArray where each element is an array of values attached to a single event.
+   */
+  public static JSONArray getEvent(List<String> eventIds, EntityId entity)
+      throws HttpErrorCodeException, ProcessingException, MalformedInputException{
+
+    if (!(Utility.isIdValid(entity.getPrimaryKey(), EntityTypeEnum.USR))) {
+      throw new MalformedInputException(
+          String.format("UserId %s malformed must be in form: USR#{}", entity.getPrimaryKey()));
+    }
+
+    // Loops through list of eventIds and queries it
+    List<List<Map<String,Object>>> ValueList = new ArrayList<>();
+    Iterator<Item> itemIterator;
+    Item item;
+    for (String eventId : eventIds) {
+
+      // validate eventId
+      if (!(Utility.isIdValid(eventId, EntityTypeEnum.EVT))) {
+        throw new MalformedInputException(
+            String.format("EventId %s malformed must be in form: EVT#{}", eventId));
+      }
+      // make api call
+      itemIterator = TarrieDynamoDb.queryDynamo(eventId, Optional.empty());
+
+      // parse the return
+      List<Map<String,Object>> _valueList = new ArrayList<>();
+      while (itemIterator.hasNext()) {
+        item = itemIterator.next();
+        _valueList.add(item.asMap());
+      }
+      ValueList.add(_valueList);
+    }
+
+    return new JSONArray(ValueList);
+
+  }
+
+  /**
    * Edits a event and send all the user/groups associated with event update that event has changed
    *
    * @param eventId: Id of event in question
@@ -416,7 +464,8 @@ public class Controller {
     // Edit the event by making call to db
     TarrieAppSync.editEvent(event);
 
-    // Loop through all entities that have a relationship with event and notify them that shit has changed
+    // Loop through all entities that have a relationship with event and notify them that shit has
+    // changed
     Collection<HostEvent> listOfRelationships;
     for (EventRelationship relationship : EventRelationship.values()) {
       // get all the users/groups that are related to the event
@@ -442,7 +491,8 @@ public class Controller {
    *     couldn't parse the response from Amazon S3
    */
   public static String uploadProfileImg(InputStream is, String mimeType, String entityId)
-          throws  MalformedInputException, AmazonServiceException, SdkClientException, ProcessingException {
+      throws MalformedInputException, AmazonServiceException, SdkClientException,
+          ProcessingException {
 
     String s3Url;
 
@@ -452,7 +502,7 @@ public class Controller {
   }
 
   public static String uploadEventProfileImg(InputStream is, String mimeType, String eventId)
-          throws MalformedInputException, HttpCloseException, ProcessingException,
+      throws MalformedInputException, HttpCloseException, ProcessingException,
           HttpErrorCodeException, HttpResponseException, URISyntaxException {
 
     // Upload to S3 and get back the url

@@ -1,4 +1,4 @@
-package io.tarrie.model.consumes;
+package io.tarrie.model.events;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import io.swagger.annotations.ApiModel;
@@ -21,8 +21,8 @@ import java.util.Set;
 public class CreateEvent {
 
     private Set<String> coordinators;
-    private String creatorId;
-    private String userId;
+    private String creatorId=null;
+    private String userId=null;
     private String name;
     private EventPrivacy eventPrivacy;
     private Map location;

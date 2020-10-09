@@ -1,6 +1,5 @@
 package io.tarrie;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.tarrie.controller.Controller;
 import io.tarrie.database.contants.ImgTypes;
 import io.tarrie.database.exceptions.*;
@@ -9,7 +8,7 @@ import io.tarrie.model.Location;
 import io.tarrie.model.condensed.UserCondensed;
 import io.tarrie.model.constants.EventVisibilityType;
 import io.tarrie.model.constants.MembershipType;
-import io.tarrie.model.consumes.CreateEvent;
+import io.tarrie.model.events.CreateEvent;
 import io.tarrie.model.consumes.CreateGroup;
 import io.tarrie.model.consumes.CreateUser;
 import io.tarrie.utilities.Utility;

@@ -97,24 +97,15 @@ public class TarrieAppSync {
     }
 
     if (response.getStatusLine().getStatusCode() != 200) {
-      String jsonString;
 
-      // InputStream is = response.getEntity().getContent();
-      // System.out.println(response.toString());
-
-      jsonString =
-          new JSONObject()
-              .put("code", Integer.toString(response.getStatusLine().getStatusCode()))
-              .put(
-                  "message",
-                  String.format(
+      Integer errCode = response.getStatusLine().getStatusCode();
+      String errMsg = String.format(
                       "[%s,  %s]\n %s",
                       errorPrefix,
                       response.getStatusLine().getReasonPhrase(),
-                      Utility.responseBodyToString(response)))
-              .toString();
+                      Utility.responseBodyToString(response));
 
-      throw new HttpErrorCodeException(jsonString);
+      throw new HttpErrorCodeException(errCode,errMsg);
     }
   }
 

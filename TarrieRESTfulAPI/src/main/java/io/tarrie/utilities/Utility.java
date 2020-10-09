@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collection;
@@ -54,7 +55,7 @@ public class Utility {
    * @throws MalformedInputException if invalid hashtag
    */
   public static void verifyHashTags(Set<String> hashTags) throws MalformedInputException {
-    if (hashTags == null){
+    if (hashTags == null) {
       return;
     }
 
@@ -113,7 +114,7 @@ public class Utility {
    * @param strDateTime datetime formatted string to check
    */
   public static void isDateTimeValid(String strDateTime) throws MalformedInputException {
-    if (isStringNull(strDateTime)){
+    if (isStringNull(strDateTime)) {
       return;
     }
     try {
@@ -137,16 +138,15 @@ public class Utility {
     return matcher.find();
   }
 
-  /**
-   * Checks if id is valid of type entitiy type
-   */
-  public static boolean isIdValid(String id, EntityTypeEnum entityTypeEnum){
-        Pattern pattern =
-        Pattern.compile(
-            String.format(
-                "(?<entityType>%s)#", entityTypeEnum));
+  /** Checks if id is valid of type entitiy type */
+  public static boolean isIdValid(String id, EntityTypeEnum entityTypeEnum) {
+    Pattern pattern = Pattern.compile(String.format("(?<entityType>%s)#", entityTypeEnum));
     Matcher matcher = pattern.matcher(id);
     return matcher.find();
+  }
+
+  public static String urlDecode(String value) throws UnsupportedEncodingException {
+    return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
   }
 
   /**
@@ -236,7 +236,7 @@ public class Utility {
     return str == null || str.isEmpty();
   }
 
-  public static boolean isStringNull(String str){
+  public static boolean isStringNull(String str) {
     return str == null;
   }
 
@@ -312,9 +312,14 @@ public class Utility {
   public static void isValidEntitySet(Collection<String> entitySet, String errorPrefix)
       throws MalformedInputException {
 
+    if (entitySet == null || entitySet.isEmpty()) {
+      return;
+    }
+
     for (String entityId : entitySet) {
       if (!(Utility.isIdValid(entityId))) {
-        throw new MalformedInputException(String.format("[%s] malformed id: %s", errorPrefix, entityId));
+        throw new MalformedInputException(
+            String.format("[%s] malformed id: %s", errorPrefix, entityId));
       }
     }
   }
@@ -336,22 +341,22 @@ public class Utility {
     }
   }
 
-    public static Response processHttpErrorCodeException(HttpErrorCodeException e){
-              Map<String, String> errorMap;
-          try {
-            errorMap = HttpErrorCodeException.ErrorMsgToMap(e);
-          } catch (IOException ex) {
-            return Response.status(500)
-                .type(MediaType.TEXT_PLAIN_TYPE)
-                .entity(
-                    String.format(
-                        " Something terribly wrong, could not run HttpErrorCodeException.ErrorMsgToMap(e) ; %s",
-                        e.getMessage()))
-                .build();
-          }
-          return Response.status(Integer.parseInt(errorMap.get("code")))
-              .type(MediaType.TEXT_PLAIN_TYPE)
-              .entity(errorMap.get("message"))
-              .build();
+  public static Response processHttpErrorCodeException(HttpErrorCodeException e) {
+    Map<String, String> errorMap;
+    try {
+      errorMap = HttpErrorCodeException.ErrorMsgToMap(e);
+    } catch (IOException ex) {
+      return Response.status(500)
+          .type(MediaType.TEXT_PLAIN_TYPE)
+          .entity(
+              String.format(
+                  " Something terribly wrong, could not run HttpErrorCodeException.ErrorMsgToMap(e) ; %s",
+                  e.getMessage()))
+          .build();
     }
+    return Response.status(Integer.parseInt(errorMap.get("code")))
+        .type(MediaType.TEXT_PLAIN_TYPE)
+        .entity(errorMap.get("message"))
+        .build();
+  }
 }

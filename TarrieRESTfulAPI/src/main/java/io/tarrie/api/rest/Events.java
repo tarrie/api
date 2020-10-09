@@ -9,19 +9,23 @@ import io.swagger.annotations.*;
 import io.tarrie.database.contants.EntityTypeEnum;
 import io.tarrie.database.contants.ImgTypes;
 import io.tarrie.database.exceptions.*;
-import io.tarrie.model.events.EditEvent;
+import io.tarrie.model.Entity;
+import io.tarrie.model.consumes.EntityId;
 import io.tarrie.utilities.Utility;
 import io.tarrie.controller.Controller;
-import io.tarrie.model.consumes.CreateEvent;
+import io.tarrie.model.events.CreateEvent;
 import io.tarrie.model.events.Event;
-import org.apache.commons.lang3.tuple.Triple;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 // http://localhost:8080/api/events
@@ -32,6 +36,40 @@ import java.util.Optional;
     })
 @Path("/events")
 public class Events implements io.tarrie.api.interfaces.Events {
+
+  ///  http://localhost:8080/events?eventId=EVT#123&eventId=EVT#234
+  @ApiOperation(value = "Get a event")
+  @GET
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @ApiResponses(
+      value = {
+        @ApiResponse(code = 200, message = "Created", response = Event.class),
+        @ApiResponse(code = 400, message = "Bad input; missing required attributes"),
+        @ApiResponse(code = 401, message = "Not authorized"),
+        @ApiResponse(code = 500, message = "Internal server error")
+      })
+  public Response getEvents(@QueryParam("eventId") List<String> eventIds, EntityId entityId) {
+
+
+    JSONArray jsonArray;
+    try {
+      jsonArray = Controller.getEvent(eventIds, entityId);
+    } catch (HttpErrorCodeException e) {
+      return Utility.processHttpErrorCodeException(e);
+    } catch (ProcessingException e) {
+      return Response.status(500)
+          .type(MediaType.TEXT_PLAIN_TYPE)
+          .entity(String.format("Processing Exception; %s", e.getMessage()))
+          .build();
+    } catch (MalformedInputException e) {
+      return Response.status(400)
+          .type(MediaType.TEXT_PLAIN_TYPE)
+          .entity(String.format("Malformed input; %s", e.getMessage()))
+          .build();
+    }
+    return Response.status(200).type(MediaType.APPLICATION_JSON).entity(jsonArray.toString()).build();
+  }
 
   // https://crunchify.com/create-very-simple-jersey-rest-service-and-send-json-data-from-java-client/
   @ApiOperation(value = "Create a event")
@@ -121,11 +159,14 @@ public class Events implements io.tarrie.api.interfaces.Events {
       Event editEvent) {
 
     try {
-      Controller.editEvent(eventId,editEvent);
-    } catch (URISyntaxException | HttpCloseException | ProcessingException | HttpResponseException e) {
+      Controller.editEvent(eventId, editEvent);
+    } catch (URISyntaxException
+        | HttpCloseException
+        | ProcessingException
+        | HttpResponseException e) {
       return Response.status(500).type(MediaType.TEXT_PLAIN_TYPE).entity(e.getMessage()).build();
     } catch (HttpErrorCodeException e) {
-            return Utility.processHttpErrorCodeException(e);
+      return Utility.processHttpErrorCodeException(e);
     } catch (MalformedInputException e) {
       return Response.status(400).type(MediaType.TEXT_PLAIN_TYPE).entity(e.getMessage()).build();
     }
@@ -155,7 +196,7 @@ public class Events implements io.tarrie.api.interfaces.Events {
       @FormDataParam("file") FormDataBodyPart fileBody,
       @FormDataParam("userId") FormDataBodyPart userIdBody) {
 
-    //System.out.println(String.format("[Events::uploadProfilePic()] %s",eventId));
+    System.out.println(String.format("[Events::uploadProfilePic()] %s", eventId));
 
     String mimeType = fileBody.getMediaType().toString();
     String userId = userIdBody.getValue();
@@ -224,6 +265,7 @@ public class Events implements io.tarrie.api.interfaces.Events {
     JSONObject obj = new JSONObject();
     obj.put("imgPath", imgPath);
     obj.put("main_pk", eventId);
+    System.out.println(String.format("[Events::uploadProfilePic()] %s finished", eventId));
 
     // image/gif, image/jpg, image/jpeg, image/png,
     return Response.status(200)

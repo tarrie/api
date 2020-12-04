@@ -1,4 +1,6 @@
 # Configuration
+# Incase want update jersey - and have swageer pop up
+https://medium.com/shark-bytes/co-hosting-swagger-ui-with-your-jersey-rest-api-using-maven-dependencies-44d88ae85bf8
 
 # To Run on Local
 `mvn clean package tomcat7:run`

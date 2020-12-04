@@ -250,6 +250,19 @@ public class Controller {
    * @throws HttpResponseException
    * @throws HttpErrorCodeException
    */
+
+  /**
+   *
+   * @param createEvent
+   * @param useDynamo [Optional(bool)] True if we want to use actual dynmo db, false we use AWS App Sync
+   * @return
+   * @throws MalformedInputException
+   * @throws HttpCloseException
+   * @throws HttpResponseException
+   * @throws HttpErrorCodeException
+   * @throws URISyntaxException
+   * @throws ProcessingException
+   */
   public static Event createEvent(CreateEvent createEvent, Optional<Boolean> useDynamo)
       throws MalformedInputException, HttpCloseException, HttpResponseException,
           HttpErrorCodeException, URISyntaxException, ProcessingException {
@@ -335,7 +348,6 @@ public class Controller {
     newEvent.setPrivacy(createEvent.getEventPrivacy());
     // newEvent.setRsvpNum(creatorType.equals(EntityType.USER) ? 1 : 0);
 
-    TarrieAppSync.createEvent(newEvent);
     if (useDynamo.isPresent()) {
       mapper.save(newEvent);
     } else {

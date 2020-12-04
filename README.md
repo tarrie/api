@@ -6,7 +6,8 @@
 # To Host on ElasticBeanStalk - Remote
 (signin link https://069445345183.signin.aws.amazon.com/console )
 1. Set Env: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY on EB
-2. `mvn clean compile war:war`
+2. Make sure `src/main/resources/graphql.properties` up to date with latest API key for GraphQl
+3. `mvn clean compile war:war`
 3. Get the war file upload to EB
 
 # Linking ElasticBeanStalk to ROUTE 53

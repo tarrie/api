@@ -1,6 +1,18 @@
 # Configuration
 # Incase want update jersey - and have swageer pop up
 https://medium.com/shark-bytes/co-hosting-swagger-ui-with-your-jersey-rest-api-using-maven-dependencies-44d88ae85bf8
+# Environment variables to set b4 attempting to run
+1. Make sure `src/main/resources/graphql.properties` up to date with latest API key for GraphQl from AwsAppSync
+    - Credentials found in AWS management console: `AWS AppSync` > `Tarrie.io` > `Settings`
+    - Make sure property file exist and the following properties are set
+        - ApiUrl
+        - ApiKey
+2. Make sure `src/main/resources/aws.properties` up to date with latest AWS Admin credentials
+    - Credentials found in AWS management console: `Administrator` > `My Security Credentials`. But usually this is in the .bash_profile so check first b4 generating something new
+    - Make sure property file exist and the following properties are set
+        - AWS_ACCESS_KEY_ID
+        - AWS_SECRET_ACCESS_KEY
+
 
 # To Run on Local
 `mvn clean package tomcat7:run`

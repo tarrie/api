@@ -31,20 +31,15 @@ import java.util.*;
 // https://www.baeldung.com/httpclient-post-http-request
 // https://github.com/tinnou/appsync-java-sample/blob/master/src/main/java/tinnou/Main.java
 public class TarrieAppSync {
-  private static final String graphqlPropFileName = "src/main/resources/graphql.properties";
-  private static final Properties properties = Utility.loadPropertyValues(graphqlPropFileName);
 
-  static Properties getProperties() {
-    return properties;
-  }
 
   /** Gets context for http post request */
   private static Pair<CloseableHttpClient, HttpPost> _getHttpClient() throws URISyntaxException {
     final URI uri;
 
-    uri = new URI(properties.getProperty("ApiUrl"));
+    uri = new URI(Utility.getParam("AppSyncApiUrl"));
     Collection<Header> headers = new ArrayList<>();
-    headers.add(new BasicHeader("x-api-key", properties.getProperty("ApiKey")));
+    headers.add(new BasicHeader("x-api-key", Utility.getParam("AppSyncApiKey")));
     CloseableHttpClient client = HttpClientBuilder.create().setDefaultHeaders(headers).build();
     HttpPost httpPost = new HttpPost(uri);
 

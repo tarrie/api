@@ -12,12 +12,12 @@ import io.tarrie.database.contants.EntityTypeEnum;
 import io.tarrie.database.exceptions.HttpErrorCodeException;
 import io.tarrie.database.exceptions.MalformedInputException;
 import io.tarrie.model.constants.CharacterLimit;
+import io.tarrie.database.contants.EventRelationshipEnum;
 import io.tarrie.model.events.EventRelationship;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 
@@ -150,7 +150,7 @@ public class Utility {
   }
 
   /**
-   * Gets the entity type given a rawId: Group, User, Event
+   * Gets the entity type given a rawId: Group, User, Event EVT#-1742985703BLbsdU -> EVT
    *
    * @param rawId Tarrie id
    * @return entity identifier
@@ -168,7 +168,33 @@ public class Utility {
     }
   }
 
-  public static String eventIdToEventRelationship(String eventId, EventRelationship relationship) {
+  /**
+   * Gets EventRelationshipEnum from a given a ID : HOST#EVT#-1742985703BLbsdU -> HOST
+   * @param id id
+   * @return {@link EventRelationshipEnum}
+   */
+  public static EventRelationshipEnum getEventRelationshipFromId(String id)
+      throws MalformedInputException {
+
+    Pattern pattern =
+        Pattern.compile(
+            String.format(
+                "(?<eventRelationship>%s|%s|%s)#",
+                EventRelationshipEnum.HOST, EventRelationshipEnum.RSVP, EventRelationshipEnum.SAVED));
+    Matcher matcher = pattern.matcher(id);
+
+    if (matcher.find()) {
+      return EventRelationshipEnum.valueOf(matcher.group("eventRelationship"));
+    } else {
+      throw new MalformedInputException("Invalid Tarrie id: " + id);
+    }
+  }
+
+  /**
+   * EVT#-1742985703BLbsdU -> HOST#EVT#-1742985703BLbsdU
+   */
+  public static String eventIdToEventRelationship(
+      String eventId, EventRelationshipEnum relationship) {
     return String.format("%s#%s", relationship, eventId);
   }
   /**
@@ -181,7 +207,8 @@ public class Utility {
 
     return id.replaceAll(
         String.format(
-            "%s#|%s#|%s#", EventRelationship.HOST, EventRelationship.RSVP, EventRelationship.SAVED),
+            "%s#|%s#|%s#",
+            EventRelationshipEnum.HOST, EventRelationshipEnum.RSVP, EventRelationshipEnum.SAVED),
         "");
   }
 

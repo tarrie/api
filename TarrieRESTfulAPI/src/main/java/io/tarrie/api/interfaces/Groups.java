@@ -322,11 +322,14 @@ public interface Groups {
           @ApiParam(name = "startTime", value = "start time in (ISO 8601 format)")
           @QueryParam("startTime")
           String startDateTimeString,
+            @DefaultValue("-1")
+          @ApiParam(name = "eventRelationship", allowableValues = "HOST, SAVED, RSVP",value = "eventRelationship to query")
+          @QueryParam("eventRelationship")
+          String eventRelationship,
       @DefaultValue("-1")
           @ApiParam(name = "endTime", value = "end time in (ISO 8601 format)")
           @QueryParam("endTime")
-          String endDateTimeString,
-      UserId requesterUserId);
+          String endDateTimeString);
 
 
 }

@@ -9,15 +9,14 @@ import io.tarrie.database.contants.DbAttributes;
 import io.tarrie.database.contants.DbConstants;
 import io.tarrie.database.exceptions.*;
 import io.tarrie.model.events.Event;
+import io.tarrie.database.contants.EventRelationshipEnum;
 import io.tarrie.model.events.EventRelationship;
-import io.tarrie.model.events.HostEvent;
 import io.tarrie.utilities.Utility;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.MessageFormat;
+import java.util.*;
 
 public class ControllerUtils {
   /**
@@ -34,14 +33,14 @@ public class ControllerUtils {
    * @throws ProcessingException
    */
   public static void sendEventRelationshipUpdate(
-      Collection<HostEvent> listOfRelationships, Event event)
+      Collection<EventRelationship> listOfRelationships, Event event)
       throws MalformedInputException, HttpCloseException, HttpErrorCodeException,
           URISyntaxException, HttpResponseException, ProcessingException {
 
     // loop over the relationships, add the start time, and editEventRelationship
-    for (HostEvent hostEvent : listOfRelationships) {
-      hostEvent.setData(event.getStartTime());
-      TarrieAppSync.editEventRelationship(hostEvent);
+    for (EventRelationship eventRelationship : listOfRelationships) {
+      eventRelationship.setData(event.getStartTime());
+      TarrieAppSync.editEventRelationship(eventRelationship);
     }
   }
 
@@ -52,8 +51,8 @@ public class ControllerUtils {
    * @param relationship: The relationship
    * @return The collection of all
    */
-  public static Collection<HostEvent> getAllEventRelationshipForEvent(
-      String eventId, EventRelationship relationship) {
+  public static Collection<EventRelationship> getAllEventRelationshipForEvent(
+      String eventId, EventRelationshipEnum relationship) {
 
     String relationshipSortKey = Utility.eventIdToEventRelationship(eventId, relationship);
 
@@ -65,8 +64,8 @@ public class ControllerUtils {
         ":hashKey_value", new AttributeValue().withS(relationshipSortKey));
 
     // Based on: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html
-    DynamoDBQueryExpression<HostEvent> queryExpression =
-        new DynamoDBQueryExpression<HostEvent>()
+    DynamoDBQueryExpression<EventRelationship> queryExpression =
+        new DynamoDBQueryExpression<EventRelationship>()
             .withKeyConditionExpression(String.format("%s = :hashKey_value", DbAttributes.SORT_KEY))
             .withExpressionAttributeValues(expressionAttributeValues)
             .withIndexName(DbConstants.GSI_1)
@@ -74,6 +73,46 @@ public class ControllerUtils {
                 String.format("%s, %s", DbAttributes.SORT_KEY, DbAttributes.HASH_KEY));
 
     queryExpression.setConsistentRead(false); // cannot use consistent read on GSI
-    return mapper.query(HostEvent.class, queryExpression);
+    return mapper.query(EventRelationship.class, queryExpression);
+  }
+
+  /**
+   * Query Dynamo & Gets the list events associated with the entityId {GRP,USR} for a given  `relationship`
+   * @param entityId
+   * @param relationship
+   * @return
+   * @implNote https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.KeyConditions.html
+   */
+  public static Collection<EventRelationship> getEventRelationshipsForGroupOrUser(
+      String entityId, EventRelationshipEnum relationship) {
+    /*
+
+     */
+    // format query
+    Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
+    expressionAttributeValues.put(":hashKey_value", new AttributeValue().withS(entityId));
+    expressionAttributeValues.put(
+        ":relationship_prefix", new AttributeValue().withS(relationship.toString()));
+
+    DynamoDBQueryExpression<EventRelationship> queryExpression =
+        new DynamoDBQueryExpression<EventRelationship>()
+            .withKeyConditionExpression(
+                MessageFormat.format(
+                    "{0} = :hashKey_value  AND begins_with({1}, :relationship_prefix)",
+                    DbAttributes.HASH_KEY, DbAttributes.SORT_KEY))
+            .withExpressionAttributeValues(expressionAttributeValues);
+
+    // send the actual query & get the list of relationships
+    DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
+
+    return mapper.query(EventRelationship.class, queryExpression);
+  }
+
+  public static Set<String> eventRelationshipsToIDs(Collection<EventRelationship> eventRelationships){
+    Set<String> ids = new HashSet<>();
+    for (EventRelationship relationship: eventRelationships){
+      ids.add(Utility.getEntityIdFromEventRelationshipPrefix(relationship.getEventId()));
+    }
+    return ids;
   }
 }

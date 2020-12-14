@@ -9,7 +9,7 @@ class ApiStartUpTest {
 
   @BeforeAll
   static void setupClass() throws Exception {
-    ApiStartUp.setSystemProperties();
+    _ApiStartUp.setSystemProperties();
   }
 
   @Test

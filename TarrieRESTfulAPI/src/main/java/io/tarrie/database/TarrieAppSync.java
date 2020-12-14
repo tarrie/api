@@ -6,9 +6,8 @@ import io.tarrie.database.exceptions.HttpErrorCodeException;
 import io.tarrie.database.exceptions.HttpResponseException;
 import io.tarrie.database.exceptions.ProcessingException;
 import io.tarrie.model.events.Event;
-import io.tarrie.model.events.HostEvent;
+import io.tarrie.model.events.EventRelationship;
 import io.tarrie.utilities.Utility;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -16,15 +15,12 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
-import org.json.JSONObject;
 import software.amazon.awssdk.utils.Pair;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 // Based on: https://www.baeldung.com/aws-appsync-spring
@@ -220,14 +216,14 @@ public class TarrieAppSync {
    * Query that sets up Hosting For event. Basically puts the event under the primary key of the
    * owner for quick queries.
    *
-   * @param hostEvent
+   * @param eventRelationship
    * @throws IOException
    * @throws HttpCloseException
    * @throws HttpResponseException
    * @throws HttpErrorCodeException
    * @throws URISyntaxException
    */
-  public static void setEventRelationship(HostEvent hostEvent)
+  public static void setEventRelationship(EventRelationship eventRelationship)
       throws HttpCloseException, HttpResponseException, HttpErrorCodeException, URISyntaxException,
           ProcessingException {
     // System.out.println(String.format("[TarrieAppSync::setHostingEvent()] %s", hostEvent));
@@ -249,18 +245,18 @@ public class TarrieAppSync {
                 + "     lastChangedCounter"
                 + "   }"
                 + "}",
-            hostEvent.getId(),
-            hostEvent.getEventId(),
-            hostEvent.getData() == null
+            eventRelationship.getId(),
+            eventRelationship.getEventId(),
+            eventRelationship.getData() == null
                 ? ""
-                : String.format(", data: \"%s\"", hostEvent.getData()));
+                : String.format(", data: \"%s\"", eventRelationship.getData()));
     requestBody.put("query", formattedPayload);
 
     // Get the Http Response
     _getHttpResponse(client, httpPost, requestBody, "TarrieAppSync::setHostingEvent()");
   }
 
-  public static void editEventRelationship(HostEvent hostEvent)
+  public static void editEventRelationship(EventRelationship eventRelationship)
       throws URISyntaxException, HttpCloseException, HttpResponseException, HttpErrorCodeException,
           ProcessingException {
 
@@ -282,11 +278,11 @@ public class TarrieAppSync {
                 + "     lastChangedCounter"
                 + "   }"
                 + "}",
-            hostEvent.getId(),
-            hostEvent.getEventId(),
-            hostEvent.getData() == null
+            eventRelationship.getId(),
+            eventRelationship.getEventId(),
+            eventRelationship.getData() == null
                 ? ""
-                : String.format(", data: \"%s\"", hostEvent.getData())));
+                : String.format(", data: \"%s\"", eventRelationship.getData())));
 
     // Get the Http Response
     _getHttpResponse(client, httpPost, requestBody, "TarrieAppSync::editHostedEvent()");

@@ -2,10 +2,10 @@ package io.tarrie.controller;
 
 import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 import io.tarrie.database.exceptions.*;
-import io.tarrie.model.events.EventRelationship;
+import io.tarrie.database.contants.EventRelationshipEnum;
 import io.tarrie.model.events.CreateEvent;
 import io.tarrie.model.events.Event;
-import io.tarrie.model.events.HostEvent;
+import io.tarrie.model.events.EventRelationship;
 import io.tarrie.utilities.Utility;
 import io.tarrie.database.TarrieDynamoDb;
 import io.tarrie.database.TestDbHelper;
@@ -254,7 +254,7 @@ public class ControllerTest {
 
     // check event created under the host
     String host_pk = formattedGroupId1;
-    String host_sk = String.format("%s#%s", EventRelationship.HOST, createdEvent.getId());
+    String host_sk = String.format("%s#%s", EventRelationshipEnum.HOST, createdEvent.getId());
     assertTrue(TarrieDynamoDb.doesItemExist(host_pk,host_sk));
 
   }
@@ -262,7 +262,7 @@ public class ControllerTest {
   @Test
   @Order(6)
   public void listEvents() {
-    List<HostEvent> hostedEvents = Controller.getHostedEvents(formattedGroupId1);
+    List<EventRelationship> hostedEvents = Controller.getHostedEvents(formattedGroupId1);
     assertEquals(createdEvent.getId(),Utility.getEntityIdFromEventRelationshipPrefix(hostedEvents.get(0).getEventId()));
   }
 

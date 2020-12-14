@@ -8,7 +8,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.TransactionWriteRequest;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.document.spec.QuerySpec;
-import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.google.common.collect.Lists;
 import io.tarrie.controller.utils.ControllerUtils;
@@ -36,6 +35,7 @@ import org.json.JSONArray;
 import javax.mail.internet.AddressException;
 import java.io.*;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -252,9 +252,9 @@ public class Controller {
    */
 
   /**
-   *
    * @param createEvent
-   * @param useDynamo [Optional(bool)] True if we want to use actual dynmo db, false we use AWS App Sync
+   * @param useDynamo [Optional(bool)] True if we want to use actual dynmo db, false we use AWS App
+   *     Sync
    * @return
    * @throws MalformedInputException
    * @throws HttpCloseException
@@ -319,15 +319,16 @@ public class Controller {
     }
 
     // creating the HostEvent object for the creator of the event-- will be uploaded to DynamoDb
-    HostEvent hostEvent = new HostEvent();
-    hostEvent.setId(creator.getId());
-    hostEvent.setEventId(Utility.eventIdToEventRelationship(eventId, EventRelationship.HOST));
-    hostEvent.setData(createEvent.getStartTime());
+    EventRelationship eventRelationship = new EventRelationship();
+    eventRelationship.setId(creator.getId());
+    eventRelationship.setEventId(
+        Utility.eventIdToEventRelationship(eventId, EventRelationshipEnum.HOST));
+    eventRelationship.setData(createEvent.getStartTime());
 
     if (useDynamo.isPresent()) {
-      mapper.save(hostEvent);
+      mapper.save(eventRelationship);
     } else {
-      TarrieAppSync.setEventRelationship(hostEvent);
+      TarrieAppSync.setEventRelationship(eventRelationship);
     }
 
     // create the actual event object -- will be uploaded to DynamoDb
@@ -379,76 +380,148 @@ public class Controller {
     return eventCondensed;
   }
 
+
+  public static Map<String, List<Map<String, Object>>>  getEvents(String entityId, EventRelationshipEnum relationshipEnum)
+      throws HttpErrorCodeException, ProcessingException {
+
+    Set<String> allEventsRelationships = ControllerUtils.eventRelationshipsToIDs(ControllerUtils.getEventRelationshipsForGroupOrUser(entityId,relationshipEnum)) ;
+
+    Map<String, List<Map<String, Object>>> filteredEvents = new HashMap<>();
+    filteredEvents.put(relationshipEnum.toString(), new ArrayList<>(getEvents(allEventsRelationships)));
+
+    return filteredEvents;
+  }
+
+  /**
+   * Gets all events that a `entityId` has a relationship with. Relationships are listed in {@link
+   * EventRelationshipEnum}
+   *
+   * @param entityId the entityId {USR,GRP}
+   *
+   * @apiNote Assumes entityId is a valid Tarrie type e.g {USR,GRP}
+   * @implNote The query is based on
+   *     https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.KeyConditions.html
+   * @return {HOST:List<{@link Event}>, SAVED:List<{@link Event}>,RSVP:List<{@link Event}>}
+   *
+   * @throws HttpErrorCodeException: DynamoDb produced a non 200 error http code
+   * @throws ProcessingException: Internally Tarrie having trouble talking to DynamoDb server
+   */
+  public static Map<String, List<Map<String, Object>>> getEvents(String entityId)
+      throws HttpErrorCodeException, ProcessingException {
+
+
+
+    /*
+    (2)
+    Query dynamo for each of the relationships then Split the id's returned into 4 different sets:
+    - Hosted
+    - Rsvp
+    - Saved
+    - All
+     */
+    Set<String> hostedEvents = ControllerUtils.eventRelationshipsToIDs(ControllerUtils.getEventRelationshipsForGroupOrUser(entityId,EventRelationshipEnum.HOST)) ;
+    Set<String> rsvpEvents = ControllerUtils.eventRelationshipsToIDs(ControllerUtils.getEventRelationshipsForGroupOrUser(entityId,EventRelationshipEnum.RSVP)) ;
+    Set<String> savedEvents = ControllerUtils.eventRelationshipsToIDs(ControllerUtils.getEventRelationshipsForGroupOrUser(entityId,EventRelationshipEnum.SAVED)) ;
+
+
+    Set<String> allEvents = new HashSet<>();
+    allEvents.addAll(hostedEvents);
+    allEvents.addAll(rsvpEvents);
+    allEvents.addAll(savedEvents);
+
+    /*
+    (3)
+    Query Dynamo to get the actual event. Use all events so we don't have to send 3 different queries.
+     */
+    List<Map<String, Object>> events = getEvents(allEvents);
+
+    /*
+    (4)
+    Filter events into groups of HOST RSVP SAVED
+    * */
+    Map<String, List<Map<String, Object>>> filteredEvents = new HashMap<>();
+    filteredEvents.put(EventRelationshipEnum.HOST.toString(), new ArrayList<>());
+    filteredEvents.put(EventRelationshipEnum.RSVP.toString(), new ArrayList<>());
+    filteredEvents.put(EventRelationshipEnum.SAVED.toString(), new ArrayList<>());
+
+    for (Map<String, Object> event : events) {
+      String eventId = (String) event.get(DbAttributes.HASH_KEY);
+      if (hostedEvents.contains(eventId)) {
+        filteredEvents.get(EventRelationshipEnum.HOST.toString()).add(event);
+      } else if (rsvpEvents.contains(eventId)) {
+        filteredEvents.get(EventRelationshipEnum.RSVP.toString()).add(event);
+
+      } else if ((savedEvents.contains(eventId))) {
+        filteredEvents.get(EventRelationshipEnum.SAVED.toString()).add(event);
+      }
+    }
+
+    return filteredEvents;
+  }
   /**
    * List Events hosted by a entity
    *
    * @param entityId
    * @return a list of events hosted by
    */
-  public static List<HostEvent> getHostedEvents(String entityId) {
+  public static List<EventRelationship> getHostedEvents(String entityId) {
     // load the info of the creator of the event - queried from DynamoDb
     DynamoDBMapper mapper = new DynamoDBMapper(TarrieDynamoDb.awsDynamoDb);
 
     Map<String, AttributeValue> expressionAttributeValues = new HashMap<>();
     expressionAttributeValues.put(":hashKey_value", new AttributeValue().withS(entityId));
-    expressionAttributeValues.put(":hosting_prefix", new AttributeValue().withS("HOST"));
+    expressionAttributeValues.put(
+        ":hosting_prefix", new AttributeValue().withS(EventRelationshipEnum.HOST.toString()));
 
     // Based on
     // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/LegacyConditionalParameters.KeyConditions.html
-    DynamoDBQueryExpression<HostEvent> queryExpression =
-        new DynamoDBQueryExpression<HostEvent>()
+    DynamoDBQueryExpression<EventRelationship> queryExpression =
+        new DynamoDBQueryExpression<EventRelationship>()
             .withKeyConditionExpression(
                 String.format(
                     "%s = :hashKey_value AND begins_with(%s, :hosting_prefix)",
                     DbAttributes.HASH_KEY, DbAttributes.SORT_KEY))
             .withExpressionAttributeValues(expressionAttributeValues);
 
-    return mapper.query(HostEvent.class, queryExpression);
+    return mapper.query(EventRelationship.class, queryExpression);
   }
 
   /**
-   * Gets a event and all its associated attributes.
+   * Gets a event and all its associated attributes given a list of eventId's
    *
    * @param eventIds: list of eventIds to query
-   * @param entity: The entity making the query
    * @throws HttpErrorCodeException: DynamoDb produced a non 200 error http code
    * @throws ProcessingException: Internally Tarrie having trouble talking to DynamoDb server
    * @throws MalformedInputException is userId invalid or one of the eventId's are invalid
-   * @return a JSONArray where each element is an array of values attached to a single event.
+   * @return a JSONArray where each element is a single event.
    */
-  public static JSONArray getEvent(List<String> eventIds, EntityId entity)
-      throws HttpErrorCodeException, ProcessingException, MalformedInputException{
-
-    if (!(Utility.isIdValid(entity.getPrimaryKey(), EntityTypeEnum.USR))) {
-      throw new MalformedInputException(
-          String.format("UserId %s malformed must be in form: USR#{}", entity.getPrimaryKey()));
-    }
+  public static List<Map<String, Object>> getEvents(Collection<String> eventIds)
+      throws HttpErrorCodeException, ProcessingException {
 
     // Loops through list of eventIds and queries it
-    List<List<Map<String,Object>>> ValueList = new ArrayList<>();
+    List<Map<String, Object>> ValueList = new ArrayList<>();
     Iterator<Item> itemIterator;
     Item item;
     for (String eventId : eventIds) {
 
       // validate eventId
       if (!(Utility.isIdValid(eventId, EntityTypeEnum.EVT))) {
-        throw new MalformedInputException(
-            String.format("EventId %s malformed must be in form: EVT#{}", eventId));
+        break;
       }
       // make api call
       itemIterator = TarrieDynamoDb.queryDynamo(eventId, Optional.empty());
 
       // parse the return
-      List<Map<String,Object>> _valueList = new ArrayList<>();
+      // List<Map<String, Object>> _valueList = new ArrayList<>();
+      Map<String, Object> _valueList = new HashMap<>();
       while (itemIterator.hasNext()) {
         item = itemIterator.next();
-        _valueList.add(item.asMap());
+        _valueList.putAll(item.asMap());
       }
-      ValueList.add(_valueList);
+      if (!(_valueList.isEmpty())) ValueList.add(_valueList);
     }
 
-    return new JSONArray(ValueList);
-
+    return ValueList;
   }
 
   /**
@@ -478,8 +551,8 @@ public class Controller {
 
     // Loop through all entities that have a relationship with event and notify them that shit has
     // changed
-    Collection<HostEvent> listOfRelationships;
-    for (EventRelationship relationship : EventRelationship.values()) {
+    Collection<EventRelationship> listOfRelationships;
+    for (EventRelationshipEnum relationship : EventRelationshipEnum.values()) {
       // get all the users/groups that are related to the event
       listOfRelationships = ControllerUtils.getAllEventRelationshipForEvent(eventId, relationship);
 

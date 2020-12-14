@@ -105,7 +105,7 @@ with open(testGIF_path, 'rb') as f:
 
 
 
-
+# Get QUerty specific event ID
 
 import requests
 import os.path

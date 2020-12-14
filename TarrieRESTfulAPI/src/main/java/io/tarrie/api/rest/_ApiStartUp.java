@@ -9,7 +9,7 @@ import javax.ws.rs.ext.Provider;
 import java.util.Properties;
 
 @Provider
-public class ApiStartUp implements AbstractResourceModelListener
+public class _ApiStartUp implements AbstractResourceModelListener
 {
     // Name of the prop file that contains env variables for graphQl
     private static final String graphqlPropFileName = "src/main/resources/graphql.properties";
@@ -19,7 +19,7 @@ public class ApiStartUp implements AbstractResourceModelListener
     public void onLoaded(AbstractResourceModelContext modelContext) {
 
         setSystemProperties();
-        System.out.println("##### System properties initiated");
+        System.out.println("##### System properties initiated #####");
     }
 
     /**
